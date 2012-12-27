@@ -5,6 +5,6 @@ cptk.read = function(featurefilename, perffilename, minimize=T) {
     pnames = setdiff(names(pf), common)
     combined = merge(ff, pf)
     optfun = if(minimize) { min } else { max }
-    combined$best = apply(combined, 1, function(x) { pnames[head(which(unlist(x[pnames]) == optfun(unlist(x[pnames]))), 1)] })
+    combined$best = factor(apply(combined, 1, function(x) { pnames[head(which(unlist(x[pnames]) == optfun(unlist(x[pnames]))), 1)] }))
     return(list(data=combined, features=setdiff(names(ff), common), performance=pnames))
 }
