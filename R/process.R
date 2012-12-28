@@ -5,7 +5,9 @@ cptk.cvFolds = function(data, nfolds=10) {
         x$fold = rep(1:nfolds, length.out = n)[sample(n, n)]
         x
     })
-    return(split(data$data, tmp$fold))
+    parts = split(data$data, tmp$fold)
+    return(list(train=lapply(1:nfolds, function(x) { return(unsplit(parts[-x], 1)) }),
+                test=lapply(1:nfolds, function(x) { return(parts[[x]]) })))
 }
 
 cptk.trainTest = function(data, trainpart=0.6) {
@@ -16,7 +18,7 @@ cptk.trainTest = function(data, trainpart=0.6) {
         x
     })
     parts = split(data$data, tmp$train)
-    return(list(train=parts[[1]], test=parts[[2]]))
+    return(list(train=list(parts[[1]]), test=list(parts[[2]])))
 }
 
 # scale all columns to interval (-1, 1)
