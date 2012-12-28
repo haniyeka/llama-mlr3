@@ -8,3 +8,7 @@ require(RWeka)
 set.seed(1)
 misclass = cptk.classify(classifier=J48, data=data, split=cptk.cvFolds, eval=cptk.misclassificationPenalty)
 print(misclass)
+
+source("R/cluster.R")
+misclass = cptk.cluster(clusterer=make_Weka_clusterer("weka/clusterers/EM"), data=data, split=cptk.cvFolds, eval=cptk.misclassificationPenalty)
+print(misclass)
