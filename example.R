@@ -12,3 +12,7 @@ print(misclass)
 source("R/cluster.R")
 misclass = cptk.cluster(clusterer=make_Weka_clusterer("weka/clusterers/EM"), data=data, split=cptk.cvFolds, eval=cptk.misclassificationPenalty)
 print(misclass)
+
+source("R/regression.R")
+misclass = cptk.regression(regressor=make_Weka_classifier("weka/classifiers/functions/LinearRegression"), data=data, split=cptk.cvFolds, eval=cptk.misclassificationPenalty)
+print(misclass)
