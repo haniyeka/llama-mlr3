@@ -1,6 +1,7 @@
 cptk.regression = function(regressor=NULL, data=NULL, split=NULL, eval=NULL, combine=min) {
     splitdata = split(data)
-    score = 0
+    if(class(eval) != "list") { eval = list(eval) }
+    scores = rep.int(0, length(eval))
 
     for(i in 1:length(splitdata$train)) {
         performancePredictions = matrix(nrow=nrow(splitdata$test[[i]]), ncol=length(data$performance))
@@ -15,8 +16,10 @@ cptk.regression = function(regressor=NULL, data=NULL, split=NULL, eval=NULL, com
         for (id in 1:nrow(splitdata$test[[i]])) {
             perfs = subset(splitdata$test[[i]][id,], T, data$performance)
             successes = subset(splitdata$test[[i]][id,], T, data$success)
-            score = score + as.numeric(eval(perfs, perfs[predictions[id]], successes[predictions[id]]))
+            for (j in 1:length(eval)) {
+                scores[j] = scores[j] + as.numeric(eval[[j]](perfs, perfs[predictions[id]], successes[predictions[id]]))
+            }
         }
     }
-    return(score)
+    return(scores)
 }

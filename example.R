@@ -7,7 +7,7 @@ source("R/evaluate.R")
 source("R/classify.R")
 require(RWeka)
 set.seed(1)
-solved = cptk.classify(classifier=J48, data=data, split=cptk.cvFolds, eval=cptk.successes)
+solved = cptk.classify(classifier=J48, data=data, split=cptk.cvFolds, eval=list(cptk.successes, cptk.misclassificationPenalty))
 print(solved)
 
 source("R/cluster.R")
