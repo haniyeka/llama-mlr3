@@ -39,5 +39,5 @@ cptk.normalize = function(data, minValues=NULL, maxValues=NULL) {
         }
     }
 
-    return(list(data=cbind(tmp, subset(data$data, T, setdiff(names(data$data), data$features))), features=data$features, performance=data$performance, minValues=minValues, maxValues=maxValues))
+    return(list(data=cbind(tmp, subset(data$data, T, setdiff(names(data$data), data$features))), features=data$features, performance=data$performance, success=data$success, minValues=minValues, maxValues=maxValues))
 }

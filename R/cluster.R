@@ -10,7 +10,8 @@ cptk.cluster = function(clusterer=NULL, data=NULL, split=NULL, eval=NULL) {
 
         for (id in 1:nrow(splitdata$test[[i]])) {
             perfs = subset(splitdata$test[[i]][id,], T, data$performance)
-            score = score + as.numeric(eval(perfs, perfs[which(data$performance==best[testclusters[id]+1])]))
+            successes = subset(splitdata$test[[i]][id,], T, data$success)
+            score = score + as.numeric(eval(perfs, perfs[which(data$performance==best[testclusters[id]+1])], successes[which(data$performance==best[testclusters[id]+1])]))
         }
     }
     return(score)

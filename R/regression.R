@@ -14,7 +14,8 @@ cptk.regression = function(regressor=NULL, data=NULL, split=NULL, eval=NULL, com
 
         for (id in 1:nrow(splitdata$test[[i]])) {
             perfs = subset(splitdata$test[[i]][id,], T, data$performance)
-            score = score + as.numeric(eval(perfs, perfs[predictions[id]]))
+            successes = subset(splitdata$test[[i]][id,], T, data$success)
+            score = score + as.numeric(eval(perfs, perfs[predictions[id]], successes[predictions[id]]))
         }
     }
     return(score)
