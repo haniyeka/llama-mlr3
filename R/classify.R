@@ -1,11 +1,19 @@
-cptk.classify = function(classifier=NULL, data=NULL, split=NULL, eval=NULL) {
+cptk.classify = function(classifier=NULL, data=NULL, split=NULL, pre=NULL, eval=NULL) {
     splitdata = split(data)
     if(class(eval) != "list") { eval = list(eval) }
     scores = rep.int(0, length(eval))
 
     for(i in 1:length(splitdata$train)) {
-        model = classifier(splitdata$train[[i]]$best~., subset(splitdata$train[[i]], T, data$features))
-        predictions = predict(model, subset(splitdata$test[[i]], T, data$features))
+        trf = list(features=subset(splitdata$train[[i]], T, data$features))
+        if(!is.null(pre)) {
+            trf = pre(trf$features)
+        }
+        model = classifier(splitdata$train[[i]]$best~., trf$features)
+        tsf = list(features=subset(splitdata$test[[i]], T, data$features))
+        if(!is.null(pre)) {
+            tsf = pre(tsf$features, trf$meta)
+        }
+        predictions = predict(model, tsf$features)
 
         for (id in 1:nrow(splitdata$test[[i]])) {
             perfs = subset(splitdata$test[[i]][id,], T, data$performance)

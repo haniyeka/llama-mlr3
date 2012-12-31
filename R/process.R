@@ -22,22 +22,21 @@ cptk.trainTest = function(data, trainpart=0.6) {
 }
 
 # scale all columns to interval (-1, 1)
-cptk.normalize = function(data, minValues=NULL, maxValues=NULL) {
-    features = subset(data$data, T, data$features)
-    if(is.null(minValues)) {
-        minValues = apply(features, 2, min, na.rm=T)
+cptk.normalize = function(rawfeatures, meta=NULL) {
+    if(is.null(meta) || is.null(meta$minValues)) {
+        meta$minValues = apply(rawfeatures, 2, min, na.rm=T)
     }
-    if(is.null(maxValues)) {
-        maxValues = apply(features, 2, max, na.rm=T)
+    if(is.null(meta) || is.null(meta$maxValues)) {
+        meta$maxValues = apply(rawfeatures, 2, max, na.rm=T)
     }
-    tmp = features
-    for(i in names(features)) {
-        tmp[[i]] = if((maxValues[[i]] - minValues[[i]]) == 0) {
-            rep.int(0, length(features[[i]]))
+    tmp = rawfeatures
+    for(i in names(rawfeatures)) {
+        tmp[[i]] = if((meta$maxValues[[i]] - meta$minValues[[i]]) == 0) {
+            rep.int(0, length(rawfeatures[[i]]))
         } else {
-            ((features[[i]] - minValues[[i]]) / (maxValues[[i]] - minValues[[i]]) * 2) - 1
+            ((rawfeatures[[i]] - meta$minValues[[i]]) / (meta$maxValues[[i]] - meta$minValues[[i]]) * 2) - 1
         }
     }
 
-    return(list(data=cbind(tmp, subset(data$data, T, setdiff(names(data$data), data$features))), features=data$features, performance=data$performance, success=data$success, minValues=minValues, maxValues=maxValues))
+    return(list(features=tmp, meta=meta))
 }
