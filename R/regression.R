@@ -29,5 +29,23 @@ cptk.regression = function(regressor=NULL, data=NULL, split=NULL, pre=NULL, eval
             }
         }
     }
-    return(scores)
+
+    fs = list(features=subset(data$data, T, data$features))
+    if(!is.null(pre)) {
+        fs = pre(fs$features)
+    }
+    models = lapply(1:length(data$performance), function(id) {
+        return(regressor(data$data[[data$performance[id]]]~., fs$features))
+    })
+    return(list(eval=scores, predictor=function(x) {
+        tsf = list(features=subset(x, T, data$features))
+        if(!is.null(pre)) {
+            tsf = pre(tsf$features, fs$meta)
+        }
+        performancePredictions = matrix(nrow=nrow(x), ncol=length(data$performance))
+        for (id in 1:length(data$performance)) {
+            performancePredictions[,id] = predict(models[[id]], tsf$features)
+        }
+        return(apply(performancePredictions, 1, function(y) { factor(data$performance[head(which(y %in% combine(y)), 1)]) }))
+    }))
 }

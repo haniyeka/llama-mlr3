@@ -23,5 +23,17 @@ cptk.classify = function(classifier=NULL, data=NULL, split=NULL, pre=NULL, eval=
             }
         }
     }
-    return(scores)
+
+    fs = list(features=subset(data$data, T, data$features))
+    if(!is.null(pre)) {
+        fs = pre(fs$features)
+    }
+    model = classifier(data$data$best~., fs$features)
+    return(list(eval=scores, predictor=function(x) {
+        tsf = list(features=subset(x, T, data$features))
+        if(!is.null(pre)) {
+            tsf = pre(tsf$features, fs$meta)
+        }
+        return(predict(model, tsf$features))
+    }))
 }
