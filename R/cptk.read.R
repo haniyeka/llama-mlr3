@@ -1,4 +1,5 @@
-cptk.read = function(featurefilename, perffilename, successfilename=NULL, minimize=T) {
+cptk.read <-
+function(featurefilename, perffilename, successfilename=NULL, minimize=T) {
     ff = read.csv(featurefilename)
     pf = read.csv(perffilename)
     common = intersect(names(ff), names(pf))

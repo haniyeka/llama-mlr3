@@ -1,4 +1,5 @@
-cptk.cluster = function(clusterer=NULL, data=NULL, split=NULL, pre=NULL, eval=NULL) {
+cptk.cluster <-
+function(clusterer=NULL, data=NULL, split=NULL, pre=NULL, eval=NULL) {
     splitdata = split(data)
     if(class(eval) != "list") { eval = list(eval) }
     scores = rep.int(0, length(eval))

@@ -1,0 +1,11 @@
+Package: cptk
+Type: Package
+Title: Cork Portfolio Toolkit
+Version: 0.1
+Date: 2013-01-01
+Author: Lars Kotthoff
+Maintainer: Lars Kotthoff <larsko@4c.ucc.ie>
+Description: Provides functionality to train and evaluate algorithm selection models for portfolios.
+Depends: plyr
+Suggests: RWeka
+License: BSD

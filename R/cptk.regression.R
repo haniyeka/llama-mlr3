@@ -1,4 +1,5 @@
-cptk.regression = function(regressor=NULL, data=NULL, split=NULL, pre=NULL, eval=NULL, combine=min) {
+cptk.regression <-
+function(regressor=NULL, data=NULL, split=NULL, pre=NULL, eval=NULL, combine=min) {
     splitdata = split(data)
     if(class(eval) != "list") { eval = list(eval) }
     scores = rep.int(0, length(eval))
