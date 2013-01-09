@@ -37,7 +37,7 @@ require(cptk)
 require(RWeka)
 
 data(satsolvers)
-cptk.classify(classifier=J48, data=satsolvers, split=cptk.cvFolds, eval=cptk.trainTest)
+cptk.classify(classifier=J48, data=satsolvers, split=cptk.trainTest, eval=cptk.parscore)
 
 # use 50-50 split instead of 60-40
 cptk.classify(classifier=J48, data=satsolvers, split=function(x) { return(cptk.trainTest(x, 0.5)) }, eval=cptk.parscore)
