@@ -26,8 +26,8 @@ into training and test sets by combining $n-1$ folds for training and using the
 remaining fold for testing.
 }
 \value{
-\item{train }{a list of data sets for training.}
-\item{test }{a list of data sets for testing.}
+\item{train}{a list of data sets for training.}
+\item{test}{a list of data sets for testing.}
 }
 \author{
 Lars Kotthoff

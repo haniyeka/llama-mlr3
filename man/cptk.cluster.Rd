@@ -42,10 +42,10 @@ performance on the problems in that cluster. The learned model is evaluated on
 each of \code{eval}.
 }
 \value{
- \item{eval }{a list with the values for the evaluation functions in the same
+ \item{eval}{a list with the values for the evaluation functions in the same
  order as in the \code{eval} argument. If evaluated on more than one test set,
  the sum across all test sets.}
- \item{predictor }{a function that encapsulates the model learned on the
+ \item{predictor}{a function that encapsulates the model learned on the
  \emph{entire} data set. Can be called with data for the same features with the
  same feature names as the training data to obtain predictions.}
 }

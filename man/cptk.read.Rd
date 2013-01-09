@@ -37,10 +37,10 @@ evaluate the learned models, this argument is required however and will lead to
 error messages if not supplied.
 }
 \value{
-\item{data }{the combined data (features, performance, successes).}
-\item{features }{a list of names denoting problem features.}
-\item{performance }{a list of names denoting algorithm performances.}
-\item{success }{a list of names denoting algorithm successes.}
+\item{data}{the combined data (features, performance, successes).}
+\item{features}{a list of names denoting problem features.}
+\item{performance}{a list of names denoting algorithm performances.}
+\item{success}{a list of names denoting algorithm successes.}
 }
 \author{
 Lars Kotthoff

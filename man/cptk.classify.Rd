@@ -40,10 +40,10 @@ supplied). The preprocessed data is then split into training and test sets using
 model is evaluated on each of \code{eval}.
 }
 \value{
- \item{eval }{a list with the values for the evaluation functions in the same
+ \item{eval}{a list with the values for the evaluation functions in the same
  order as in the \code{eval} argument. If evaluated on more than one test set,
  the sum across all test sets.}
- \item{predictor }{a function that encapsulates the classifier learned on the
+ \item{predictor}{a function that encapsulates the classifier learned on the
  \emph{entire} data set. Can be called with data for the same features with the
  same feature names as the training data to obtain predictions.}
 }

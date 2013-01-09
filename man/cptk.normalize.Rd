@@ -27,8 +27,8 @@ a feature, divides by the difference between maximum and minimum, multiplies by
 2 and subtracts 1. The range of the values for all features will be -1 to 1.
 }
 \value{
-\item{features }{the normalized feature vectors.}
-\item{meta }{the minimum and maximum values for each feature before
+\item{features}{the normalized feature vectors.}
+\item{meta}{the minimum and maximum values for each feature before
 normalization. Can be used in subsequent calls to \code{normalize} for new
 data.}
 }

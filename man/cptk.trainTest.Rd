@@ -23,8 +23,8 @@ fraction. The distribution of the best algorithms in training and test set is
 approximately the same, i.e. the sets are stratified.
 }
 \value{
-\item{train }{a (one-element) list of data sets for training.}
-\item{test }{a (one-element) list of data sets for testing.}
+\item{train}{a (one-element) list of data sets for training.}
+\item{test}{a (one-element) list of data sets for testing.}
 }
 \author{
 Lars Kotthoff
