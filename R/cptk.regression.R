@@ -16,7 +16,7 @@ function(regressor=NULL, data=NULL, split=NULL, pre=NULL, eval=NULL, combine=min
             tsf = pre(tsf$features, trf$meta)
         }
         for (id in 1:length(data$performance)) {
-            model = regressor(splitdata$train[[i]][[data$performance[id]]]~., trf$features)
+            model = regressor(splitdata$train[[i]][[data$performance[id]]]~., data=trf$features)
             performancePredictions[,id] = predict(model, tsf$features)
         }
 
@@ -36,7 +36,7 @@ function(regressor=NULL, data=NULL, split=NULL, pre=NULL, eval=NULL, combine=min
         fs = pre(fs$features)
     }
     models = lapply(1:length(data$performance), function(id) {
-        return(regressor(data$data[[data$performance[id]]]~., fs$features))
+        return(regressor(data$data[[data$performance[id]]]~., data=fs$features))
     })
     return(list(eval=scores, predictor=function(x) {
         tsf = list(features=subset(x, T, data$features))

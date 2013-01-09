@@ -9,7 +9,7 @@ function(classifier=NULL, data=NULL, split=NULL, pre=NULL, eval=NULL) {
         if(!is.null(pre)) {
             trf = pre(trf$features)
         }
-        model = classifier(splitdata$train[[i]]$best~., trf$features)
+        model = classifier(splitdata$train[[i]]$best~., data=trf$features)
         tsf = list(features=subset(splitdata$test[[i]], T, data$features))
         if(!is.null(pre)) {
             tsf = pre(tsf$features, trf$meta)
@@ -29,7 +29,7 @@ function(classifier=NULL, data=NULL, split=NULL, pre=NULL, eval=NULL) {
     if(!is.null(pre)) {
         fs = pre(fs$features)
     }
-    model = classifier(data$data$best~., fs$features)
+    model = classifier(data$data$best~., data=fs$features)
     return(list(eval=scores, predictor=function(x) {
         tsf = list(features=subset(x, T, data$features))
         if(!is.null(pre)) {
