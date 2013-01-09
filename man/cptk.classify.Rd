@@ -61,5 +61,8 @@ data(satsolvers)
 res = cptk.classify(classifier=J48, data=satsolvers, split=cptk.cvFolds, eval=list(cptk.successes, cptk.misclassificationPenalty, cptk.parscore))
 print(res$eval)
 print(res$predictor(subset(satsolvers$data, TRUE, satsolvers$features)))
+
+require(e1071)
+res = cptk.classify(classifier=svm, data=satsolvers, split=cptk.cvFolds, eval=list(cptk.successes, cptk.misclassificationPenalty, cptk.parscore))
 }
 \keyword{ ~models }

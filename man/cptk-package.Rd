@@ -39,6 +39,11 @@ evaluate the performance of the learned models are provided.
 Please note that this is an alpha release. Bugs should be expected and the code
 used with care. More sophisticated functionality has not been implemented yet.
 Function names and interfaces may change in future versions.
+
+At the moment, the implementation of the functions is very much geared towards
+\code{RWeka}, an R package to interface with the Weka machine learning toolkit.
+While in theory using other packages and implementations should be possible,
+this may not be so in practice.
 }
 \author{
 Lars Kotthoff

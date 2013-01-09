@@ -62,11 +62,12 @@ Lars Kotthoff
 }
 \examples{
 require(cptk)
-require(RWeka)
-
 data(satsolvers)
-res = cptk.regression(regressor=make_Weka_classifier("weka/classifiers/functions/LinearRegression"), data=satsolvers, split=cptk.cvFolds, eval=list(cptk.successes, cptk.misclassificationPenalty, cptk.parscore))
+res = cptk.regression(regressor=lm, data=satsolvers, split=cptk.cvFolds, eval=list(cptk.successes, cptk.misclassificationPenalty, cptk.parscore))
 print(res$eval)
 print(res$predictor(subset(satsolvers$data, TRUE, satsolvers$features)))
+
+require(RWeka)
+res = cptk.regression(regressor=make_Weka_classifier("weka/classifiers/functions/LinearRegression"), data=satsolvers, split=cptk.cvFolds, eval=list(cptk.successes, cptk.misclassificationPenalty, cptk.parscore))
 }
 \keyword{ ~regression }
