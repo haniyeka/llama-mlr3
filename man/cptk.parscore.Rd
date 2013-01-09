@@ -48,15 +48,5 @@ cptk.classify(classifier=J48, data=satsolvers, split=cptk.cvFolds, eval=cptk.par
 # use factor of 5 instead of 10.
 cptk.classify(classifier=J48, data=satsolvers, split=cptk.cvFolds,
 eval=function(x, y, z) { return(cptk.parscore(x, y, z, 5)) })
-
-## The function is currently defined as
-function (allperf, chosenperf, chosensuccess, factor = 10) 
-{
-    score = chosenperf
-    if (!chosensuccess) {
-        score = score * factor
-    }
-    return(score)
-  }
 }
 \keyword{ ~models }

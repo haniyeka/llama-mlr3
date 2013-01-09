@@ -44,22 +44,5 @@ cptk.classify(classifier=J48, data=satsolvers, split=cptk.cvFolds, eval=cptk.par
 
 # use 5 folds instead of the default 10
 cptk.classify(classifier=J48, data=satsolvers, split=function(x) { return(cptk.cvFolds(x, 5)) }, eval=cptk.parscore)
-
-## The function is currently defined as
-function (data, nfolds = 10) 
-{
-    require(plyr)
-    tmp = ddply(data$data, .(best), function(x) {
-        n = nrow(x)
-        x$fold = rep(1:nfolds, length.out = n)[sample(n, n)]
-        x
-    })
-    parts = split(data$data, tmp$fold)
-    return(list(train = lapply(1:nfolds, function(x) {
-        return(unsplit(parts[-x], 1))
-    }), test = lapply(1:nfolds, function(x) {
-        return(parts[[x]])
-    })))
-  }
 }
 \keyword{ ~models }

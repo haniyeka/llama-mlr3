@@ -38,11 +38,5 @@ require(RWeka)
 
 data(satsolvers)
 cptk.classify(classifier=J48, data=satsolvers, split=cptk.cvFolds, eval=cptk.successes)
-
-## The function is currently defined as
-function (allperf, chosenperf, chosensuccess) 
-{
-    return(as.integer(chosensuccess))
-  }
 }
 \keyword{ ~models }

@@ -41,19 +41,5 @@ cptk.classify(classifier=J48, data=satsolvers, split=cptk.cvFolds, eval=cptk.tra
 
 # use 50-50 split instead of 60-40
 cptk.classify(classifier=J48, data=satsolvers, split=function(x) { return(cptk.trainTest(x, 0.5)) }, eval=cptk.parscore)
-
-## The function is currently defined as
-function (data, trainpart = 0.6) 
-{
-    require(plyr)
-    tmp = ddply(data$data, .(best), function(x) {
-        n = nrow(x)
-        x$train = c(rep.int(1, round(n * trainpart)), rep.int(2, 
-            n - round(n * trainpart)))[sample(n, n)]
-        x
-    })
-    parts = split(data$data, tmp$train)
-    return(list(train = list(parts[[1]]), test = list(parts[[2]])))
-  }
 }
 \keyword{ ~models }

@@ -48,17 +48,5 @@ cptk.classify(classifier=J48, data=satsolvers, split=cptk.cvFolds, eval=cptk.mis
 
 # maximum performance value is best
 cptk.classify(classifier=J48, data=satsolvers, split=cptk.cvFolds, eval=function(x, y, z) { return(cptk.misclassificationPenalty(x, y, z, FALSE)) })
-
-## The function is currently defined as
-function (allperf, chosenperf, chosensuccess, minimize = T) 
-{
-    optfun = if (minimize) {
-        min
-    }
-    else {
-        max
-    }
-    return(abs(chosenperf - optfun(allperf)))
-  }
 }
 \keyword{ ~models }
