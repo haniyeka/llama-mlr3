@@ -60,7 +60,7 @@ require(cptk)
 require(RWeka)
 
 data(satsolvers)
-res = cptk.cluster(clusterer=make_Weka_clusterer("weka/clusterers/EM"), data=satsolvers, split=cptk.cvFolds, pre=cptk.normalize, eval=list(cptk.successes, cptk.misclassificationPenalty, cptk.parscore))
+res = cptk.cluster(clusterer=XMeans, data=satsolvers, split=cptk.cvFolds, pre=cptk.normalize, eval=list(cptk.successes, cptk.misclassificationPenalty, cptk.parscore))
 print(res$eval)
 print(res$predictor(subset(satsolvers$data, TRUE, satsolvers$features)))
 

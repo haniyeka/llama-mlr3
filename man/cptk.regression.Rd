@@ -68,6 +68,6 @@ print(res$eval)
 print(res$predictor(subset(satsolvers$data, TRUE, satsolvers$features)))
 
 require(RWeka)
-res = cptk.regression(regressor=make_Weka_classifier("weka/classifiers/functions/LinearRegression"), data=satsolvers, split=cptk.cvFolds, eval=list(cptk.successes, cptk.misclassificationPenalty, cptk.parscore))
+res = cptk.regression(regressor=LinearRegression, data=satsolvers, split=cptk.cvFolds, eval=list(cptk.successes, cptk.misclassificationPenalty, cptk.parscore))
 }
 \keyword{ ~regression }
