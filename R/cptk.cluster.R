@@ -22,7 +22,12 @@ function(clusterer=NULL, data=NULL, split=NULL, pre=NULL, eval=NULL) {
             perfs = subset(splitdata$test[[i]][id,], T, data$performance)
             successes = subset(splitdata$test[[i]][id,], T, data$success)
             for (j in 1:length(eval)) {
-                scores[j] = scores[j] + as.numeric(eval[[j]](perfs, perfs[which(data$performance==best[[which(names(best)==testclusters[id])]])], successes[which(data$performance==best[[which(names(best)==testclusters[id])]])]))
+                if(is.na(testclusters[id])) {
+                    chosen = names(sort(table(splitdata$train[[i]]$best), decreasing=T))[1]
+                } else {
+                    chosen = best[[which(names(best)==testclusters[id])]]
+                }
+                scores[j] = scores[j] + as.numeric(eval[[j]](perfs, perfs[which(data$performance==chosen)], successes[which(data$performance==chosen)]))
             }
         }
     }
@@ -40,7 +45,11 @@ function(clusterer=NULL, data=NULL, split=NULL, pre=NULL, eval=NULL) {
             tsf = pre(tsf$features, fs$meta)
         }
         return(sapply(predict(model, tsf$features), function(y) {
-            return(factor(best[[which(names(best)==y)]]))
+            if(is.na(y)) {
+                return(factor(names(sort(table(data$data$best), decreasing=T))[1]))
+            } else {
+                return(factor(best[[which(names(best)==y)]]))
+            }
         }))
     }))
 }
