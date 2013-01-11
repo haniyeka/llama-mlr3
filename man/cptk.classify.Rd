@@ -21,7 +21,8 @@ cptk.classify(classifier = NULL, data = NULL, split = NULL, pre = NULL, eval = N
 }
   \item{split}{
   a function to split the data into training and test set(s). One of
-  \code{cptk.trainTest} or \code{cptk.cvFolds}.
+  \code{cptk.trainTest} or \code{cptk.cvFolds}. Alternatively, a data set that
+  has been split already by one of these functions.
 }
   \item{pre}{
   a function to preprocess the data. Currently only \code{cptk.normalize}.
@@ -64,5 +65,9 @@ print(res$predictor(subset(satsolvers$data, TRUE, satsolvers$features)))
 
 require(e1071)
 res = cptk.classify(classifier=svm, data=satsolvers, split=cptk.cvFolds, eval=list(cptk.successes, cptk.misclassificationPenalty, cptk.parscore))
+
+# pre-split data set
+folds = cptk.cvFolds(satsolvers)
+res = cptk.classify(classifier=svm, data=satsolvers, split=folds, eval=list(cptk.successes, cptk.misclassificationPenalty, cptk.parscore))
 }
 \keyword{ ~models }

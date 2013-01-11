@@ -21,7 +21,8 @@ cptk.regression(regressor = NULL, data = NULL, split = NULL, pre = NULL, eval = 
 }
   \item{split}{
   a function to split the data into training and test set(s). One of
-  \code{cptk.trainTest} or \code{cptk.cvFolds}.
+  \code{cptk.trainTest} or \code{cptk.cvFolds}. Alternatively, a data set that
+  has been split already by one of these functions.
 }
   \item{pre}{
   a function to preprocess the data. Currently only \code{cptk.normalize}.
