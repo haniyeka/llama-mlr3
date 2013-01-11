@@ -2,7 +2,7 @@ cptk.regression <-
 function(regressor=NULL, data=NULL, split=NULL, pre=NULL, eval=NULL, combine=min) {
     splitdata = if(is.function(split)) { split(data) } else { split }
     if(class(eval) != "list") { eval = list(eval) }
-    scores = rep.int(0, length(eval))
+    scores = vector(mode="list", length=length(eval))
 
     for(i in 1:length(splitdata$train)) {
         performancePredictions = matrix(nrow=nrow(splitdata$test[[i]]), ncol=length(data$performance))
@@ -26,7 +26,7 @@ function(regressor=NULL, data=NULL, split=NULL, pre=NULL, eval=NULL, combine=min
             perfs = subset(splitdata$test[[i]][id,], T, data$performance)
             successes = subset(splitdata$test[[i]][id,], T, data$success)
             for (j in 1:length(eval)) {
-                scores[j] = scores[j] + as.numeric(eval[[j]](perfs, perfs[predictions[id]], successes[predictions[id]]))
+                scores[[j]] = append(scores[[j]], as.numeric(eval[[j]](perfs, perfs[predictions[id]], successes[predictions[id]])))
             }
         }
     }

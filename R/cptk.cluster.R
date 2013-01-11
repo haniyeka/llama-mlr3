@@ -2,7 +2,7 @@ cptk.cluster <-
 function(clusterer=NULL, data=NULL, split=NULL, pre=NULL, eval=NULL) {
     splitdata = if(is.function(split)) { split(data) } else { split }
     if(class(eval) != "list") { eval = list(eval) }
-    scores = rep.int(0, length(eval))
+    scores = vector(mode="list", length=length(eval))
 
     for(i in 1:length(splitdata$train)) {
         trf = list(features=subset(splitdata$train[[i]], T, data$features))
@@ -27,7 +27,7 @@ function(clusterer=NULL, data=NULL, split=NULL, pre=NULL, eval=NULL) {
                 } else {
                     chosen = best[[which(names(best)==testclusters[id])]]
                 }
-                scores[j] = scores[j] + as.numeric(eval[[j]](perfs, perfs[which(data$performance==chosen)], successes[which(data$performance==chosen)]))
+                scores[[j]] = append(scores[[j]], as.numeric(eval[[j]](perfs, perfs[which(data$performance==chosen)], successes[which(data$performance==chosen)])))
             }
         }
     }

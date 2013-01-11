@@ -30,8 +30,8 @@ cptk.classify(classifier = NULL, data = NULL, split = NULL, pre = NULL, eval = N
 }
   \item{eval}{
   a list of functions to use to evaluate the learned model. Currently supported
-  are \code{cptk.misclassificationPenalty}, \code{cptk.parscore} and
-  \code{cptk.successes}.
+  are \code{cptk.misclassificationPenalty}, \code{cptk.parscore},
+  \code{cptk.prediction} and \code{cptk.success}.
 }
 }
 \details{
@@ -41,9 +41,10 @@ supplied). The preprocessed data is then split into training and test sets using
 model is evaluated on each of \code{eval}.
 }
 \value{
- \item{eval}{a list with the values for the evaluation functions in the same
- order as in the \code{eval} argument. If evaluated on more than one test set,
- the sum across all test sets.}
+ \item{eval}{a list with a list of values for the evaluation functions in the
+ same order as in the \code{eval} argument. That is, there is one element for
+ each function in \code{eval} and each of those elements is a list with the
+ results of the evaluation for each problem it was evaluated on.}
  \item{predictor}{a function that encapsulates the classifier learned on the
  \emph{entire} data set. Can be called with data for the same features with the
  same feature names as the training data to obtain predictions.}
@@ -59,15 +60,16 @@ require(cptk)
 require(RWeka)
 
 data(satsolvers)
-res = cptk.classify(classifier=J48, data=satsolvers, split=cptk.cvFolds, eval=list(cptk.successes, cptk.misclassificationPenalty, cptk.parscore))
-print(res$eval)
+res = cptk.classify(classifier=J48, data=satsolvers, split=cptk.cvFolds, eval=list(cptk.success, cptk.misclassificationPenalty, cptk.parscore))
+# print the total number of successes
+print(sum(res$eval[[1]]))
 print(res$predictor(subset(satsolvers$data, TRUE, satsolvers$features)))
 
 require(e1071)
-res = cptk.classify(classifier=svm, data=satsolvers, split=cptk.cvFolds, eval=list(cptk.successes, cptk.misclassificationPenalty, cptk.parscore))
+res = cptk.classify(classifier=svm, data=satsolvers, split=cptk.cvFolds, eval=list(cptk.success, cptk.misclassificationPenalty, cptk.parscore))
 
 # pre-split data set
 folds = cptk.cvFolds(satsolvers)
-res = cptk.classify(classifier=svm, data=satsolvers, split=folds, eval=list(cptk.successes, cptk.misclassificationPenalty, cptk.parscore))
+res = cptk.classify(classifier=svm, data=satsolvers, split=folds, eval=list(cptk.success, cptk.misclassificationPenalty, cptk.parscore))
 }
 \keyword{ ~models }

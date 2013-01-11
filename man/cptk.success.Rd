@@ -1,5 +1,5 @@
-\name{cptk.successes}
-\alias{cptk.successes}
+\name{cptk.success}
+\alias{cptk.success}
 \title{
 Success
 }
@@ -7,7 +7,7 @@ Success
 Was the problem solved successfully using the chosen algorithm?
 }
 \usage{
-cptk.successes(allperf, chosenperf, chosensuccess)
+cptk.success(allperf, chosenperf, chosensuccess)
 }
 \arguments{
   \item{allperf}{
@@ -30,13 +30,14 @@ Returns 1 if the chosen algorithm successfully solved the problem, 0 otherwise.
 Lars Kotthoff
 }
 \seealso{
-\code{\link{cptk.misclassificationPenalty}}, \code{\link{cptk.parscore}}
+\code{\link{cptk.misclassificationPenalty}}, \code{\link{cptk.parscore}},
+\code{\link{cptk.prediction}}
 }
 \examples{
 require(cptk)
 require(RWeka)
 
 data(satsolvers)
-cptk.classify(classifier=J48, data=satsolvers, split=cptk.cvFolds, eval=cptk.successes)
+cptk.classify(classifier=J48, data=satsolvers, split=cptk.cvFolds, eval=cptk.success)
 }
 \keyword{ ~models }

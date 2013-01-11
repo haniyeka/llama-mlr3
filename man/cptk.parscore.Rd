@@ -36,7 +36,8 @@ The penalized average runtime.
 Lars Kotthoff
 }
 \seealso{
-\code{\link{cptk.misclassificationPenalty}}, \code{\link{cptk.successes}}
+\code{\link{cptk.misclassificationPenalty}}, \code{\link{cptk.prediction}},
+\code{\link{cptk.success}}
 }
 \examples{
 require(cptk)

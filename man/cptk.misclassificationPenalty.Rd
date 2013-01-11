@@ -37,7 +37,8 @@ The misclassification penalty.
 Lars Kotthoff
 }
 \seealso{
-\code{\link{cptk.parscore}}, \code{\link{cptk.successes}}
+\code{\link{cptk.parscore}}, \code{\link{cptk.prediction}},
+\code{\link{cptk.success}}
 }
 \examples{
 require(cptk)

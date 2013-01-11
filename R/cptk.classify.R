@@ -2,7 +2,7 @@ cptk.classify <-
 function(classifier=NULL, data=NULL, split=NULL, pre=NULL, eval=NULL) {
     splitdata = if(is.function(split)) { split(data) } else { split }
     if(class(eval) != "list") { eval = list(eval) }
-    scores = rep.int(0, length(eval))
+    scores = vector(mode="list", length=length(eval))
 
     for(i in 1:length(splitdata$train)) {
         trf = list(features=subset(splitdata$train[[i]], T, data$features))
@@ -20,7 +20,7 @@ function(classifier=NULL, data=NULL, split=NULL, pre=NULL, eval=NULL) {
             perfs = subset(splitdata$test[[i]][id,], T, data$performance)
             successes = subset(splitdata$test[[i]][id,], T, data$success)
             for (j in 1:length(eval)) {
-                scores[j] = scores[j] + as.numeric(eval[[j]](perfs, perfs[which(data$performance==predictions[id])], successes[which(data$performance==predictions[id])]))
+                scores[[j]] = append(scores[[j]], as.numeric(eval[[j]](perfs, perfs[which(data$performance==predictions[id])], successes[which(data$performance==predictions[id])])))
             }
         }
     }

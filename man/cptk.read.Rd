@@ -32,7 +32,7 @@ common column names in the two files (usually an ID of the problem). For each
 problem, the best algorithm according to the read performance data is computed.
 
 The file that describes whether an algorithm was successful on a problem is
-optional. If \code{cptk.parscore} or \code{cptk.successes} are to be used to
+optional. If \code{cptk.parscore} or \code{cptk.success} are to be used to
 evaluate the learned models, this argument is required however and will lead to
 error messages if not supplied.
 }
