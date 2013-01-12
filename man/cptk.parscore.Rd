@@ -27,7 +27,8 @@ the penalization factor to use for non-successful choices. Default 10.
 \details{
 Returns the performance of the chosen algorithm. If the chosen algorithm is not
 able to solve the problem successfully, its performance value is multiplied by
-the penalization factor.
+the penalization factor. That is, it is assumed that the performance value is
+the timeout.
 }
 \value{
 The penalized average runtime.
