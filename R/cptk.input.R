@@ -1,5 +1,8 @@
 cptk.input <-
 function(ff, pf, sf=NULL, minimize=T) {
+    if(nrow(ff) != nrow(pf) || (!is.null(sf) && (nrow(ff) != nrow(sf) || nrow(pf) != nrow(sf)))) {
+        warning("Different number of rows in data frames, taking only common rows.")
+    }
     common = intersect(names(ff), names(pf))
     pnames = setdiff(names(pf), common)
     combined = merge(ff, pf)
