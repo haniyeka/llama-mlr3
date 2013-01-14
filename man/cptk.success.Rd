@@ -38,6 +38,8 @@ require(cptk)
 require(RWeka)
 
 data(satsolvers)
-cptk.classify(classifier=J48, data=satsolvers, split=cptk.cvFolds, eval=cptk.success)
+trainTest = cptk.cvFolds(satsolvers)
+
+cptk.classify(classifier=J48, data=trainTest, eval=cptk.success)
 }
 \keyword{ ~models }

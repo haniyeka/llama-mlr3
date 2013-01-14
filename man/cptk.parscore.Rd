@@ -45,10 +45,11 @@ require(cptk)
 require(RWeka)
 
 data(satsolvers)
-cptk.classify(classifier=J48, data=satsolvers, split=cptk.cvFolds, eval=cptk.parscore)
+trainTest = cptk.cvFolds(satsolvers)
+
+cptk.classify(classifier=J48, data=trainTest, eval=cptk.parscore)
 
 # use factor of 5 instead of 10.
-cptk.classify(classifier=J48, data=satsolvers, split=cptk.cvFolds,
-eval=function(x, y, z) { return(cptk.parscore(x, y, z, 5)) })
+cptk.classify(classifier=J48, data=trainTest, eval=function(x, y, z) { return(cptk.parscore(x, y, z, 5)) })
 }
 \keyword{ ~models }

@@ -7,5 +7,5 @@ function(data, trainpart=0.6) {
         x
     })
     parts = split(data$data, tmp$train)
-    return(list(train=list(parts[[1]]), test=list(parts[[2]])))
+    return(c(data, list(train = list(parts[[1]]), test = list(parts[[2]]))))
 }

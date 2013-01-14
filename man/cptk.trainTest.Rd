@@ -20,11 +20,13 @@ cptk.trainTest(data, trainpart = 0.6)
 \details{
 Partitions the data set into training and test set according to the specified
 fraction. The distribution of the best algorithms in training and test set is
-approximately the same, i.e. the sets are stratified.
+approximately the same, i.e. the sets are stratified. The training and test set
+are added to the original data and returned.
 }
 \value{
 \item{train}{a (one-element) list of data sets for training.}
 \item{test}{a (one-element) list of data sets for testing.}
+\item{...}{the original members of \code{data}. See \code{\link{cptk.read}}.}
 }
 \author{
 Lars Kotthoff
@@ -37,9 +39,9 @@ require(cptk)
 require(RWeka)
 
 data(satsolvers)
-cptk.classify(classifier=J48, data=satsolvers, split=cptk.trainTest, eval=cptk.parscore)
+trainTest = cptk.trainTest(satsolvers)
 
 # use 50-50 split instead of 60-40
-cptk.classify(classifier=J48, data=satsolvers, split=function(x) { return(cptk.trainTest(x, 0.5)) }, eval=cptk.parscore)
+trainTest1 = cptk.trainTest(satsolvers, 0.5)
 }
 \keyword{ ~models }

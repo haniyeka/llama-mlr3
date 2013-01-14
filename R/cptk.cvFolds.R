@@ -7,6 +7,7 @@ function(data, nfolds=10) {
         x
     })
     parts = split(data$data, tmp$fold)
-    return(list(train=lapply(1:nfolds, function(x) { return(unsplit(parts[-x], 1)) }),
-                test=lapply(1:nfolds, function(x) { return(parts[[x]]) })))
+    return(c(data,
+            list(train = lapply(1:nfolds, function(x) { return(unsplit(parts[-x], 1)) }),
+                 test = lapply(1:nfolds, function(x) { return(parts[[x]]) }))))
 }

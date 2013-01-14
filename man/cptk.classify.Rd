@@ -8,7 +8,7 @@ Build a classification model that predicts the algorithm to use based on the
 features of the problem.
 }
 \usage{
-cptk.classify(classifier = NULL, data = NULL, split = NULL, pre = NULL, eval = NULL)
+cptk.classify(classifier = NULL, data = NULL, pre = NULL, eval = NULL)
 }
 \arguments{
   \item{classifier}{
@@ -17,12 +17,8 @@ cptk.classify(classifier = NULL, data = NULL, split = NULL, pre = NULL, eval = N
   given to \code{predict} along with new data. See examples.
 }
   \item{data}{
-  the data to use. The structure returned by \code{cptk.read}.
-}
-  \item{split}{
-  a function to split the data into training and test set(s). One of
-  \code{cptk.trainTest} or \code{cptk.cvFolds}. Alternatively, a data set that
-  has been split already by one of these functions.
+  the data to use with training and test sets. The structure returned by
+  \code{cptk.trainTest} or \code{cptk.cvFolds}.
 }
   \item{pre}{
   a function to preprocess the data. Currently only \code{cptk.normalize}.
@@ -35,10 +31,9 @@ cptk.classify(classifier = NULL, data = NULL, split = NULL, pre = NULL, eval = N
 }
 }
 \details{
-\code{cptk.classify} takes \code{data} and processes it using \code{pre} (if
-supplied). The preprocessed data is then split into training and test sets using
-\code{split} and \code{classifier} is called to induce a classifier. The learned
-model is evaluated on each of \code{eval}.
+\code{cptk.classify} takes the training and test sets in \code{data} and
+processes it using \code{pre} (if supplied). \code{classifier} is called to
+induce a classifier. The learned model is evaluated on each of \code{eval}.
 }
 \value{
  \item{eval}{a list with a list of values for the evaluation functions in the
@@ -60,16 +55,14 @@ require(cptk)
 require(RWeka)
 
 data(satsolvers)
-res = cptk.classify(classifier=J48, data=satsolvers, split=cptk.cvFolds, eval=list(cptk.success, cptk.misclassificationPenalty, cptk.parscore))
+trainTest = cptk.cvFolds(satsolvers)
+
+res = cptk.classify(classifier=J48, data=trainTest, eval=list(cptk.success, cptk.misclassificationPenalty, cptk.parscore))
 # print the total number of successes
 print(sum(res$eval[[1]]))
 print(res$predictor(subset(satsolvers$data, TRUE, satsolvers$features)))
 
 require(e1071)
-res = cptk.classify(classifier=svm, data=satsolvers, split=cptk.cvFolds, eval=list(cptk.success, cptk.misclassificationPenalty, cptk.parscore))
-
-# pre-split data set
-folds = cptk.cvFolds(satsolvers)
-res = cptk.classify(classifier=svm, data=satsolvers, split=folds, eval=list(cptk.success, cptk.misclassificationPenalty, cptk.parscore))
+res = cptk.classify(classifier=svm, data=trainTest, eval=list(cptk.success, cptk.misclassificationPenalty, cptk.parscore))
 }
 \keyword{ ~models }

@@ -60,8 +60,9 @@ require(cptk)
 require(RWeka)
 
 data(satsolvers)
+trainTest = cptk.cvFolds(satsolvers)
 
-res = cptk.classify(classifier=J48, data=satsolvers, split=cptk.cvFolds, eval=list(cptk.success, cptk.misclassificationPenalty, cptk.parscore))
+res = cptk.classify(classifier=J48, data=trainTest, eval=list(cptk.success, cptk.misclassificationPenalty, cptk.parscore))
 # print the total number of successes
 print(sum(res$eval[[1]]))
 # print the total misclassification penalty

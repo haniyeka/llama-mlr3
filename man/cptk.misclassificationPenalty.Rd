@@ -45,9 +45,11 @@ require(cptk)
 require(RWeka)
 
 data(satsolvers)
-cptk.classify(classifier=J48, data=satsolvers, split=cptk.cvFolds, eval=cptk.misclassificationPenalty)
+trainTest = cptk.cvFolds(satsolvers)
+
+cptk.classify(classifier=J48, data=trainTest, eval=cptk.misclassificationPenalty)
 
 # maximum performance value is best
-cptk.classify(classifier=J48, data=satsolvers, split=cptk.cvFolds, eval=function(x, y, z) { return(cptk.misclassificationPenalty(x, y, z, FALSE)) })
+cptk.classify(classifier=J48, data=trainTest, eval=function(x, y, z) { return(cptk.misclassificationPenalty(x, y, z, FALSE)) })
 }
 \keyword{ ~models }

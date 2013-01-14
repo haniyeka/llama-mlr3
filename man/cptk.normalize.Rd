@@ -1,7 +1,7 @@
 \name{cptk.normalize}
 \alias{cptk.normalize}
 \title{
-Normalize
+Normalize features
 }
 \description{
 Normalize input data so that the values for all features cover the same range -1
@@ -40,6 +40,8 @@ require(cptk)
 require(RWeka)
 
 data(satsolvers)
-cptk.cluster(clusterer=make_Weka_clusterer("weka/clusterers/EM"), data=satsolvers, split=cptk.cvFolds, pre=cptk.normalize, eval=cptk.parscore)
+trainTest = cptk.cvFolds(satsolvers)
+
+cptk.cluster(clusterer=XMeans, data=trainTest, pre=cptk.normalize, eval=cptk.parscore)
 }
 \keyword{ ~models }
