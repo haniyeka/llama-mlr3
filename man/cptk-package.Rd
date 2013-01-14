@@ -48,6 +48,8 @@ this may not be so in practice.
 \author{
 Lars Kotthoff
 
+contributions by Barry Hurley
+
 Maintainer: Lars Kotthoff <larsko@4c.ucc.ie>
 }
 \references{

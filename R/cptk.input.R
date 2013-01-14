@@ -8,7 +8,7 @@ function(ff, pf, sf=NULL, minimize=T) {
 
     snames = NULL
     if(!is.null(sf)) {
-        names(sf) = c(head(names(sf), 1), sapply(tail(names(sf), -1), function(x) { paste(x, "success", sep="_") }))
+        names(sf) = c(intersect(names(sf), common), sapply(setdiff(names(sf), common), function(x) { paste(x, "success", sep="_") }))
         combined = merge(combined, sf)
         snames = setdiff(names(sf), common)
     }
