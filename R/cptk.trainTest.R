@@ -1,7 +1,7 @@
 cptk.trainTest <-
-function(data, trainpart=0.6) {
+function(data, trainpart=0.6, stratify=T) {
     require(plyr)
-    tmp = ddply(data$data, .(best), function(x) {
+    tmp = ddply(data$data, if(stratify) { .(best) } else { .() }, function(x) {
         n = nrow(x)
         x$train = c(rep.int(1, round(n*trainpart)), rep.int(2, n-round(n*trainpart)))[sample(n, n)]
         x
