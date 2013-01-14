@@ -9,13 +9,13 @@ Performance data for 19 SAT solvers on 2433 SAT instances.
 }
 \usage{data(satsolvers)}
 \format{
-\code{satsolvers} is a list in the format returned by \code{cptk.read} and
+\code{satsolvers} is a list in the format returned by \code{cptk.input} and
 expected by the other functions of the Cork Portfolio Toolkit. The list has the
 foillowing components.
 
 \describe{
- \item{data:}{The original input data merged. That is, the contents of the files
- read by \code{cptk.read} in a single data frame with the following additonal
+ \item{data:}{The original input data merged. That is, the data frames processed
+ by \code{cptk.input} in a single data frame with the following additonal
  columns.
     \describe{
      \item{best:}{The algorithm with the best performance for each row.}
@@ -38,7 +38,7 @@ TODO
 %%  ~~ reference to a publication or URL from which the data were obtained ~~
 }
 \seealso{
-\code{\link{cptk.read}}
+\code{\link{cptk.input}}
 }
 \examples{
 data(satsolvers)

@@ -24,14 +24,14 @@ The package provides functions to read performance data, build performance
 models that enable selection of algorithms (using external machine learning
 functions) and evaluate those models.
 
-Data is read using \code{cptk.read} and can then be used to learn performance
-models. There are currently three main ways to create models. Classification
-(\code{cptk.classify}) creates a single machine learning model that predicts the
-algorithm to use as a label. Clustering (\code{cptk.cluster}) clusters the
-problems to solve and assigns the best algorithm to each cluster. Regression
-(\code{cptk.regression}) trains separate models for all available algorithms,
-predicts the performance on a problem independently and chooses the algorithm
-with the best predicted performance.
+Data is input using \code{cptk.input} and can then be used to learn
+performance models. There are currently three main ways to create models.
+Classification (\code{cptk.classify}) creates a single machine learning model
+that predicts the algorithm to use as a label. Clustering (\code{cptk.cluster})
+clusters the problems to solve and assigns the best algorithm to each cluster.
+Regression (\code{cptk.regression}) trains separate models for all available
+algorithms, predicts the performance on a problem independently and chooses the
+algorithm with the best predicted performance.
 
 Various functions to split the data into training and test set(s) and to
 evaluate the performance of the learned models are provided.

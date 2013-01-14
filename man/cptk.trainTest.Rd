@@ -11,7 +11,7 @@ cptk.trainTest(data, trainpart = 0.6)
 }
 \arguments{
   \item{data}{
-  the data to use. The structure returned by \code{cptk.read}.
+  the data to use. The structure returned by \code{cptk.input}.
 }
   \item{trainpart}{
   the fraction of the data to use for training. Default 0.6.
@@ -26,7 +26,7 @@ are added to the original data and returned.
 \value{
 \item{train}{a (one-element) list of data sets for training.}
 \item{test}{a (one-element) list of data sets for testing.}
-\item{...}{the original members of \code{data}. See \code{\link{cptk.read}}.}
+\item{...}{the original members of \code{data}. See \code{\link{cptk.input}}.}
 }
 \author{
 Lars Kotthoff

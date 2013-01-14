@@ -4,7 +4,7 @@
 Cross-validation folds
 }
 \description{
-Take data produced by \code{cptk.read} and amend it with stratified folds for
+Take data produced by \code{cptk.input} and amend it with stratified folds for
 cross-validation.
 }
 \usage{
@@ -12,7 +12,7 @@ cptk.cvFolds(data, nfolds = 10)
 }
 \arguments{
   \item{data}{
-  the data to use. The structure returned by \code{cptk.read}.
+  the data to use. The structure returned by \code{cptk.input}.
 }
   \item{nfolds}{
   the number of folds. Defaults to 10.
@@ -29,7 +29,7 @@ returned.
 \value{
 \item{train}{a list of data sets for training.}
 \item{test}{a list of data sets for testing.}
-\item{...}{the original members of \code{data}. See \code{\link{cptk.read}}.}
+\item{...}{the original members of \code{data}. See \code{\link{cptk.input}}.}
 }
 \author{
 Lars Kotthoff
