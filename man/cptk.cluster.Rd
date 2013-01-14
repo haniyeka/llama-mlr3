@@ -52,10 +52,10 @@ data(satsolvers)
 trainTest = cptk.cvFolds(satsolvers)
 
 res = cptk.cluster(clusterer=XMeans, data=trainTest, pre=cptk.normalize)
-# print the total number of successes
-print(sum(unlist(cptk.successes(trainTest, res$predictions))))
-# print predictions on the entire data set
-print(res$predictor(subset(satsolvers$data, TRUE, satsolvers$features)))
+# the total number of successes
+sum(unlist(cptk.successes(trainTest, res$predictions)))
+# predictions on the entire data set
+res$predictor(subset(satsolvers$data, TRUE, satsolvers$features))
 
 require(flexclust)
 res = cptk.cluster(clusterer=function(x) { kcca(x, length(satsolvers$performance)) }, data=trainTest, pre=cptk.normalize)

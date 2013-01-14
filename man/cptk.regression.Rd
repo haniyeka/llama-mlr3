@@ -55,10 +55,10 @@ data(satsolvers)
 trainTest = cptk.cvFolds(satsolvers)
 
 res = cptk.regression(regressor=lm, data=trainTest)
-# print the total number of successes
-print(sum(unlist(cptk.successes(trainTest, res$predictions))))
-# print predictions on the entire data set
-print(res$predictor(subset(satsolvers$data, TRUE, satsolvers$features)))
+# the total number of successes
+sum(unlist(cptk.successes(trainTest, res$predictions)))
+# predictions on the entire data set
+res$predictor(subset(satsolvers$data, TRUE, satsolvers$features))
 
 require(RWeka)
 res = cptk.regression(regressor=LinearRegression, data=trainTest)

@@ -42,10 +42,10 @@ require(RWeka)
 data(satsolvers)
 trainTest = cptk.cvFolds(satsolvers)
 
-cptk.classify(classifier=J48, data=trainTest)
-print(sum(unlist(cptk.misclassificationPenalties(trainTest, res$predictions))))
+res = cptk.classify(classifier=J48, data=trainTest)
+sum(unlist(cptk.misclassificationPenalties(trainTest, res$predictions)))
 
 # maximum performance value is best
-print(sum(unlist(cptk.misclassificationPenalties(trainTest, res$predictions, FALSE))))
+sum(unlist(cptk.misclassificationPenalties(trainTest, res$predictions, FALSE)))
 }
 \keyword{ ~models }

@@ -51,10 +51,10 @@ data(satsolvers)
 trainTest = cptk.cvFolds(satsolvers)
 
 res = cptk.classify(classifier=J48, data=trainTest)
-# print the total number of successes
-print(sum(unlist(cptk.successes(trainTest, res$predictions))))
-# print predictions on the entire data set
-print(res$predictor(subset(satsolvers$data, TRUE, satsolvers$features)))
+# the total number of successes
+sum(unlist(cptk.successes(trainTest, res$predictions)))
+# predictions on the entire data set
+res$predictor(subset(satsolvers$data, TRUE, satsolvers$features))
 
 require(e1071)
 res = cptk.classify(classifier=svm, data=trainTest)

@@ -37,7 +37,7 @@ require(RWeka)
 data(satsolvers)
 trainTest = cptk.cvFolds(satsolvers)
 
-cptk.classify(classifier=J48, data=trainTest)
-print(sum(unlist(cptk.successes(trainTest, res$predictions))))
+res = cptk.classify(classifier=J48, data=trainTest)
+sum(unlist(cptk.successes(trainTest, res$predictions)))
 }
 \keyword{ ~models }

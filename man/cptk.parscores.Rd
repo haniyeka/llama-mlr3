@@ -42,10 +42,10 @@ require(RWeka)
 data(satsolvers)
 trainTest = cptk.cvFolds(satsolvers)
 
-cptk.classify(classifier=J48, data=trainTest)
-print(sum(unlist(cptk.parscores(trainTest, res$predictions))))
+res = cptk.classify(classifier=J48, data=trainTest)
+sum(unlist(cptk.parscores(trainTest, res$predictions)))
 
 # use factor of 5 instead of 10.
-print(sum(unlist(cptk.parscores(trainTest, res$predictions, 5))))
+sum(unlist(cptk.parscores(trainTest, res$predictions, 5)))
 }
 \keyword{ ~models }
