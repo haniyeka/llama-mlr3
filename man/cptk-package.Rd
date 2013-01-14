@@ -62,12 +62,14 @@ require(RWeka)
 data(satsolvers)
 trainTest = cptk.cvFolds(satsolvers)
 
-res = cptk.classify(classifier=J48, data=trainTest, eval=list(cptk.success, cptk.misclassificationPenalty, cptk.parscore))
+res = cptk.classify(classifier=J48, data=trainTest)
 # print the total number of successes
-print(sum(res$eval[[1]]))
+print(sum(unlist(cptk.successes(trainTest, res$predictions))))
 # print the total misclassification penalty
-print(sum(res$eval[[2]]))
+print(sum(unlist(cptk.misclassificationPenalties(trainTest, res$predictions))))
 # print the total PAR10 score
-print(sum(res$eval[[3]]))
+print(sum(unlist(cptk.parscores(trainTest, res$predictions))))
+
+# print predictions on the entire data set
 print(res$predictor(subset(satsolvers$data, TRUE, satsolvers$features)))
 }

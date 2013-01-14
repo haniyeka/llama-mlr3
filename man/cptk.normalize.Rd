@@ -42,6 +42,6 @@ require(RWeka)
 data(satsolvers)
 trainTest = cptk.cvFolds(satsolvers)
 
-cptk.cluster(clusterer=XMeans, data=trainTest, pre=cptk.normalize, eval=cptk.parscore)
+cptk.cluster(clusterer=XMeans, data=trainTest, pre=cptk.normalize)
 }
 \keyword{ ~models }
