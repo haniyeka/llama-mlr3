@@ -15,6 +15,8 @@ cptk.classify(classifier = NULL, data = NULL, pre = NULL)
   the classifier function to use. Must accept a formula of the values to predict
   and a data frame with features. Return value should be a structure that can be
   given to \code{predict} along with new data. See examples.
+
+  The argument can also be a list of such classifiers.
 }
   \item{data}{
   the data to use with training and test sets. The structure returned by
@@ -30,6 +32,12 @@ cptk.classify(classifier = NULL, data = NULL, pre = NULL)
 processes it using \code{pre} (if supplied). \code{classifier} is called to
 induce a classifier. The learned model is used to make predictions on the test
 set(s).
+
+If a list of classifiers is supplied in \code{classifier}, ensemble
+classification is performed. That is, the models are trained and used to make
+predictions independently. For each instance, the final prediction is determined
+by majority vote of the predictions of the individual models -- the class that
+occurs most often is chosen.
 }
 \value{
  \item{predictions}{a list of lists with the predictions for each test set.}
@@ -42,6 +50,11 @@ Lars Kotthoff
 }
 \seealso{
 \code{\link{cptk.cluster}}, \code{\link{cptk.regression}}
+}
+\references{
+Kotthoff, L., Miguel, I., Nightingale, P. (2010)
+Ensemble Classification for Constraint Solver Configuration.
+\emph{16th International Conference on Principles and Practices of Constraint Programming}, 321--329.
 }
 \examples{
 require(cptk)
@@ -58,5 +71,8 @@ res$predictor(subset(satsolvers$data, TRUE, satsolvers$features))
 
 require(e1071)
 res = cptk.classify(classifier=svm, data=trainTest)
+
+# ensemble classification
+rese = cptk.classify(classifier=list(J48, IBk, svm), data=trainTest)
 }
 \keyword{ ~models }
