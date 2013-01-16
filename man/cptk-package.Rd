@@ -17,7 +17,7 @@ Type: \tab Package\cr
 Version: \tab 0.1\cr
 Date: \tab 2013-01-01\cr
 Depends: \tab plyr\cr
-Suggests: \tab RWeka\cr
+Suggests: \tab RWeka, FSelector\cr
 License: \tab BSD\cr
 }
 The package provides functions to read performance data, build performance
@@ -74,4 +74,13 @@ print(sum(unlist(cptk.parscores(trainTest, res$predictions))))
 
 # print predictions on the entire data set
 print(res$predictor(subset(satsolvers$data, TRUE, satsolvers$features)))
+
+# filter features and train a regression model
+require(FSelector)
+
+filtered = cptk.featureFilter(cfs, satsolvers)
+folds = cptk.cvFolds(filtered)
+res = cptk.regression(regressor=LinearRegression, data=folds)
+# print the total number of successes
+print(sum(unlist(cptk.successes(folds, res$predictions))))
 }

@@ -7,5 +7,5 @@ Author: Lars Kotthoff, contributions by Barry Hurley
 Maintainer: Lars Kotthoff <larsko@4c.ucc.ie>
 Description: Provides functionality to train and evaluate algorithm selection models for portfolios.
 Depends: plyr
-Suggests: RWeka
+Suggests: RWeka, FSelector
 License: BSD
