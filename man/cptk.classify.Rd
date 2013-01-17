@@ -37,7 +37,10 @@ If a list of classifiers is supplied in \code{classifier}, ensemble
 classification is performed. That is, the models are trained and used to make
 predictions independently. For each instance, the final prediction is determined
 by majority vote of the predictions of the individual models -- the class that
-occurs most often is chosen.
+occurs most often is chosen. If the list given as \code{classifier} contains a
+member \code{.combine} that is a function, it is assumed to be a classifier with
+the same properties as the other ones and will be used to combine the ensemble
+predictions instead of majority voting.
 }
 \value{
  \item{predictions}{a list of lists with the predictions for each test set.}
@@ -74,5 +77,8 @@ res = cptk.classify(classifier=svm, data=trainTest)
 
 # ensemble classification
 rese = cptk.classify(classifier=list(J48, IBk, svm), data=trainTest)
+
+# ensemble classification with a classifier to combine predictions
+rese = cptk.classify(classifier=list(J48, IBk, svm, .combine=J48), data=trainTest)
 }
 \keyword{ ~models }
