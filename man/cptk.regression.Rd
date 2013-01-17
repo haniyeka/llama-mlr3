@@ -8,7 +8,8 @@ Build a regression model that predicts the algorithm to use based on the
 features of the problem.
 }
 \usage{
-cptk.regression(regressor = NULL, data = NULL, pre = NULL, combine = min)
+cptk.regression(regressor = NULL, data = NULL, pre = NULL, combine = min, stack
+= F)
 }
 \arguments{
   \item{regressor}{
@@ -28,6 +29,11 @@ cptk.regression(regressor = NULL, data = NULL, pre = NULL, combine = min)
   the function used to combine the predictions of the individual regression
   models. Default \code{min}. See details.
 }
+  \item{stack}{
+  whether the function given in \code{combine} is a classifier that should be
+  used to predict the algorithm to choose based on the predicted performances.
+  Default false.
+}
 }
 \details{
 \code{cptk.regression} takes \code{data} and processes it using \code{pre} (if
@@ -36,6 +42,11 @@ each of the algorithms to predict its performance. The predicted performances
 are combined using \code{combine} to choose the best algorithm. That is, the
 algorithm with the predicted performance that \code{combine} chooses is
 selected.
+
+If \code{stack} is true, the function given in \code{combine} is assumed to be a
+classifier with the same properties as classifiers given to \code{cptk.classify}
+and will be used to learn a model to predict the best algorithm given the
+performance predictions for the individual algorithms.
 }
 \value{
  \item{predictions}{a list of lists with the predictions for each test set.}
@@ -48,6 +59,11 @@ Lars Kotthoff
 }
 \seealso{
 \code{\link{cptk.classify}}, \code{\link{cptk.cluster}}
+}
+\references{
+Kotthoff, L. (2012)
+Hybrid Regression-Classification Models for Algorithm Selection.
+\emph{20th European Conference on Artificial Intelligence}, 480--485.
 }
 \examples{
 require(cptk)
@@ -62,5 +78,9 @@ res$predictor(subset(satsolvers$data, TRUE, satsolvers$features))
 
 require(RWeka)
 res = cptk.regression(regressor=LinearRegression, data=trainTest)
+
+# combine performance predictions using classifier
+ress = cptk.regression(regressor=LinearRegression, data=trainTest, combine=J48,
+stack=TRUE)
 }
 \keyword{ ~regression }
