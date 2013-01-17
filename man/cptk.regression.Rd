@@ -8,8 +8,7 @@ Build a regression model that predicts the algorithm to use based on the
 features of the problem.
 }
 \usage{
-cptk.regression(regressor = NULL, data = NULL, pre = NULL, combine = min, stack
-= F)
+cptk.regression(regressor = NULL, data = NULL, pre = NULL, combine = min, stack = F, expand = identity)
 }
 \arguments{
   \item{regressor}{
@@ -34,6 +33,12 @@ cptk.regression(regressor = NULL, data = NULL, pre = NULL, combine = min, stack
   used to predict the algorithm to choose based on the predicted performances.
   Default false.
 }
+  \item{expand}{
+  a function that takes a matrix of performance predictions (columns are
+  algorithms, rows problem instances) and transforms it into a matrix with the
+  same number of rows. Only meaningful if \code{stack} is true. Default is the
+  identity function, which will leave the matrix unchanged. See examples.
+}
 }
 \details{
 \code{cptk.regression} takes \code{data} and processes it using \code{pre} (if
@@ -46,7 +51,10 @@ selected.
 If \code{stack} is true, the function given in \code{combine} is assumed to be a
 classifier with the same properties as classifiers given to \code{cptk.classify}
 and will be used to learn a model to predict the best algorithm given the
-performance predictions for the individual algorithms.
+performance predictions for the individual algorithms. Optionally, \code{expand}
+can be used to supply a function that will modify the features given to the
+classifier, e.g. augment the performance predictions with the pairwise
+differences (see examples).
 }
 \value{
  \item{predictions}{a list of lists with the predictions for each test set.}
@@ -80,7 +88,9 @@ require(RWeka)
 res = cptk.regression(regressor=LinearRegression, data=trainTest)
 
 # combine performance predictions using classifier
-ress = cptk.regression(regressor=LinearRegression, data=trainTest, combine=J48,
-stack=TRUE)
+ress = cptk.regression(regressor=LinearRegression, data=trainTest, combine=J48, stack=TRUE)
+
+# add pairwise differences to performance predictions before running classifier
+ress = cptk.regression(regressor=LinearRegression, data=trainTest, combine=J48, stack=TRUE, expand=function(x) { cbind(x, combn(c(1:ncol(x)), 2, function(y) { abs(x[,y[1]] - x[,y[2]]) })) })
 }
 \keyword{ ~regression }

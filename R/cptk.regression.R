@@ -1,5 +1,5 @@
 cptk.regression <-
-function(regressor=NULL, data=NULL, pre=NULL, combine=min, stack=F) {
+function(regressor=NULL, data=NULL, pre=NULL, combine=min, stack=F, expand=identity) {
     if(length(data$train) == 0 || length(data$test) == 0) {
         stop("Need data with train/test split!")
     }
@@ -26,8 +26,8 @@ function(regressor=NULL, data=NULL, pre=NULL, combine=min, stack=F) {
         }
 
         if(stack) {
-            combinedmodel = combine(data$train[[i]]$best~., data=data.frame(trainpredictions))
-            combinedpredictions = as.character(predict(combinedmodel, data.frame(performancePredictions)))
+            combinedmodel = combine(data$train[[i]]$best~., data=data.frame(expand(trainpredictions)))
+            combinedpredictions = as.character(predict(combinedmodel, data.frame(expand(performancePredictions))))
         } else {
             combinedpredictions = apply(performancePredictions, 1, function(x) { data$performance[head(which(x %in% combine(x)), 1)] })
         }
@@ -45,7 +45,7 @@ function(regressor=NULL, data=NULL, pre=NULL, combine=min, stack=F) {
             for (i in 1:length(data$performance)) {
                 trainpredictions[,i] = predict(models[[i]], fs$features)
             }
-            combinedmodel = combine(data$data$best~., data=data.frame(trainpredictions))
+            combinedmodel = combine(data$data$best~., data=data.frame(expand(trainpredictions)))
         }
     }
 
@@ -61,7 +61,7 @@ function(regressor=NULL, data=NULL, pre=NULL, combine=min, stack=F) {
         }
 
         if(stack) {
-            combinedpredictions = as.character(predict(combinedmodel, data.frame(performancePredictions)))
+            combinedpredictions = as.character(predict(combinedmodel, data.frame(expand(performancePredictions))))
         } else {
             combinedpredictions = apply(performancePredictions, 1, function(x) { data$performance[head(which(x %in% combine(x)), 1)] })
         }
