@@ -1,5 +1,5 @@
 cptk.classify <-
-function(classifier=NULL, data=NULL, pre=NULL) {
+function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }) {
     if(length(data$train) == 0 || length(data$test) == 0) {
         stop("Need data with train/test split!")
     }
@@ -12,14 +12,8 @@ function(classifier=NULL, data=NULL, pre=NULL) {
     predictions = list()
 
     for(i in 1:length(data$train)) {
-        trf = list(features=subset(data$train[[i]], T, data$features))
-        if(!is.null(pre)) {
-            trf = pre(trf$features)
-        }
-        tsf = list(features=subset(data$test[[i]], T, data$features))
-        if(!is.null(pre)) {
-            tsf = pre(tsf$features, trf$meta)
-        }
+        trf = pre(subset(data$train[[i]], T, data$features))
+        tsf = pre(subset(data$test[[i]], T, data$features), trf$meta)
 
         trainpredictions = matrix(nrow=nrow(trf$features), ncol=length(classifier))
         ensemblepredictions = matrix(nrow=nrow(tsf$features), ncol=length(classifier))
@@ -38,10 +32,7 @@ function(classifier=NULL, data=NULL, pre=NULL) {
         }
         predictions = append(predictions, list(combinedpredictions))
         
-        fs = list(features=subset(data$data, T, data$features))
-        if(!is.null(pre)) {
-            fs = pre(fs$features)
-        }
+        fs = pre(subset(data$data, T, data$features))
         models = lapply(1:length(classifier), function(i) {
             return(classifier[[i]](data$data$best~., data=fs$features))
         })
@@ -55,10 +46,7 @@ function(classifier=NULL, data=NULL, pre=NULL) {
     }
 
     return(list(predictions=predictions, predictor=function(x) {
-        tsf = list(features=subset(x, T, data$features))
-        if(!is.null(pre)) {
-            tsf = pre(tsf$features, fs$meta)
-        }
+        tsf = pre(subset(x, T, data$features), fs$meta)
         ensemblepredictions = matrix(nrow=nrow(tsf$features), ncol=length(classifier))
         for(i in 1:length(classifier)) {
             ensemblepredictions[,i] = as.character(predict(models[[i]], tsf$features))

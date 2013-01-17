@@ -8,7 +8,7 @@ Build a regression model that predicts the algorithm to use based on the
 features of the problem.
 }
 \usage{
-cptk.regression(regressor = NULL, data = NULL, pre = NULL, combine = min, stack = F, expand = identity)
+cptk.regression(regressor = NULL, data = NULL, pre = function(x, y=NULL) { list(features=x) }, combine = min, stack = F, expand = identity)
 }
 \arguments{
   \item{regressor}{
@@ -22,7 +22,7 @@ cptk.regression(regressor = NULL, data = NULL, pre = NULL, combine = min, stack 
 }
   \item{pre}{
   a function to preprocess the data. Currently only \code{cptk.normalize}.
-  Optional.
+  Optional. Does nothing by default.
 }
   \item{combine}{
   the function used to combine the predictions of the individual regression

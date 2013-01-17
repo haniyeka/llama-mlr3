@@ -1,19 +1,13 @@
 cptk.regression <-
-function(regressor=NULL, data=NULL, pre=NULL, combine=min, stack=F, expand=identity) {
+function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }, combine=min, stack=F, expand=identity) {
     if(length(data$train) == 0 || length(data$test) == 0) {
         stop("Need data with train/test split!")
     }
     predictions = list()
 
     for(i in 1:length(data$train)) {
-        trf = list(features=subset(data$train[[i]], T, data$features))
-        if(!is.null(pre)) {
-            trf = pre(trf$features)
-        }
-        tsf = list(features=subset(data$test[[i]], T, data$features))
-        if(!is.null(pre)) {
-            tsf = pre(tsf$features, trf$meta)
-        }
+        trf = pre(subset(data$train[[i]], T, data$features))
+        tsf = pre(subset(data$test[[i]], T, data$features), trf$meta)
 
         trainpredictions = matrix(nrow=nrow(trf$features), ncol=length(data$performance))
         performancePredictions = matrix(nrow=nrow(tsf$features), ncol=length(data$performance))
@@ -33,10 +27,7 @@ function(regressor=NULL, data=NULL, pre=NULL, combine=min, stack=F, expand=ident
         }
         predictions = append(predictions, list(combinedpredictions))
 
-        fs = list(features=subset(data$data, T, data$features))
-        if(!is.null(pre)) {
-            fs = pre(fs$features)
-        }
+        fs = pre(subset(data$data, T, data$features))
         models = lapply(1:length(data$performance), function(i) {
             return(regressor(data$data[[data$performance[i]]]~., data=fs$features))
         })
@@ -50,10 +41,7 @@ function(regressor=NULL, data=NULL, pre=NULL, combine=min, stack=F, expand=ident
     }
 
     return(list(predictions=predictions, predictor=function(x) {
-        tsf = list(features=subset(x, T, data$features))
-        if(!is.null(pre)) {
-            tsf = pre(tsf$features, fs$meta)
-        }
+        tsf = pre(subset(x, T, data$features), fs$meta)
 
         performancePredictions = matrix(nrow=nrow(tsf$features), ncol=length(data$performance))
         for (i in 1:length(data$performance)) {

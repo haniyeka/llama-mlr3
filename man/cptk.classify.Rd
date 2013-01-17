@@ -8,7 +8,7 @@ Build a classification model that predicts the algorithm to use based on the
 features of the problem.
 }
 \usage{
-cptk.classify(classifier = NULL, data = NULL, pre = NULL)
+cptk.classify(classifier = NULL, data = NULL, pre = function(x, y=NULL) { list(features=x) })
 }
 \arguments{
   \item{classifier}{
@@ -24,7 +24,7 @@ cptk.classify(classifier = NULL, data = NULL, pre = NULL)
 }
   \item{pre}{
   a function to preprocess the data. Currently only \code{cptk.normalize}.
-  Optional.
+  Optional. Does nothing by default.
 }
 }
 \details{

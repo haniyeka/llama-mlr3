@@ -8,7 +8,7 @@ Build a cluster model that predicts the algorithm to use based on the features
 of the problem.
 }
 \usage{
-cptk.cluster(clusterer = NULL, data = NULL, pre = NULL)
+cptk.cluster(clusterer = NULL, data = NULL, pre = function(x, y=NULL) { list(features=x) })
 }
 \arguments{
   \item{clusterer}{
@@ -24,7 +24,7 @@ cptk.cluster(clusterer = NULL, data = NULL, pre = NULL)
 }
   \item{pre}{
   a function to preprocess the data. Currently only \code{cptk.normalize}.
-  Optional.
+  Optional. Does nothing by default.
 }
 }
 \details{
