@@ -32,32 +32,35 @@ function(regressor=NULL, data=NULL, pre=NULL, combine=min, stack=F) {
             combinedpredictions = apply(performancePredictions, 1, function(x) { data$performance[head(which(x %in% combine(x)), 1)] })
         }
         predictions = append(predictions, list(combinedpredictions))
-    }
 
-    return(list(predictions=predictions, predictor=function(x) {
         fs = list(features=subset(data$data, T, data$features))
         if(!is.null(pre)) {
             fs = pre(fs$features)
         }
+        models = lapply(1:length(data$performance), function(i) {
+            return(regressor(data$data[[data$performance[i]]]~., data=fs$features))
+        })
+        if(stack) {
+            trainpredictions = matrix(nrow=nrow(fs$features), ncol=length(data$performance))
+            for (i in 1:length(data$performance)) {
+                trainpredictions[,i] = predict(models[[i]], fs$features)
+            }
+            combinedmodel = combine(data$data$best~., data=data.frame(trainpredictions))
+        }
+    }
+
+    return(list(predictions=predictions, predictor=function(x) {
         tsf = list(features=subset(x, T, data$features))
         if(!is.null(pre)) {
             tsf = pre(tsf$features, fs$meta)
         }
 
-        models = lapply(1:length(data$performance), function(i) {
-            return(regressor(data$data[[data$performance[i]]]~., data=fs$features))
-        })
-        trainpredictions = matrix(nrow=nrow(fs$features), ncol=length(data$performance))
         performancePredictions = matrix(nrow=nrow(tsf$features), ncol=length(data$performance))
         for (i in 1:length(data$performance)) {
-            if(stack) {
-                trainpredictions[,i] = predict(models[[i]], fs$features)
-            }
             performancePredictions[,i] = predict(models[[i]], tsf$features)
         }
 
         if(stack) {
-            combinedmodel = combine(data$data$best~., data=data.frame(trainpredictions))
             combinedpredictions = as.character(predict(combinedmodel, data.frame(performancePredictions)))
         } else {
             combinedpredictions = apply(performancePredictions, 1, function(x) { data$performance[head(which(x %in% combine(x)), 1)] })

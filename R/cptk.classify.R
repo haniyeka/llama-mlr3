@@ -37,28 +37,33 @@ function(classifier=NULL, data=NULL, pre=NULL) {
             combinedpredictions = apply(ensemblepredictions, 1, function(l) { l[which(table(l) %in% max(table(l)))[1]] })
         }
         predictions = append(predictions, list(combinedpredictions))
-    }
-
-    return(list(predictions=predictions, predictor=function(x) {
+        
         fs = list(features=subset(data$data, T, data$features))
         if(!is.null(pre)) {
             fs = pre(fs$features)
         }
+        models = lapply(1:length(classifier), function(i) {
+            return(classifier[[i]](data$data$best~., data=fs$features))
+        })
+        if(is.function(combinator)) {
+            trainpredictions = matrix(nrow=nrow(fs$features), ncol=length(classifier))
+            for(i in 1:length(classifier)) {
+                trainpredictions[,i] = as.character(predict(models[[i]], fs$features))
+            }
+            combinedmodel = combinator(data$data$best~., data=data.frame(trainpredictions))
+        }
+    }
+
+    return(list(predictions=predictions, predictor=function(x) {
         tsf = list(features=subset(x, T, data$features))
         if(!is.null(pre)) {
             tsf = pre(tsf$features, fs$meta)
         }
         ensemblepredictions = matrix(nrow=nrow(tsf$features), ncol=length(classifier))
-        trainpredictions = matrix(nrow=nrow(fs$features), ncol=length(classifier))
         for(i in 1:length(classifier)) {
-            model = classifier[[i]](data$data$best~., data=fs$features)
-            if(is.function(combinator)) {
-                trainpredictions[,i] = as.character(predict(model, fs$features))
-            }
-            ensemblepredictions[,i] = as.character(predict(model, tsf$features))
+            ensemblepredictions[,i] = as.character(predict(models[[i]], tsf$features))
         }
         if(is.function(combinator)) {
-            combinedmodel = combinator(data$data$best~., data=data.frame(trainpredictions))
             combinedpredictions = as.character(predict(combinedmodel, data.frame(ensemblepredictions)))
         } else {
             combinedpredictions = apply(ensemblepredictions, 1, function(l) { l[which(table(l) %in% max(table(l)))[1]] })
