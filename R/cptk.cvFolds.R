@@ -8,6 +8,6 @@ function(data, nfolds=10, stratify=T) {
     })
     parts = split(data$data, tmp$fold)
     return(c(data,
-            list(train = lapply(1:nfolds, function(x) { return(unsplit(parts[-x], 1)) }),
+            list(train = lapply(1:nfolds, function(x) { return(unsplit(parts[-x], tmp$fold[tmp$fold!=x])) }),
                  test = lapply(1:nfolds, function(x) { return(parts[[x]]) }))))
 }
