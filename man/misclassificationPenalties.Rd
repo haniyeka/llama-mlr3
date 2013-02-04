@@ -1,5 +1,5 @@
-\name{cptk.misclassificationPenalties}
-\alias{cptk.misclassificationPenalties}
+\name{misclassificationPenalties}
+\alias{misclassificationPenalties}
 \title{
 Misclassification penalty
 }
@@ -8,13 +8,13 @@ Calculates the penalty incurred because of making incorrect decisions, i.e.
 choosing suboptimal algorithms.
 }
 \usage{
-cptk.misclassificationPenalties(data, predictions, minimize = T)
+misclassificationPenalties(data, predictions, minimize = T)
 }
 \arguments{
   \item{data}{the data used to induce the model. The same as given to
-      \code{cptk.classify}, \code{cptk.cluster} or \code{cptk.regression}.}
+      \code{classify}, \code{cluster} or \code{regression}.}
   \item{predictions}{the predictions. Can be a list of lists as returned by
-      \code{cptk.classify}, \code{cptk.cluster} or \code{cptk.regression} or a
+      \code{classify}, \code{cluster} or \code{regression} or a
       list as returned by the predictor return value of those functions.}
   \item{minimize}{is the minimum performance value the best or worst? Default T
       for best.}
@@ -33,19 +33,19 @@ misclassification penalties.
 Lars Kotthoff
 }
 \seealso{
-\code{\link{cptk.parscores}}, \code{\link{cptk.successes}}
+\code{\link{parscores}}, \code{\link{successes}}
 }
 \examples{
-require(cptk)
+require(llama)
 require(RWeka)
 
 data(satsolvers)
-trainTest = cptk.cvFolds(satsolvers)
+trainTest = cvFolds(satsolvers)
 
-res = cptk.classify(classifier=J48, data=trainTest)
-sum(unlist(cptk.misclassificationPenalties(trainTest, res$predictions)))
+res = classify(classifier=J48, data=trainTest)
+sum(unlist(misclassificationPenalties(trainTest, res$predictions)))
 
 # maximum performance value is best
-sum(unlist(cptk.misclassificationPenalties(trainTest, res$predictions, FALSE)))
+sum(unlist(misclassificationPenalties(trainTest, res$predictions, FALSE)))
 }
 \keyword{ ~models }

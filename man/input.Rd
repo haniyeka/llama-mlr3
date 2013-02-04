@@ -1,5 +1,5 @@
-\name{cptk.input}
-\alias{cptk.input}
+\name{input}
+\alias{input}
 \title{
 Read data
 }
@@ -7,7 +7,7 @@ Read data
 Reads performance data that can be used to train and evaluate models.
 }
 \usage{
-cptk.input(features, performances, successes = NULL, minimize = T)
+input(features, performances, successes = NULL, minimize = T)
 }
 \arguments{
   \item{features}{
@@ -25,13 +25,13 @@ cptk.input(features, performances, successes = NULL, minimize = T)
 }
 }
 \details{
-\code{cptk.input} takes a list of data frames and processes them as follows. The
+\code{input} takes a list of data frames and processes them as follows. The
 feature and performance data are joined by looking for common column names in
 the two files (usually an ID of the problem). For each problem, the best
 algorithm according to the read performance data is computed.
 
 The data frame that describes whether an algorithm was successful on a problem
-is optional. If \code{cptk.parscores} or \code{cptk.successes} are to be used to
+is optional. If \code{parscores} or \code{successes} are to be used to
 evaluate the learned models, this argument is required however and will lead to
 error messages if not supplied.
 }
@@ -45,7 +45,7 @@ error messages if not supplied.
 Lars Kotthoff
 }
 \examples{
-require(cptk)
+require(llama)
 # features.csv looks something like
 # ID,width,height
 # 0,1.2,3
@@ -58,6 +58,6 @@ require(cptk)
 # ID,alg1,alg2
 # 0,T,F
 # ...
-#cptk.input(read.csv("features.csv"), read.csv("performance.csv"), read.csv("success.csv"))
+#input(read.csv("features.csv"), read.csv("performance.csv"), read.csv("success.csv"))
 }
 \keyword{ ~models }

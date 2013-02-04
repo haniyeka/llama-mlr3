@@ -1,5 +1,5 @@
-\name{cptk.normalize}
-\alias{cptk.normalize}
+\name{normalize}
+\alias{normalize}
 \title{
 Normalize features
 }
@@ -8,7 +8,7 @@ Normalize input data so that the values for all features cover the same range -1
 to 1.
 }
 \usage{
-cptk.normalize(rawfeatures, meta = NULL)
+normalize(rawfeatures, meta = NULL)
 }
 \arguments{
   \item{rawfeatures}{
@@ -36,12 +36,12 @@ data.}
 Lars Kotthoff
 }
 \examples{
-require(cptk)
+require(llama)
 require(RWeka)
 
 data(satsolvers)
-trainTest = cptk.cvFolds(satsolvers)
+trainTest = cvFolds(satsolvers)
 
-cptk.cluster(clusterer=XMeans, data=trainTest, pre=cptk.normalize)
+cluster(clusterer=XMeans, data=trainTest, pre=normalize)
 }
 \keyword{ ~models }

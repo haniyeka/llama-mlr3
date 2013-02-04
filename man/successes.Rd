@@ -1,5 +1,5 @@
-\name{cptk.successes}
-\alias{cptk.successes}
+\name{successes}
+\alias{successes}
 \title{
 Success
 }
@@ -7,13 +7,13 @@ Success
 Was the problem solved successfully using the chosen algorithm?
 }
 \usage{
-cptk.successes(data, predictions)
+successes(data, predictions)
 }
 \arguments{
   \item{data}{the data used to induce the model. The same as given to
-      \code{cptk.classify}, \code{cptk.cluster} or \code{cptk.regression}.}
+      \code{classify}, \code{cluster} or \code{regression}.}
   \item{predictions}{the predictions. Can be a list of lists as returned by
-      \code{cptk.classify}, \code{cptk.cluster} or \code{cptk.regression} or a
+      \code{classify}, \code{cluster} or \code{regression} or a
       list as returned by the predictor return value of those functions.}
 }
 \details{
@@ -28,16 +28,16 @@ success values.
 Lars Kotthoff
 }
 \seealso{
-\code{\link{cptk.misclassificationPenalties}}, \code{\link{cptk.parscores}}
+\code{\link{misclassificationPenalties}}, \code{\link{parscores}}
 }
 \examples{
-require(cptk)
+require(llama)
 require(RWeka)
 
 data(satsolvers)
-trainTest = cptk.cvFolds(satsolvers)
+trainTest = cvFolds(satsolvers)
 
-res = cptk.classify(classifier=J48, data=trainTest)
-sum(unlist(cptk.successes(trainTest, res$predictions)))
+res = classify(classifier=J48, data=trainTest)
+sum(unlist(successes(trainTest, res$predictions)))
 }
 \keyword{ ~models }

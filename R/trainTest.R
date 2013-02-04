@@ -1,4 +1,4 @@
-cptk.trainTest <-
+trainTest <-
 function(data, trainpart=0.6, stratify=T) {
     require(plyr)
     tmp = ddply(data$data, if(stratify) { .(best) } else { .() }, function(x) {

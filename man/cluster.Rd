@@ -1,5 +1,5 @@
-\name{cptk.cluster}
-\alias{cptk.cluster}
+\name{cluster}
+\alias{cluster}
 \title{
 Cluster model
 }
@@ -8,7 +8,7 @@ Build a cluster model that predicts the algorithm to use based on the features
 of the problem.
 }
 \usage{
-cptk.cluster(clusterer = NULL, data = NULL, pre = function(x, y=NULL) { list(features=x) })
+cluster(clusterer = NULL, data = NULL, pre = function(x, y=NULL) { list(features=x) })
 }
 \arguments{
   \item{clusterer}{
@@ -20,15 +20,15 @@ cptk.cluster(clusterer = NULL, data = NULL, pre = function(x, y=NULL) { list(fea
 }
   \item{data}{
   the data to use with training and test sets. The structure returned by
-  \code{cptk.trainTest} or \code{cptk.cvFolds}.
+  \code{trainTest} or \code{cvFolds}.
 }
   \item{pre}{
-  a function to preprocess the data. Currently only \code{cptk.normalize}.
+  a function to preprocess the data. Currently only \code{normalize}.
   Optional. Does nothing by default.
 }
 }
 \details{
-\code{cptk.cluster} takes \code{data} and processes it using \code{pre} (if
+\code{cluster} takes \code{data} and processes it using \code{pre} (if
 supplied). \code{clusterer} is called to cluster the data. For each cluster, the
 best algorithm is identified as the one with the best overall performance on the
 problems in that cluster. The learned model is used to cluster the test data and
@@ -40,7 +40,7 @@ predictions independently. For each instance, the final prediction is determined
 by majority vote of the predictions of the individual models -- the class that
 occurs most often is chosen. If the list given as \code{clusterer} contains a
 member \code{.combine} that is a function, it is assumed to be a classifier with
-the same properties as classifiers given to \code{cptk.classify} and will be
+the same properties as classifiers given to \code{classify} and will be
 used to combine the ensemble predictions instead of majority voting.
 
 }
@@ -54,28 +54,28 @@ used to combine the ensemble predictions instead of majority voting.
 Lars Kotthoff
 }
 \seealso{
-\code{\link{cptk.classify}}, \code{\link{cptk.regression}}
+\code{\link{classify}}, \code{\link{regression}}
 }
 \examples{
-require(cptk)
+require(llama)
 require(RWeka)
 
 data(satsolvers)
-trainTest = cptk.cvFolds(satsolvers)
+trainTest = cvFolds(satsolvers)
 
-res = cptk.cluster(clusterer=XMeans, data=trainTest, pre=cptk.normalize)
+res = cluster(clusterer=XMeans, data=trainTest, pre=normalize)
 # the total number of successes
-sum(unlist(cptk.successes(trainTest, res$predictions)))
+sum(unlist(successes(trainTest, res$predictions)))
 # predictions on the entire data set
 res$predictor(subset(satsolvers$data, TRUE, satsolvers$features))
 
 require(flexclust)
-res = cptk.cluster(clusterer=function(x) { kcca(x, length(satsolvers$performance)) }, data=trainTest, pre=cptk.normalize)
+res = cluster(clusterer=function(x) { kcca(x, length(satsolvers$performance)) }, data=trainTest, pre=normalize)
 
 # ensemble clustering
-rese = cptk.cluster(clusterer=list(XMeans, make_Weka_clusterer("weka/clusterers/EM"), function(x) { kcca(x, length(satsolvers$performance)) }), data=trainTest, pre=cptk.normalize)
+rese = cluster(clusterer=list(XMeans, make_Weka_clusterer("weka/clusterers/EM"), function(x) { kcca(x, length(satsolvers$performance)) }), data=trainTest, pre=normalize)
 
 # ensemble clustering with a classifier to combine predictions
-rese = cptk.cluster(clusterer=list(XMeans, make_Weka_clusterer("weka/clusterers/EM"), function(x) { kcca(x, length(satsolvers$performance)) }, .combine=J48), data=trainTest, pre=cptk.normalize)
+rese = cluster(clusterer=list(XMeans, make_Weka_clusterer("weka/clusterers/EM"), function(x) { kcca(x, length(satsolvers$performance)) }, .combine=J48), data=trainTest, pre=normalize)
 }
 \keyword{ ~cluster }

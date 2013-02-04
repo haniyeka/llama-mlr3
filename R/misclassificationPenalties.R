@@ -1,4 +1,4 @@
-cptk.misclassificationPenalties <-
+misclassificationPenalties <-
 function(data=NULL, predictions=NULL, minimize=T) {
     optfun = if(minimize) { min } else { max }
     post = identity

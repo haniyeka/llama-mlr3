@@ -1,4 +1,4 @@
-cptk.classify <-
+classify <-
 function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }) {
     if(length(data$train) == 0 || length(data$test) == 0) {
         stop("Need data with train/test split!")

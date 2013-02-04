@@ -1,14 +1,14 @@
-\name{cptk.featureFilter}
-\alias{cptk.featureFilter}
+\name{featureFilter}
+\alias{featureFilter}
 \title{
 Feature filtering
 }
 \description{
-Take data produced by \code{cptk.input} and determine the most predictive
+Take data produced by \code{input} and determine the most predictive
 features (with respect to the best algorithm).
 }
 \usage{
-cptk.featureFilter(filter, data)
+featureFilter(filter, data)
 }
 \arguments{
   \item{filter}{
@@ -17,7 +17,7 @@ cptk.featureFilter(filter, data)
   features.
 }
   \item{data}{
-  the data to use. The structure returned by \code{cptk.input}.
+  the data to use. The structure returned by \code{input}.
 }
 }
 \details{
@@ -29,17 +29,17 @@ features. The subset of the features chosen by the filter are saved in the
 \value{
 \item{features}{list of the most predictive features.}
 \item{original_features}{the list of the orignal features.}
-\item{...}{the original members of \code{data}. See \code{\link{cptk.input}}.}
+\item{...}{the original members of \code{data}. See \code{\link{input}}.}
 }
 \author{
 Lars Kotthoff
 }
 \examples{
-require(cptk)
+require(llama)
 require(FSelector)
 
 data(satsolvers)
-d = cptk.featureFilter(filter=cfs, satsolvers)
+d = featureFilter(filter=cfs, satsolvers)
 d$features
 }
 \keyword{ ~models }

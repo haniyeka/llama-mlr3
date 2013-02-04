@@ -1,5 +1,5 @@
-\name{cptk.regression}
-\alias{cptk.regression}
+\name{regression}
+\alias{regression}
 \title{
 Regression model
 }
@@ -8,7 +8,7 @@ Build a regression model that predicts the algorithm to use based on the
 features of the problem.
 }
 \usage{
-cptk.regression(regressor = NULL, data = NULL, pre = function(x, y=NULL) { list(features=x) }, combine = min, stack = F, expand = identity)
+regression(regressor = NULL, data = NULL, pre = function(x, y=NULL) { list(features=x) }, combine = min, stack = F, expand = identity)
 }
 \arguments{
   \item{regressor}{
@@ -18,10 +18,10 @@ cptk.regression(regressor = NULL, data = NULL, pre = function(x, y=NULL) { list(
 }
   \item{data}{
   the data to use with training and test sets. The structure returned by
-  \code{cptk.trainTest} or \code{cptk.cvFolds}.
+  \code{trainTest} or \code{cvFolds}.
 }
   \item{pre}{
-  a function to preprocess the data. Currently only \code{cptk.normalize}.
+  a function to preprocess the data. Currently only \code{normalize}.
   Optional. Does nothing by default.
 }
   \item{combine}{
@@ -41,7 +41,7 @@ cptk.regression(regressor = NULL, data = NULL, pre = function(x, y=NULL) { list(
 }
 }
 \details{
-\code{cptk.regression} takes \code{data} and processes it using \code{pre} (if
+\code{regression} takes \code{data} and processes it using \code{pre} (if
 supplied). \code{regressor} is called to induce separate regression models for
 each of the algorithms to predict its performance. The predicted performances
 are combined using \code{combine} to choose the best algorithm. That is, the
@@ -49,7 +49,7 @@ algorithm with the predicted performance that \code{combine} chooses is
 selected.
 
 If \code{stack} is true, the function given in \code{combine} is assumed to be a
-classifier with the same properties as classifiers given to \code{cptk.classify}
+classifier with the same properties as classifiers given to \code{classify}
 and will be used to learn a model to predict the best algorithm given the
 performance predictions for the individual algorithms. Optionally, \code{expand}
 can be used to supply a function that will modify the features given to the
@@ -66,7 +66,7 @@ differences (see examples).
 Lars Kotthoff
 }
 \seealso{
-\code{\link{cptk.classify}}, \code{\link{cptk.cluster}}
+\code{\link{classify}}, \code{\link{cluster}}
 }
 \references{
 Kotthoff, L. (2012)
@@ -74,23 +74,23 @@ Hybrid Regression-Classification Models for Algorithm Selection.
 \emph{20th European Conference on Artificial Intelligence}, 480--485.
 }
 \examples{
-require(cptk)
+require(llama)
 data(satsolvers)
-trainTest = cptk.cvFolds(satsolvers)
+trainTest = cvFolds(satsolvers)
 
-res = cptk.regression(regressor=lm, data=trainTest)
+res = regression(regressor=lm, data=trainTest)
 # the total number of successes
-sum(unlist(cptk.successes(trainTest, res$predictions)))
+sum(unlist(successes(trainTest, res$predictions)))
 # predictions on the entire data set
 res$predictor(subset(satsolvers$data, TRUE, satsolvers$features))
 
 require(RWeka)
-res = cptk.regression(regressor=LinearRegression, data=trainTest)
+res = regression(regressor=LinearRegression, data=trainTest)
 
 # combine performance predictions using classifier
-ress = cptk.regression(regressor=LinearRegression, data=trainTest, combine=J48, stack=TRUE)
+ress = regression(regressor=LinearRegression, data=trainTest, combine=J48, stack=TRUE)
 
 # add pairwise differences to performance predictions before running classifier
-ress = cptk.regression(regressor=LinearRegression, data=trainTest, combine=J48, stack=TRUE, expand=function(x) { cbind(x, combn(c(1:ncol(x)), 2, function(y) { abs(x[,y[1]] - x[,y[2]]) })) })
+ress = regression(regressor=LinearRegression, data=trainTest, combine=J48, stack=TRUE, expand=function(x) { cbind(x, combn(c(1:ncol(x)), 2, function(y) { abs(x[,y[1]] - x[,y[2]]) })) })
 }
 \keyword{ ~regression }

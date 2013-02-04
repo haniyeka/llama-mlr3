@@ -1,4 +1,4 @@
-cptk.regression <-
+regression <-
 function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }, combine=min, stack=F, expand=identity) {
     if(length(data$train) == 0 || length(data$test) == 0) {
         stop("Need data with train/test split!")

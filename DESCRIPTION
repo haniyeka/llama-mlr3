@@ -1,6 +1,6 @@
-Package: cptk
+Package: llama
 Type: Package
-Title: Cork Portfolio Toolkit
+Title: Leveraging Learning to Automatically Manage Algorithms
 Version: 0.1
 Date: 2013-01-01
 Author: Lars Kotthoff, contributions by Barry Hurley

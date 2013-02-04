@@ -1,5 +1,5 @@
-\name{cptk.parscores}
-\alias{cptk.parscores}
+\name{parscores}
+\alias{parscores}
 \title{
 Penalized average runtime score
 }
@@ -8,13 +8,13 @@ Calculates the penalized average runtime score which is commonly used for
 evaluating satisfiability solvers on a set of problems.
 }
 \usage{
-cptk.parscores(data, predictions, factor = 10)
+parscores(data, predictions, factor = 10)
 }
 \arguments{
   \item{data}{the data used to induce the model. The same as given to
-      \code{cptk.classify}, \code{cptk.cluster} or \code{cptk.regression}.}
+      \code{classify}, \code{cluster} or \code{regression}.}
   \item{predictions}{the predictions. Can be a list of lists as returned by
-      \code{cptk.classify}, \code{cptk.cluster} or \code{cptk.regression} or a
+      \code{classify}, \code{cluster} or \code{regression} or a
       list as returned by the predictor return value of those functions.}
   \item{factor}{the penalization factor to use for non-successful choices.
       Default 10.}
@@ -33,19 +33,19 @@ penalized average runtimes.
 Lars Kotthoff
 }
 \seealso{
-\code{\link{cptk.misclassificationPenalties}}, \code{\link{cptk.successes}}
+\code{\link{misclassificationPenalties}}, \code{\link{successes}}
 }
 \examples{
-require(cptk)
+require(llama)
 require(RWeka)
 
 data(satsolvers)
-trainTest = cptk.cvFolds(satsolvers)
+trainTest = cvFolds(satsolvers)
 
-res = cptk.classify(classifier=J48, data=trainTest)
-sum(unlist(cptk.parscores(trainTest, res$predictions)))
+res = classify(classifier=J48, data=trainTest)
+sum(unlist(parscores(trainTest, res$predictions)))
 
 # use factor of 5 instead of 10.
-sum(unlist(cptk.parscores(trainTest, res$predictions, 5)))
+sum(unlist(parscores(trainTest, res$predictions, 5)))
 }
 \keyword{ ~models }

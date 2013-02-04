@@ -1,18 +1,18 @@
-\name{cptk.cvFolds}
-\alias{cptk.cvFolds}
+\name{cvFolds}
+\alias{cvFolds}
 \title{
 Cross-validation folds
 }
 \description{
-Take data produced by \code{cptk.input} and amend it with (optionally)
+Take data produced by \code{input} and amend it with (optionally)
 stratified folds for cross-validation.
 }
 \usage{
-cptk.cvFolds(data, nfolds = 10, stratify = T)
+cvFolds(data, nfolds = 10, stratify = T)
 }
 \arguments{
   \item{data}{
-  the data to use. The structure returned by \code{cptk.input}.
+  the data to use. The structure returned by \code{input}.
 }
   \item{nfolds}{
   the number of folds. Defaults to 10.
@@ -32,25 +32,25 @@ set and returned.
 \value{
 \item{train}{a list of data sets for training.}
 \item{test}{a list of data sets for testing.}
-\item{...}{the original members of \code{data}. See \code{\link{cptk.input}}.}
+\item{...}{the original members of \code{data}. See \code{\link{input}}.}
 }
 \author{
 Lars Kotthoff
 }
 \seealso{
-\code{\link{cptk.trainTest}}
+\code{\link{trainTest}}
 }
 \examples{
-require(cptk)
+require(llama)
 require(RWeka)
 
 data(satsolvers)
-trainTest = cptk.cvFolds(satsolvers)
+trainTest = cvFolds(satsolvers)
 
 # use 5 folds instead of the default 10
-trainTest5 = cptk.cvFolds(satsolvers, 5)
+trainTest5 = cvFolds(satsolvers, 5)
 
 # don't stratify
-trainTestU = cptk.cvFolds(satsolvers, stratify=FALSE)
+trainTestU = cvFolds(satsolvers, stratify=FALSE)
 }
 \keyword{ ~models }

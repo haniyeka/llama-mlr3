@@ -1,5 +1,5 @@
-\name{cptk.classify}
-\alias{cptk.classify}
+\name{classify}
+\alias{classify}
 \title{
 Classification model
 }
@@ -8,7 +8,7 @@ Build a classification model that predicts the algorithm to use based on the
 features of the problem.
 }
 \usage{
-cptk.classify(classifier = NULL, data = NULL, pre = function(x, y=NULL) { list(features=x) })
+classify(classifier = NULL, data = NULL, pre = function(x, y=NULL) { list(features=x) })
 }
 \arguments{
   \item{classifier}{
@@ -20,15 +20,15 @@ cptk.classify(classifier = NULL, data = NULL, pre = function(x, y=NULL) { list(f
 }
   \item{data}{
   the data to use with training and test sets. The structure returned by
-  \code{cptk.trainTest} or \code{cptk.cvFolds}.
+  \code{trainTest} or \code{cvFolds}.
 }
   \item{pre}{
-  a function to preprocess the data. Currently only \code{cptk.normalize}.
+  a function to preprocess the data. Currently only \code{normalize}.
   Optional. Does nothing by default.
 }
 }
 \details{
-\code{cptk.classify} takes the training and test sets in \code{data} and
+\code{classify} takes the training and test sets in \code{data} and
 processes it using \code{pre} (if supplied). \code{classifier} is called to
 induce a classifier. The learned model is used to make predictions on the test
 set(s).
@@ -52,7 +52,7 @@ predictions instead of majority voting.
 Lars Kotthoff
 }
 \seealso{
-\code{\link{cptk.cluster}}, \code{\link{cptk.regression}}
+\code{\link{cluster}}, \code{\link{regression}}
 }
 \references{
 Kotthoff, L., Miguel, I., Nightingale, P. (2010)
@@ -60,25 +60,25 @@ Ensemble Classification for Constraint Solver Configuration.
 \emph{16th International Conference on Principles and Practices of Constraint Programming}, 321--329.
 }
 \examples{
-require(cptk)
+require(llama)
 require(RWeka)
 
 data(satsolvers)
-trainTest = cptk.cvFolds(satsolvers)
+trainTest = cvFolds(satsolvers)
 
-res = cptk.classify(classifier=J48, data=trainTest)
+res = classify(classifier=J48, data=trainTest)
 # the total number of successes
-sum(unlist(cptk.successes(trainTest, res$predictions)))
+sum(unlist(successes(trainTest, res$predictions)))
 # predictions on the entire data set
 res$predictor(subset(satsolvers$data, TRUE, satsolvers$features))
 
 require(e1071)
-res = cptk.classify(classifier=svm, data=trainTest)
+res = classify(classifier=svm, data=trainTest)
 
 # ensemble classification
-rese = cptk.classify(classifier=list(J48, IBk, svm), data=trainTest)
+rese = classify(classifier=list(J48, IBk, svm), data=trainTest)
 
 # ensemble classification with a classifier to combine predictions
-rese = cptk.classify(classifier=list(J48, IBk, svm, .combine=J48), data=trainTest)
+rese = classify(classifier=list(J48, IBk, svm, .combine=J48), data=trainTest)
 }
 \keyword{ ~models }

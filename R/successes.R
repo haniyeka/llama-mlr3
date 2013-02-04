@@ -1,4 +1,4 @@
-cptk.successes <-
+successes <-
 function(data=NULL, predictions=NULL) {
     post = identity
     if(length(data$test) == 0) {

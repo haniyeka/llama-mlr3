@@ -1,4 +1,4 @@
-cptk.normalize <-
+normalize <-
 function(rawfeatures, meta=NULL) {
     if(is.null(meta) || is.null(meta$minValues)) {
         meta$minValues = apply(rawfeatures, 2, min, na.rm=T)

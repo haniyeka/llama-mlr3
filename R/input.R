@@ -1,4 +1,4 @@
-cptk.input <-
+input <-
 function(features, performances, successes=NULL, minimize=T) {
     if(nrow(features) != nrow(performances) || (!is.null(successes) && (nrow(features) != nrow(successes) || nrow(performances) != nrow(successes)))) {
         warning("Different number of rows in data frames, taking only common rows.")

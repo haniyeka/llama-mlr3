@@ -1,4 +1,4 @@
-cptk.parscores <-
+parscores <-
 function(data=NULL, predictions=NULL, factor=10) {
     post = identity
     if(length(data$test) == 0) {

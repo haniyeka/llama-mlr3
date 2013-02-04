@@ -1,4 +1,4 @@
-cptk.featureFilter <-
+featureFilter <-
 function(filter=NULL, data=NULL) {
     data$original_features = data$features
     b = data$data$best

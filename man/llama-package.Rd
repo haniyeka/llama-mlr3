@@ -1,18 +1,19 @@
-\name{cptk-package}
-\alias{cptk-package}
-\alias{cptk}
+\name{llama-package}
+\alias{llama-package}
+\alias{llama}
 \docType{package}
 \title{
-Cork Portfolio Toolkit
+Leveraging Learning to Automatically Manage Algorithms
 }
 \description{
-The Cork Portfolio Toolkit provides functionality to read and process
-performance data for algorithms, facilitate building models that predict which
-algorithm to use in which scenario and ways of evaluating them.
+Leveraging Learning to Automatically Manage Algorithms provides functionality to
+read and process performance data for algorithms, facilitate building models
+that predict which algorithm to use in which scenario and ways of evaluating
+them.
 }
 \details{
 \tabular{ll}{
-Package: \tab cptk\cr
+Package: \tab llama\cr
 Type: \tab Package\cr
 Version: \tab 0.1\cr
 Date: \tab 2013-01-01\cr
@@ -24,12 +25,12 @@ The package provides functions to read performance data, build performance
 models that enable selection of algorithms (using external machine learning
 functions) and evaluate those models.
 
-Data is input using \code{cptk.input} and can then be used to learn
+Data is input using \code{input} and can then be used to learn
 performance models. There are currently three main ways to create models.
-Classification (\code{cptk.classify}) creates a single machine learning model
-that predicts the algorithm to use as a label. Clustering (\code{cptk.cluster})
+Classification (\code{classify}) creates a single machine learning model
+that predicts the algorithm to use as a label. Clustering (\code{cluster})
 clusters the problems to solve and assigns the best algorithm to each cluster.
-Regression (\code{cptk.regression}) trains separate models for all available
+Regression (\code{regression}) trains separate models for all available
 algorithms, predicts the performance on a problem independently and chooses the
 algorithm with the best predicted performance.
 
@@ -58,19 +59,19 @@ Lars Kotthoff, Algorithm Selection for Combinatorial Search Problems: A survey,
 }
 \keyword{ package }
 \examples{
-require(cptk)
+require(llama)
 require(RWeka)
 
 data(satsolvers)
-trainTest = cptk.cvFolds(satsolvers)
+trainTest = cvFolds(satsolvers)
 
-res = cptk.classify(classifier=J48, data=trainTest)
+res = classify(classifier=J48, data=trainTest)
 # print the total number of successes
-print(sum(unlist(cptk.successes(trainTest, res$predictions))))
+print(sum(unlist(successes(trainTest, res$predictions))))
 # print the total misclassification penalty
-print(sum(unlist(cptk.misclassificationPenalties(trainTest, res$predictions))))
+print(sum(unlist(misclassificationPenalties(trainTest, res$predictions))))
 # print the total PAR10 score
-print(sum(unlist(cptk.parscores(trainTest, res$predictions))))
+print(sum(unlist(parscores(trainTest, res$predictions))))
 
 # print predictions on the entire data set
 print(res$predictor(subset(satsolvers$data, TRUE, satsolvers$features)))
@@ -78,9 +79,9 @@ print(res$predictor(subset(satsolvers$data, TRUE, satsolvers$features)))
 # filter features and train a regression model
 require(FSelector)
 
-filtered = cptk.featureFilter(cfs, satsolvers)
-folds = cptk.cvFolds(filtered)
-res = cptk.regression(regressor=LinearRegression, data=folds)
+filtered = featureFilter(cfs, satsolvers)
+folds = cvFolds(filtered)
+res = regression(regressor=LinearRegression, data=folds)
 # print the total number of successes
-print(sum(unlist(cptk.successes(folds, res$predictions))))
+print(sum(unlist(successes(folds, res$predictions))))
 }
