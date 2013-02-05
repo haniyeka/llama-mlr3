@@ -1,5 +1,8 @@
 successes <-
 function(data=NULL, predictions=NULL) {
+    if(is.null(data$success)) {
+        stop("Need successes to compute successes.")
+    }
     post = identity
     if(length(data$test) == 0) {
         data$test = list(data$data)

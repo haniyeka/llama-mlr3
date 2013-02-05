@@ -1,5 +1,8 @@
 parscores <-
 function(data=NULL, predictions=NULL, factor=10) {
+    if(is.null(data$success)) {
+        stop("Need successes to compute PAR scores.")
+    }
     post = identity
     if(length(data$test) == 0) {
         data$test = list(data$data)
