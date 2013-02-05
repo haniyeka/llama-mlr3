@@ -1,6 +1,9 @@
 classify <-
 function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }) {
-    if(length(data$train) == 0 || length(data$test) == 0) {
+    if(is.null(classifier)) {
+        stop("No classifier given!")
+    }
+    if(is.null(data) || length(data$train) == 0 || length(data$test) == 0) {
         stop("Need data with train/test split!")
     }
     if(!is.list(classifier)) { classifier = list(classifier) }
@@ -28,7 +31,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
             combinedmodel = combinator(data$train[[i]]$best~., data=data.frame(trainpredictions))
             combinedpredictions = as.character(predict(combinedmodel, data.frame(ensemblepredictions)))
         } else {
-            combinedpredictions = apply(ensemblepredictions, 1, function(l) { l[which(table(l) %in% max(table(l)))[1]] })
+            combinedpredictions = apply(ensemblepredictions, 1, function(l) { names(sort(table(l), decreasing=T)[1]) })
         }
         predictions = append(predictions, list(combinedpredictions))
         
@@ -54,7 +57,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
         if(is.function(combinator)) {
             combinedpredictions = as.character(predict(combinedmodel, data.frame(ensemblepredictions)))
         } else {
-            combinedpredictions = apply(ensemblepredictions, 1, function(l) { l[which(table(l) %in% max(table(l)))[1]] })
+            combinedpredictions = apply(ensemblepredictions, 1, function(l) { names(sort(table(l), decreasing=T)[1]) })
         }
         return(combinedpredictions)
     }))

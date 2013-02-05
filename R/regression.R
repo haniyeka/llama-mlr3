@@ -1,6 +1,9 @@
 regression <-
 function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }, combine=min, stack=F, expand=identity) {
-    if(length(data$train) == 0 || length(data$test) == 0) {
+    if(is.null(regressor)) {
+        stop("No regressor given!")
+    }
+    if(is.null(data) || length(data$train) == 0 || length(data$test) == 0) {
         stop("Need data with train/test split!")
     }
     predictions = list()
