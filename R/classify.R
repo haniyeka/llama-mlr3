@@ -1,5 +1,6 @@
 classify <-
 function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }) {
+    require(foreach)
     if(is.null(classifier)) {
         stop("No classifier given!")
     }
@@ -12,9 +13,8 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
         combinator = classifier$.combine
         classifier = classifier[-which(names(classifier) == ".combine")]
     }
-    predictions = list()
 
-    for(i in 1:length(data$train)) {
+    predictions = foreach(i = 1:length(data$train), .combine=append) %dopar% {
         trf = pre(subset(data$train[[i]], T, data$features))
         tsf = pre(subset(data$test[[i]], T, data$features), trf$meta)
 
@@ -33,19 +33,19 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
         } else {
             combinedpredictions = apply(ensemblepredictions, 1, function(l) { names(sort(table(l), decreasing=T)[1]) })
         }
-        predictions = append(predictions, list(combinedpredictions))
-        
-        fs = pre(subset(data$data, T, data$features))
-        models = lapply(1:length(classifier), function(i) {
-            return(classifier[[i]](data$data$best~., data=fs$features))
-        })
-        if(is.function(combinator)) {
-            trainpredictions = matrix(nrow=nrow(fs$features), ncol=length(classifier))
-            for(i in 1:length(classifier)) {
-                trainpredictions[,i] = as.character(predict(models[[i]], fs$features))
-            }
-            combinedmodel = combinator(data$data$best~., data=data.frame(trainpredictions))
+        return(list(combinedpredictions))
+    }
+
+    fs = pre(subset(data$data, T, data$features))
+    models = lapply(1:length(classifier), function(i) {
+        return(classifier[[i]](data$data$best~., data=fs$features))
+    })
+    if(is.function(combinator)) {
+        trainpredictions = matrix(nrow=nrow(fs$features), ncol=length(classifier))
+        for(i in 1:length(classifier)) {
+            trainpredictions[,i] = as.character(predict(models[[i]], fs$features))
         }
+        combinedmodel = combinator(data$data$best~., data=data.frame(trainpredictions))
     }
 
     return(list(predictions=predictions, predictor=function(x) {

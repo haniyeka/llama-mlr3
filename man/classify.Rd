@@ -33,6 +33,9 @@ processes it using \code{pre} (if supplied). \code{classifier} is called to
 induce a classifier. The learned model is used to make predictions on the test
 set(s).
 
+The evaluation across the training and test sets will be parallelized
+automatically if a suitable backend for parallel computation is loaded.
+
 If a list of classifiers is supplied in \code{classifier}, ensemble
 classification is performed. That is, the models are trained and used to make
 predictions independently. For each instance, the final prediction is determined

@@ -17,7 +17,7 @@ Package: \tab llama\cr
 Type: \tab Package\cr
 Version: \tab 0.1\cr
 Date: \tab 2013-01-01\cr
-Depends: \tab plyr\cr
+Depends: \tab plyr, foreach\cr
 Suggests: \tab RWeka, FSelector\cr
 License: \tab BSD\cr
 }
@@ -44,7 +44,13 @@ Function names and interfaces may change in future versions.
 At the moment, the implementation of the functions is very much geared towards
 \code{RWeka}, an R package to interface with the Weka machine learning toolkit.
 While in theory using other packages and implementations should be possible,
-this may not be so in practice.
+there may be problems in practice.
+
+The model building functions are transparently parallelizable by loading a
+suitable backend for parallel computation. Note that this does \emph{not} mean
+that all machine learning algorithms used for building models can be
+parallelized safely. In particular \code{RWeka} functions cannot be run in
+parallel safely without loading the package in each executor independently.
 }
 \author{
 Lars Kotthoff

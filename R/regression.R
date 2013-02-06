@@ -1,14 +1,14 @@
 regression <-
 function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }, combine=min, stack=F, expand=identity) {
+    require(foreach)
     if(is.null(regressor)) {
         stop("No regressor given!")
     }
     if(is.null(data) || length(data$train) == 0 || length(data$test) == 0) {
         stop("Need data with train/test split!")
     }
-    predictions = list()
 
-    for(i in 1:length(data$train)) {
+    predictions = foreach(i = 1:length(data$train), .combine=append) %dopar% {
         trf = pre(subset(data$train[[i]], T, data$features))
         tsf = pre(subset(data$test[[i]], T, data$features), trf$meta)
 
@@ -28,19 +28,19 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         } else {
             combinedpredictions = apply(performancePredictions, 1, function(x) { data$performance[head(which(x %in% combine(x)), 1)] })
         }
-        predictions = append(predictions, list(combinedpredictions))
+        return(list(combinedpredictions))
+    }
 
-        fs = pre(subset(data$data, T, data$features))
-        models = lapply(1:length(data$performance), function(i) {
-            return(regressor(data$data[[data$performance[i]]]~., data=fs$features))
-        })
-        if(stack) {
-            trainpredictions = matrix(nrow=nrow(fs$features), ncol=length(data$performance))
-            for (i in 1:length(data$performance)) {
-                trainpredictions[,i] = predict(models[[i]], fs$features)
-            }
-            combinedmodel = combine(data$data$best~., data=data.frame(expand(trainpredictions)))
+    fs = pre(subset(data$data, T, data$features))
+    models = lapply(1:length(data$performance), function(i) {
+        return(regressor(data$data[[data$performance[i]]]~., data=fs$features))
+    })
+    if(stack) {
+        trainpredictions = matrix(nrow=nrow(fs$features), ncol=length(data$performance))
+        for (i in 1:length(data$performance)) {
+            trainpredictions[,i] = predict(models[[i]], fs$features)
         }
+        combinedmodel = combine(data$data$best~., data=data.frame(expand(trainpredictions)))
     }
 
     return(list(predictions=predictions, predictor=function(x) {

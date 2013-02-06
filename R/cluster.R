@@ -1,5 +1,6 @@
 cluster <-
 function(clusterer=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }) {
+    require(foreach)
     if(is.null(clusterer)) {
         stop("No clusterer given!")
     }
@@ -12,9 +13,8 @@ function(clusterer=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         combinator = clusterer$.combine
         clusterer = clusterer[-which(names(clusterer) == ".combine")]
     }
-    predictions = list()
 
-    for(i in 1:length(data$train)) {
+    predictions = foreach(i = 1:length(data$train), .combine=append) %dopar% {
         trf = pre(subset(data$train[[i]], T, data$features))
         tsf = pre(subset(data$test[[i]], T, data$features), trf$meta)
 
@@ -49,29 +49,29 @@ function(clusterer=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         } else {
             combinedpredictions = apply(ensemblepredictions, 1, function(l) { names(sort(table(l), decreasing=T)[1]) })
         }
-        predictions = append(predictions, list(combinedpredictions))
+        return(list(combinedpredictions))
+    }
 
-        fs = pre(subset(data$data, T, data$features))
-        models = lapply(1:length(clusterer), function(i) {
-            model = clusterer[[i]](fs$features)
-            clusters = predict(model)
-            best = by(data$data, clusters, function(x) { names(sort(table(x$best), decreasing=T))[1] })
-            return(function(newdata) { sapply(predict(model, newdata),
-                function(x) {
-                    as.character(if(is.na(x)) {
-                        names(sort(table(data$data$best), decreasing=T))[1]
-                    } else {
-                        best[[which(names(best)==x)]]
-                    })
-                })})
-        })
-        if(is.function(combinator)) {
-            trainpredictions = matrix(nrow=nrow(fs$features), ncol=length(clusterer))
-            for(j in 1:length(clusterer)) {
-                trainpredictions[,j] = models[[j]](fs$features)
-            }
-            combinedmodel = combinator(data$data$best~., data=data.frame(trainpredictions))
+    fs = pre(subset(data$data, T, data$features))
+    models = lapply(1:length(clusterer), function(i) {
+        model = clusterer[[i]](fs$features)
+        clusters = predict(model)
+        best = by(data$data, clusters, function(x) { names(sort(table(x$best), decreasing=T))[1] })
+        return(function(newdata) { sapply(predict(model, newdata),
+            function(x) {
+                as.character(if(is.na(x)) {
+                    names(sort(table(data$data$best), decreasing=T))[1]
+                } else {
+                    best[[which(names(best)==x)]]
+                })
+            })})
+    })
+    if(is.function(combinator)) {
+        trainpredictions = matrix(nrow=nrow(fs$features), ncol=length(clusterer))
+        for(j in 1:length(clusterer)) {
+            trainpredictions[,j] = models[[j]](fs$features)
         }
+        combinedmodel = combinator(data$data$best~., data=data.frame(trainpredictions))
     }
 
     return(list(predictions=predictions, predictor=function(x) {

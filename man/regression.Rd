@@ -48,6 +48,9 @@ are combined using \code{combine} to choose the best algorithm. That is, the
 algorithm with the predicted performance that \code{combine} chooses is
 selected.
 
+The evaluation across the training and test sets will be parallelized
+automatically if a suitable backend for parallel computation is loaded.
+
 If \code{stack} is true, the function given in \code{combine} is assumed to be a
 classifier with the same properties as classifiers given to \code{classify}
 and will be used to learn a model to predict the best algorithm given the

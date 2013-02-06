@@ -34,6 +34,9 @@ best algorithm is identified as the one with the best overall performance on the
 problems in that cluster. The learned model is used to cluster the test data and
 predict algorithms accordingly.
 
+The evaluation across the training and test sets will be parallelized
+automatically if a suitable backend for parallel computation is loaded.
+
 If a list of clusterers is supplied in \code{clusterer}, ensemble
 clustering is performed. That is, the models are trained and used to make
 predictions independently. For each instance, the final prediction is determined
