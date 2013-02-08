@@ -1,0 +1,85 @@
+\documentclass[letterpaper]{llncs}
+
+\usepackage{multirow}
+ 
+
+
+
+\title{LLAMA: Leveraging Learning to Automatically Manage Algorithms}
+
+\author{Lars Kotthoff \and Yuri Malitsky}
+
+\institute{University College Cork, Cork Constraint Computation Centre, Cork, Ireland \\
+  		\email{\{larsko,y.malitsky\}@4c.ucc.ie}}
+
+
+\begin{document}
+
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{abstract}
+Algorithm portfolios have achieved remarkable improvements over single solver approaches. In the 
+SAT domain, portfolios can be compared to the Industrial Revolution in terms of their fundamental 
+effect on how SAT problems are solved. However, the implementation of such systems is often highly 
+specialized and specific to the problem domain. This makes it difficult for researchers to adapt the 
+leading techniques to their domain. We present LLAMA, a modular and extendable toolkit that 
+facilitates the exploration of a range of different portfolio techniques on any problem domain. Here, 
+we present the current capabilities and limitations of the toolkit and illustrate its usage on an example 
+SAT problem.
+\end{abstract}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+
+It has been observed for quite some time now that there is usually no single solver that is always the 
+best over a large set of problem instances. Instead, because in practice problem instances tend to be
+heterogeneous in their size and structure, a solver that excels at talking one type of problem usually
+performs poorly on another. This is precisely the underlying reason why portfolio algorithms have
+been dominating competitions in constraint satisfaction (CSP)~\cite{}, quantified boolean formulae (QBF)~\cite{},
+and perhaps most notably of all in satisfiability testing (SAT)~\cite{}.
+
+These portfolio approaches generally try to identify a new instance's structure in the form of a feature 
+vector and then make a prediction as to which solver in their portfolio is likely to yield the best result.
+There are a number of ways this process can be done. In 2007 and 2009, SATzilla~\cite{}, one of the first
+successful portfolio solvers, learned a regression model to predict the log time of every instance. The
+solver that had the smallest predicted runtime would be evaluated on the newly provided instance.
+The ISAC~\cite{} approach went another way, clustering the training data based on the feature vectors 
+and identifying a single solver for each cluster. A new test instance would be assigned to the nearest 
+cluster and evaluated using the appropriate solver. Alternatively, techniques like CPhydra~\cite{} and 
+3S~\cite{} would create a schedule of solvers to run on the new instance so as to maximize the chance
+of solving the instance. Finally, after 2012 SATzilla~\cite{} has changed its approach to instead train 
+a binary for each pair of solvers in its portfolio. For a given instance, the solver that is voted by the 
+majority number of trees is then selected as the best candidate to be run.
+
+These are just a small subset of the portfolio techniques that are now being investigated and evaluated.
+Any existing machine learning approach can be utilized in making the decision of the most preferred
+solver. The downside for researchers and developers, however, that the implementation of such 
+systems is often highly specialized and specific to the problem domain. Therefore, in this paper we 
+present LLAMA, a modular and extendable toolkit that facilitates the exploration of a range of different 
+portfolio techniques on any problem domain.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{LLAMA at a glance}
+
+We provide a complete framework for creating, evaluating and comparing
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Riding the LLAMA}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Discussion}
+
+\end{document}
