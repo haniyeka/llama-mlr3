@@ -60,15 +60,46 @@ These are just a small subset of the portfolio techniques that are now being inv
 Any existing machine learning approach can be utilized in making the decision of the most preferred
 solver. The downside for researchers and developers, however, that the implementation of such 
 systems is often highly specialized and specific to the problem domain. Therefore, in this paper we 
-present LLAMA, a modular and extendable toolkit that facilitates the exploration of a range of different 
+present LLAMA, a modular and extensible toolkit that facilitates the exploration of a range of different 
 portfolio techniques on any problem domain.
+
+The main drawback of all existing approaches is that they are highly tailored
+and customised for the particular problem domain. Even though the high-level
+approach can usually be applied to other problems, in practice this is almost
+always very difficult or even impossible. This makes it very difficult to
+compare different approaches and especially for researchers who are not experts
+in the domain to prototype their ideas.
+
+This is exactly what LLAMA addresses. Instead of providing yet another
+highly-specialised approach that has been tuned and customised to yield high
+performance on a specific data set, LLAMA is a framework that provides the
+building blocks for automatic portfolio selectors. It supports the most common
+approaches to portfolio selection and offers the possibility to combine them
+into more sophisticated approaches. It furthermore provides an implementation of
+the infrastructure that is required for algorithm selection in practice.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{LLAMA at a glance}
 
-We provide a complete framework for creating, evaluating and comparing
+The main focus of LLAMA is to provide the user with a framework for the
+implementation and evaluation of different algorithm selection approaches. It is
+\emph{not} meant to provide turn-key algorithm portfolio systems that can be
+used in competitions or similar settings. While the functionality it provides
+can certainly be used to facilitate the creation of such systems, a lot of the
+technical details for practical algorithm selection systems are highly
+domain-specific. The main audience of LLAMA are researchers that wish
+investigate and explore the performance characteristics of algorithm selection
+systems in general.
+
+As such, many of the issues that are highly relevant to algorithm selection
+systems in competition settings do not have direct support in LLAMA. Such issues
+include the fall back to a default solver if feature computation takes too long,
+the prediction of the time required to compute features or the running of a
+presolver to take care of the easy problems. LLAMA can certainly be used to
+address these issues by providing it with suitable input data, but there is no
+explicit support for it.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
