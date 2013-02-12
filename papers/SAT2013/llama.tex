@@ -106,7 +106,91 @@ explicit support for it.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Riding the LLAMA}
 
+LLAMA is implemented as an R package\footnote{LLAMA has not been released
+officially yet; a review-only snapshot is available at XXX. We will make a
+release available to the public before SAT}. There are many advantages to this
+approach; one of the major ones is that all the functionality available in R can
+be used to build performance model.
 
+In the remainder of this section, we will illustrate how to use LLAMA to build
+and evaluate algorithm portfolio models. The examples given are based on the
+documentation of LLAMA, which is available through R's help system.
+
+To start using LLAMA, the package needs to be loaded. There is example data
+included with the package that will be used here.
+
+\begin{verbatim}
+> require(llama)
+> data(satsolvers)
+\end{verbatim}
+
+To enable scientifically rigorous evaluation of an approach, LLAMA provides
+functions to split a data set into training and test sets. For 10 fold
+stratified cross-validation, the following command should be called.
+
+\begin{verbatim}
+> trainTest = cvFolds(satsolvers)
+\end{verbatim}
+
+Training an algorithm portfolio model can be done in a single line. In this
+example, we train a classification model that uses a C4.5 decision tree to,
+based on the features of a problem, predict the fastest solver. The
+implementation for the C4.5 decision tree is taken from Weka (through the RWeka
+package).
+
+\begin{verbatim}
+> require(RWeka)
+> res = classify(J48, trainTest)
+\end{verbatim}
+
+Calling the model builder also evaluates it on the test data. The return value
+contains lists of predictions on these data that can be used to compute the
+performance (e.g.\ PAR10 score) of the learned model.
+
+\begin{verbatim}
+> sum(unlist(parscores(trainTest, res$predictions)))
+\end{verbatim}
+
+The above is already a complete example. This demonstrates the power and one of
+the main advantages of LLAMA -- model building and evaluation can be done very
+concisely in just a few lines of R code.
+
+Instead of training a classifier to predict the best solver, we can also train
+regression models to predict the performance of each solver independently and
+choose the one with the best predicted performance. This is the approach used in
+the first versions of SATzilla. Here we use a linear regression performance
+model, again from Weka.
+
+\begin{verbatim}
+> res = regression(LinearRegression, trainTest)
+\end{verbatim}
+
+The third main approach to algorithm selection is to cluster the training
+problems and assign the best solver to each cluster based on the solver
+performances on the cluster problems. This approach is used for example in ISAC;
+here we use the XMeans clustering algorithm from Weka. For clustering
+approaches, it is advisable to normalise the feature values across the training
+problems. This is achieved automatically by passing an additional parameter to
+the model building function.
+
+\begin{verbatim}
+> res = cluster(XMeans, trainTest, pre=normalize)
+\end{verbatim}
+
+LLAMA provides a lot more functionality than we can cover here. There is however
+extensive\footnote{For suitable definitions of ``extensive''.} documentation
+with examples for all the functionality. To conclude this section, we provide an
+example for a more sophisticated approach, namely a hybrid
+regression-classification model~\cite{}. The performance of the algorithms in
+the portfolio is predicted independently using linear regression models.
+However, instead of choosing the algorithm with the best predicted performance,
+a C4.5 decision tree is induced to make the prediction of best solver based on
+the predicted performances.
+
+\begin{verbatim}
+> res = regression(LinearRegression, trainTest, combine=J48,
+    stack=TRUE)
+\end{verbatim}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
