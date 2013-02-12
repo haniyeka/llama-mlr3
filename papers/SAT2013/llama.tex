@@ -113,4 +113,28 @@ explicit support for it.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Discussion}
 
+The functionality currently implemented in LLAMA facilitates the exploration of
+the performance to many different approaches to algorithm selection, but is far
+from comprehensive. There are a number of extensions of the current
+implementation that we are planning to provide in the future. An example of this
+is the possibility to provide a richer prediction output from the approaches
+that support it. At the moment, the only output of a model is the best algorithm
+to run on a particular problem. If a ranked list of algorithms was provided
+instead, these algorithms could be ran in parallel or according to a schedule.
+The main advantage of this approach is that if a bad prediction was made, the
+impact on overall performance is limited because a list of algorithms has a
+higher probability of containing the best algorithm even if predictions are bad.
+
+Another obvious point for extensions is to provide a larger number of approaches
+for building performance models. In particular, there is currently no
+support for the approach that SATzilla uses in its most recent incarnation --
+for each pair of algorithms in the portfolio, train a model that predicts which
+one is faster and collate these predictions.
+
+\medskip
+
+It is our intention for LLAMA to develop into a platform that not only
+facilitates the exploration and comparison of different existing approaches, but
+also the rapid prototyping of new approaches.
+
 \end{document}
