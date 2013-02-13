@@ -1,14 +1,16 @@
 \documentclass{llncs}
 
 \usepackage[british]{babel}
+\usepackage{cite}
 \usepackage{graphicx}
 
 \title{LLAMA: Leveraging Learning to Automatically Manage Algorithms}
 
-\author{Lars Kotthoff \and Yuri Malitsky}
-
-\institute{University College Cork, Cork Constraint Computation Centre, Cork, Ireland \\
-  		\email{\{larsko,y.malitsky\}@4c.ucc.ie}}
+\author{Lars Kotthoff \and Yuri Malitsky\thanks{Lars Kotthoff and Yuri
+        Malitsky are supported by EU FP7 grant 284715. The drawing of a Llama is
+        courtesy of \url{http://www.bluebison.net/}. }}
+\institute{University College Cork, Cork Constraint Computation Centre, Cork, Ireland\\
+\email{\{larsko,y.malitsky\}@4c.ucc.ie}}
 
 
 \begin{document}
@@ -16,8 +18,7 @@
 \maketitle
 
 \begin{center}
-\includegraphics{llama.jpg}\footnotetext{The image of a Llama was taken from
-\url{http://www.bluebison.net/}.}
+\includegraphics{llama.jpg}
 \end{center}
 
 \begin{abstract}
@@ -69,7 +70,7 @@ domains and provides an overview of the different approaches.
 
 \medskip
 
-The main drawback of all existing approaches is that they are highly tailored
+The main drawback of existing approaches is that they are highly tailored
 and customised for the particular problem domain or even set of problems. Even
 though the high-level approach can usually be applied to other problems, in
 practice this is almost always very difficult or even impossible. This makes it
@@ -113,6 +114,12 @@ advantages to this approach; one of the major ones is that all the functionality
 available in R can be used to build performance model. This is not limited to
 the functionality that is implemented in R -- there are interfaces to many other
 packages, such as the well-known Weka machine learning toolkit.
+
+The large number of machine learning approaches and algorithms available in R
+makes it possible to use LLAMA to quickly evaluate a range of different
+techniques for algorithm selection on given data, such as the comparison
+presented in~\cite{kotthoff_evaluation_2012}. Being able to do so is crucial for
+achieving good performance in practice.
 
 The implementation of LLAMA provides a set of function that facilitate the
 processing of performance data, the building of algorithm selection models and
@@ -257,17 +264,20 @@ particular, the model that can be used to make predictions on unseen data does
 not only encapsulate the clustering, but also how the input data should be
 normalised.
 
-\medskip
+LLAMA provides a lot of additional functionality than we cannot cover in this
+document. There is however extensive\footnote{For suitable definitions of
+``extensive''.} documentation available with examples for all the functionality.
+All the examples are self-contained and can be run directly. In addition, there
+is a set of unit tests that demonstrates not only how to use specific functions,
+but also how they are expected to behave.
 
-LLAMA provides a lot more functionality than we can cover in this document.
-There is however extensive\footnote{For suitable definitions of ``extensive''.}
-documentation with examples for all the functionality. To conclude this section,
-we provide an example for a more sophisticated approach, namely a hybrid
-regression-classification model~\cite{kotthoff_hybrid_2012}. The performance of
-the algorithms in the portfolio is predicted independently using linear
-regression models. However, instead of choosing the algorithm with the best
-predicted performance, a C4.5 decision tree is induced to make the prediction of
-best solver based on the predicted performances.
+To conclude this section, we provide an example for a more sophisticated
+approach, namely a hybrid regression-classification
+model~\cite{kotthoff_hybrid_2012}. The performance of the algorithms in the
+portfolio is predicted independently using linear regression models. However,
+instead of choosing the algorithm with the best predicted performance, a C4.5
+decision tree is induced to make the prediction of best solver based on the
+predicted performances.
 
 \begin{verbatim}
 > res = regression(LinearRegression, folds, combine=J48,
@@ -293,18 +303,27 @@ Another obvious point for extensions is to provide a larger number of approaches
 for building performance models. In particular, there is currently no
 support for the approach that SATzilla uses in its most recent incarnation --
 for each pair of algorithms in the portfolio, train a model that predicts which
-one is faster and collate these predictions.
+one is faster and collate these predictions~\cite{xu_hydra-mip_2011}.
 
-\medskip
+Another line of research into algorithm selection for SAT has focused on
+building hierarchical models which first predict whether a problem is
+satisfiable or not and have different models for solver selection for each
+outcome~\cite{xu_hierarchical_2007}. While there is currently no explicit
+support for approaches like this, they can be implemented through partitioning
+of the data that is given to LLAMA.
 
 It is our intention for LLAMA to develop into a platform that not only
 facilitates the exploration and comparison of different existing approaches, but
-also the rapid prototyping of new approaches.
+also the rapid prototyping of new approaches. The functions it provides take
+care of many of the infrastructure required to train and evaluate machine
+learning models in a scientifically rigorous way. Researchers wishing to improve
+algorithm portfolio selection do not need to concern themselves with the
+infrastructure, but can concentrate on the actual research.
 
-\subsection*{Acknowledgements}
-
-Lars Kotthoff and Yuri Malitsky are supported by European Union FP7 grant
-284715.
+LLAMA is still at an early stage of development and bugs may occur. In the end,
+the responsibility of interpreting and validating the results lies with the
+user. However, we have used LLAMA for a number of applications, found and fixed
+a few bugs and are reasonably confident that it will useful to other people.
 
 \bibliography{\jobname}
 \bibliographystyle{splncs03}
