@@ -1,9 +1,7 @@
-\documentclass[letterpaper]{llncs}
+\documentclass{llncs}
 
-\usepackage{multirow}
- 
-
-
+\usepackage[british]{babel}
+\usepackage{graphicx}
 
 \title{LLAMA: Leveraging Learning to Automatically Manage Algorithms}
 
@@ -17,58 +15,66 @@
 
 \maketitle
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{center}
+\includegraphics{llama.jpg}\footnotetext{The image of a Llama was taken from
+\url{http://www.bluebison.net/}.}
+\end{center}
+
 \begin{abstract}
-Algorithm portfolios have achieved remarkable improvements over single solver approaches. In the 
-SAT domain, portfolios can be compared to the Industrial Revolution in terms of their fundamental 
-effect on how SAT problems are solved. However, the implementation of such systems is often highly 
-specialized and specific to the problem domain. This makes it difficult for researchers to adapt the 
-leading techniques to their domain. We present LLAMA, a modular and extendable toolkit that 
-facilitates the exploration of a range of different portfolio techniques on any problem domain. Here, 
-we present the current capabilities and limitations of the toolkit and illustrate its usage on an example 
-SAT problem.
+Algorithm portfolios have achieved remarkable improvements over single solver
+approaches. In the SAT domain, portfolios can be compared to the Industrial
+Revolution in terms of their fundamental effect on how SAT problems are solved.
+However, the implementation of such systems is often highly specialized and
+specific to the problem domain. This makes it difficult for researchers to adapt
+the leading techniques to their domain. We present LLAMA, a modular and
+extensible toolkit that facilitates the exploration of a range of different
+portfolio techniques on any problem domain. We describe the current
+capabilities and limitations of the toolkit and illustrate its usage on a set of
+example SAT problems.
 \end{abstract}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 
-It has been observed for quite some time now that there is usually no single solver that is always the 
-best over a large set of problem instances. Instead, because in practice problem instances tend to be
-heterogeneous in their size and structure, a solver that excels at talking one type of problem usually
-performs poorly on another. This is precisely the underlying reason why portfolio algorithms have
-been dominating competitions in constraint satisfaction (CSP)~\cite{}, quantified boolean formulae (QBF)~\cite{},
-and perhaps most notably of all in satisfiability testing (SAT)~\cite{}.
+An algorithm portfolio~\cite{huberman_economics_1997,gomes_algorithm_2001} is a
+collection of state of the art solvers that are all capable of solving the same
+kind of problem. To use an algorithm portfolio to solve problems, a selection
+mechanism is required to determine the algorithm to use in the particular case.
+The idea behind algorithm portfolios is similar to the concept of algorithms in
+economics -- instead of relying on a single entity to always deliver the best
+performance, the bets are hedged.
 
-These portfolio approaches generally try to identify a new instance's structure in the form of a feature 
-vector and then make a prediction as to which solver in their portfolio is likely to yield the best result.
-There are a number of ways this process can be done. In 2007 and 2009, SATzilla~\cite{}, one of the first
-successful portfolio solvers, learned a regression model to predict the log time of every instance. The
-solver that had the smallest predicted runtime would be evaluated on the newly provided instance.
-The ISAC~\cite{} approach went another way, clustering the training data based on the feature vectors 
-and identifying a single solver for each cluster. A new test instance would be assigned to the nearest 
-cluster and evaluated using the appropriate solver. Alternatively, techniques like CPhydra~\cite{} and 
-3S~\cite{} would create a schedule of solvers to run on the new instance so as to maximize the chance
-of solving the instance. Finally, after 2012 SATzilla~\cite{} has changed its approach to instead train 
-a binary for each pair of solvers in its portfolio. For a given instance, the solver that is voted by the 
-majority number of trees is then selected as the best candidate to be run.
+Many contemporary SAT solvers have complementing strengths and weaknesses. On a
+set of problems where one solver exhibits bad performance, another will excel
+while the picture may be reversed on a different set of problems. Algorithm
+portfolios exploit this by relating the structure of the problem to solve to the
+performance of an individual solver or a set of solvers. They are closely
+related to the Algorithm Selection Problem~\cite{rice_algorithm_1976}, which is
+concerned with identifying the most suitable algorithm for solving a problem.
 
-These are just a small subset of the portfolio techniques that are now being investigated and evaluated.
-Any existing machine learning approach can be utilized in making the decision of the most preferred
-solver. The downside for researchers and developers, however, that the implementation of such 
-systems is often highly specialized and specific to the problem domain. Therefore, in this paper we 
-present LLAMA, a modular and extensible toolkit that facilitates the exploration of a range of different 
-portfolio techniques on any problem domain.
+SAT is one of the first areas of artificial intelligence that algorithm
+portfolios and algorithm selection techniques have been applied to, and with
+great success. The most prominent system is probably
+SATzilla~\cite{xu_satzilla_2008}, which has dominated SAT solver competitions
+when it was introduced. More recent systems include
+ISAC~\cite{kadioglu_isac_2010}, Hydra~\cite{xu_hydra_2010} and
+3S~\cite{kadioglu_algorithm_2011}.
+
+Portfolio systems have achieved tremendous performance improvements over the
+previous state of the art in SAT. They have dominated the field in terms of
+performance to such an extent that recent SAT solver competitions have
+introduced a separate track for portfolio solvers. The success of algorithm
+selection systems has not been limited to SAT though. A recent survey of the
+field~\cite{kotthoff_algorithm_2012} lists a number of additional application
+domains and provides an overview of the different approaches.
+
+\medskip
 
 The main drawback of all existing approaches is that they are highly tailored
-and customised for the particular problem domain. Even though the high-level
-approach can usually be applied to other problems, in practice this is almost
-always very difficult or even impossible. This makes it very difficult to
-compare different approaches and especially for researchers who are not experts
-in the domain to prototype their ideas.
+and customised for the particular problem domain or even set of problems. Even
+though the high-level approach can usually be applied to other problems, in
+practice this is almost always very difficult or even impossible. This makes it
+very difficult to compare different approaches and especially for researchers
+who are not experts in the domain to prototype their ideas.
 
 This is exactly what LLAMA addresses. Instead of providing yet another
 highly-specialised approach that has been tuned and customised to yield high
@@ -78,10 +84,8 @@ approaches to portfolio selection and offers the possibility to combine them
 into more sophisticated approaches. It furthermore provides an implementation of
 the infrastructure that is required for algorithm selection in practice.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{LLAMA at a glance}
+
+\section{Anatomy of LLAMA}
 
 The main focus of LLAMA is to provide the user with a framework for the
 implementation and evaluation of different algorithm selection approaches. It is
@@ -101,101 +105,177 @@ presolver to take care of the easy problems. LLAMA can certainly be used to
 address these issues by providing it with suitable input data, but there is no
 explicit support for it.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Riding the LLAMA}
-
 LLAMA is implemented as an R package\footnote{LLAMA has not been released
-officially yet; a review-only snapshot is available at XXX. We will make a
-release available to the public before SAT}. There are many advantages to this
-approach; one of the major ones is that all the functionality available in R can
-be used to build performance model.
+officially yet; a review-only development snapshot is available at
+\url{http://4c.ucc.ie/\textasciitilde{}larsko/sat/llama.tar.gz}. We will make a
+release available to the public through CRAN before SAT.}. There are many
+advantages to this approach; one of the major ones is that all the functionality
+available in R can be used to build performance model. This is not limited to
+the functionality that is implemented in R -- there are interfaces to many other
+packages, such as the well-known Weka machine learning toolkit.
 
-In the remainder of this section, we will illustrate how to use LLAMA to build
-and evaluate algorithm portfolio models. The examples given are based on the
-documentation of LLAMA, which is available through R's help system.
+The implementation of LLAMA provides a set of function that facilitate the
+processing of performance data, the building of algorithm selection models and
+their evaluation. The functions are designed to assist the user rather than
+providing a black box that is easy to use, but hard to adjust.
 
-To start using LLAMA, the package needs to be loaded. There is example data
-included with the package that will be used here.
+
+\section{LLAMA for domestic use: an example}
+
+The best way to illustrate the software is to show a concrete example of how to
+use it. In the remainder of this section, we will illustrate how to use LLAMA to
+build and evaluate algorithm portfolio models. The examples given are based on
+the documentation of LLAMA, which is available through R's help system.
+
+To start using LLAMA, the package needs to be loaded. We will also load example
+data that is included with the package. This data describes 2433 SAT instances
+and the performance of 19 SAT solvers on these instances.
 
 \begin{verbatim}
 > require(llama)
 > data(satsolvers)
 \end{verbatim}
 
+LLAMA provides the function \verb+input+ to process input and create the data
+structure it requires for further processing from a set of files that describe
+the features of each problem and the performance of each solver on each problem.
+This data structure contains some additional meta-information, such as the label
+of the best solver for each problem. Note that LLAMA does not limit the notion
+of solver performance to be time; the quality of a solution or the progress
+towards finding a solution could be used in the same manner.
+
+\subsection{Harnessing the LLAMA}
+
 To enable scientifically rigorous evaluation of an approach, LLAMA provides
-functions to split a data set into training and test sets. For 10 fold
-stratified cross-validation, the following command should be called.
+functions to split a data set into training and test sets. This is one of the
+tedious and error-prone steps that researchers have to deal with in practice and
+that LLAMA aims to make less painful. We call the following command to partition
+the entire data into 10 stratified folds for cross-validation.
 
 \begin{verbatim}
-> trainTest = cvFolds(satsolvers)
+> folds = cvFolds(satsolvers)
 \end{verbatim}
 
 Training an algorithm portfolio model can be done in a single line. In this
 example, we train a classification model that uses a C4.5 decision tree to,
-based on the features of a problem, predict the fastest solver. The
-implementation for the C4.5 decision tree is taken from Weka (through the RWeka
-package).
+based on the features of a problem, predict the fastest solver. The information
+about which is the fastest solver is contained in the meta-data that LLAMA
+computes automatically on reading its input. The implementation for the C4.5
+decision tree is taken from Weka (through the RWeka package).
 
 \begin{verbatim}
 > require(RWeka)
-> res = classify(J48, trainTest)
+> res = classify(J48, folds)
 \end{verbatim}
 
-Calling the model builder also evaluates it on the test data. The return value
-contains lists of predictions on these data that can be used to compute the
-performance (e.g.\ PAR10 score) of the learned model.
+The call to \verb+classify+ trains and tests models on each fold of the
+cross-validation data. After that, a model is trained on the \emph{entire} data
+set. Both the predictions computed during cross-validation and the final model
+are returned. While the predictions allow to assess the expected performance of
+the approach, the returned model can be used as a building block for a portfolio
+system to obtain predictions on new data.
+
+LLAMA provides several functions to evaluate the performance of an approach
+based on the predictions made. The code below computes the PAR10 score and the
+number of solved instances.
 
 \begin{verbatim}
-> sum(unlist(parscores(trainTest, res$predictions)))
+> parscore = sum(unlist(parscores(folds, res$predictions)))
+> solved = sum(unlist(successes(folds, res$predictions)))
 \end{verbatim}
 
 The above is already a complete example. This demonstrates the power and one of
 the main advantages of LLAMA -- model building and evaluation can be done very
 concisely in just a few lines of R code.
 
-Instead of training a classifier to predict the best solver, we can also train
-regression models to predict the performance of each solver independently and
-choose the one with the best predicted performance. This is the approach used in
-the first versions of SATzilla. Here we use a linear regression performance
-model, again from Weka.
+\subsection{Caring for your LLAMA}
+
+Almost all the functions that LLAMA provides take optional parameters for
+customisation. For example, the function to create cross-validation folds will
+create 10 stratified folds by default, but this behaviour can be changed easily.
 
 \begin{verbatim}
-> res = regression(LinearRegression, trainTest)
+> folds = cvFolds(satsolvers, nfolds=5, stratify=F)
 \end{verbatim}
 
-The third main approach to algorithm selection is to cluster the training
-problems and assign the best solver to each cluster based on the solver
-performances on the cluster problems. This approach is used for example in ISAC;
-here we use the XMeans clustering algorithm from Weka. For clustering
+Note that argument names are optional in R; the above could be rewritten in a
+more concise manner as \verb+folds = cvFolds(satsolvers, 5, F)+. Similarly, the
+computation of PAR10 scores can be changed to PAR5 instead.
+
+\begin{verbatim}
+> parscore = sum(unlist(parscores(folds, res$predictions,
+  factor=5)))
+\end{verbatim}
+
+The main customisation point for building models is with the machine learning
+algorithm, \verb+J48+ in the example above. The parameters that will affect the
+learned model will be passed directly to \verb+J48+ and there is no need for
+LLAMA to provide support for this. In addition, the way parameter are passed to
+different machine learning algorithm implementations in R differ and it is
+infeasible to support all of them through a unified interface.
+
+\subsection{Exchanging the harness for a saddle}
+
+Building a classifier to predict the best solver for a problem is only one of
+the approaches to providing a selector for algorithm portfolios. A different
+approach is used for example in SATzilla~\cite{xu_satzilla_2008}. For each
+solver in the portfolio, a regression model is induced to predict the
+performance of the solver on a particular problem. Given these predictions, the
+solver with the best predicted performance is chosen.
+
+Doing this in LLAMA is a simple as calling a different function instead of the
+one used to build classification models. In this example, we use a linear
+regression performance model instead of the more sophisticated model in
+SATzilla, again from Weka. The input data is the same as for the classification
+example above.
+
+\begin{verbatim}
+> res = regression(LinearRegression, folds)
+\end{verbatim}
+
+The results of applying the regression approach can be used and evaluated in the
+same way as above; we omit the repeated code.
+
+Another common approach to algorithm selection that is used for example in
+ISAC~\cite{kadioglu_isac_2010} is to cluster the training problems and assign
+the best solver to each cluster based on the solver performances on the cluster
+problems. Again the only change is to call a different function.
+
+Here we use the XMeans clustering algorithm from Weka. For clustering
 approaches, it is advisable to normalise the feature values across the training
 problems. This is achieved automatically by passing an additional parameter to
-the model building function.
+the model building function. Note that \verb+normalize+ is part of LLAMA and
+transforms the feature values to achieve a specific distribution. Details are
+given in the documentation.
 
 \begin{verbatim}
-> res = cluster(XMeans, trainTest, pre=normalize)
+> res = cluster(XMeans, folds, pre=normalize)
 \end{verbatim}
 
-LLAMA provides a lot more functionality than we can cover here. There is however
-extensive\footnote{For suitable definitions of ``extensive''.} documentation
-with examples for all the functionality. To conclude this section, we provide an
-example for a more sophisticated approach, namely a hybrid
-regression-classification model~\cite{}. The performance of the algorithms in
-the portfolio is predicted independently using linear regression models.
-However, instead of choosing the algorithm with the best predicted performance,
-a C4.5 decision tree is induced to make the prediction of best solver based on
-the predicted performances.
+Again there is no difference in how the results of this call can be used. In
+particular, the model that can be used to make predictions on unseen data does
+not only encapsulate the clustering, but also how the input data should be
+normalised.
+
+\medskip
+
+LLAMA provides a lot more functionality than we can cover in this document.
+There is however extensive\footnote{For suitable definitions of ``extensive''.}
+documentation with examples for all the functionality. To conclude this section,
+we provide an example for a more sophisticated approach, namely a hybrid
+regression-classification model~\cite{kotthoff_hybrid_2012}. The performance of
+the algorithms in the portfolio is predicted independently using linear
+regression models. However, instead of choosing the algorithm with the best
+predicted performance, a C4.5 decision tree is induced to make the prediction of
+best solver based on the predicted performances.
 
 \begin{verbatim}
-> res = regression(LinearRegression, trainTest, combine=J48,
-    stack=TRUE)
+> res = regression(LinearRegression, folds, combine=J48,
+  stack=TRUE)
 \end{verbatim}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Discussion}
+
+\section{The further domestication of LLAMA}
 
 The functionality currently implemented in LLAMA facilitates the exploration of
 the performance to many different approaches to algorithm selection, but is far
@@ -220,5 +300,13 @@ one is faster and collate these predictions.
 It is our intention for LLAMA to develop into a platform that not only
 facilitates the exploration and comparison of different existing approaches, but
 also the rapid prototyping of new approaches.
+
+\subsection*{Acknowledgements}
+
+Lars Kotthoff and Yuri Malitsky are supported by European Union FP7 grant
+284715.
+
+\bibliography{\jobname}
+\bibliographystyle{splncs03}
 
 \end{document}
