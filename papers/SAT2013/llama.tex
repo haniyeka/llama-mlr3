@@ -6,11 +6,11 @@
 
 \title{LLAMA: Leveraging Learning to Automatically Manage Algorithms}
 
-\author{Lars Kotthoff \and Yuri Malitsky\thanks{Lars Kotthoff and Yuri
-        Malitsky are supported by EU FP7 grant 284715. The drawing of a Llama is
-        courtesy of \url{http://www.bluebison.net/}. }}
+\author{Lars Kotthoff\thanks{LK is supported by EU FP7 grant 284715. The drawing
+    of a Llama is courtesy of \url{http://www.bluebison.net/}. Yuri Malitsky
+    suggested writing this paper.}}
 \institute{University College Cork, Cork Constraint Computation Centre, Cork, Ireland\\
-\email{\{larsko,y.malitsky\}@4c.ucc.ie}}
+\email{larsko@4c.ucc.ie}}
 
 
 \begin{document}
@@ -22,14 +22,14 @@
 \end{center}
 
 \begin{abstract}
-Algorithm portfolios have achieved remarkable improvements over single solver
-approaches. In the SAT domain, portfolios can be compared to the Industrial
+Algorithm portfolio approaches have achieved remarkable improvements over single
+solvers. In the SAT domain, portfolios can be compared to the Industrial
 Revolution in terms of their fundamental effect on how SAT problems are solved.
 However, the implementation of such systems is often highly specialized and
-specific to the problem domain. This makes it difficult for researchers to adapt
-the leading techniques to their domain. We present LLAMA, a modular and
-extensible toolkit that facilitates the exploration of a range of different
-portfolio techniques on any problem domain. We describe the current
+specific to the problem domain. This makes it difficult for researchers to
+explore different techniques for their specific problems. We present LLAMA, a
+modular and extensible toolkit that facilitates the exploration of a range of
+different portfolio techniques on any problem domain. We describe the current
 capabilities and limitations of the toolkit and illustrate its usage on a set of
 example SAT problems.
 \end{abstract}
@@ -38,17 +38,17 @@ example SAT problems.
 
 An algorithm portfolio~\cite{huberman_economics_1997,gomes_algorithm_2001} is a
 collection of state of the art solvers that are all capable of solving the same
-kind of problem. To use an algorithm portfolio to solve problems, a selection
+kind of problem. To use an algorithm portfolio for solving problems, a selection
 mechanism is required to determine the algorithm to use in the particular case.
-The idea behind algorithm portfolios is similar to the concept of algorithms in
+The idea behind algorithm portfolios is similar to the concept of portfolios in
 economics -- instead of relying on a single entity to always deliver the best
-performance, the bets are hedged.
+performance, the risk is spread over multiple entities.
 
 Many contemporary SAT solvers have complementing strengths and weaknesses. On a
 set of problems where one solver exhibits bad performance, another will excel
 while the picture may be reversed on a different set of problems. Algorithm
 portfolios exploit this by relating the structure of the problem to solve to the
-performance of an individual solver or a set of solvers. They are closely
+performance of an individual solver or a set of solvers. The concept is closely
 related to the Algorithm Selection Problem~\cite{rice_algorithm_1976}, which is
 concerned with identifying the most suitable algorithm for solving a problem.
 
@@ -61,12 +61,12 @@ ISAC~\cite{kadioglu_isac_2010}, Hydra~\cite{xu_hydra_2010} and
 3S~\cite{kadioglu_algorithm_2011}.
 
 Portfolio systems have achieved tremendous performance improvements over the
-previous state of the art in SAT. They have dominated the field in terms of
-performance to such an extent that recent SAT solver competitions have
-introduced a separate track for portfolio solvers. The success of algorithm
-selection systems has not been limited to SAT though. A recent survey of the
-field~\cite{kotthoff_algorithm_2012} lists a number of additional application
-domains and provides an overview of the different approaches.
+previous state of the art in SAT, i.e.\ single solvers. They have dominated the
+field in terms of performance to such an extent that recent SAT solver
+competitions have introduced a separate track for portfolio solvers. The success
+of algorithm selection systems has not been limited to SAT though. A recent
+survey of the field~\cite{kotthoff_algorithm_2012} lists a number of additional
+application domains and provides an overview of the different approaches.
 
 \medskip
 
@@ -74,8 +74,8 @@ The main drawback of existing approaches is that they are highly tailored
 and customised for the particular problem domain or even set of problems. Even
 though the high-level approach can usually be applied to other problems, in
 practice this is almost always very difficult or even impossible. This makes it
-very difficult to compare different approaches and especially for researchers
-who are not experts in the domain to prototype their ideas.
+very difficult to compare different approaches and prototype new ideas
+especially for researchers who are not algorithm portfolio experts.
 
 This is exactly what LLAMA addresses. Instead of providing yet another
 highly-specialised approach that has been tuned and customised to yield high
@@ -83,7 +83,8 @@ performance on a specific data set, LLAMA is a framework that provides the
 building blocks for automatic portfolio selectors. It supports the most common
 approaches to portfolio selection and offers the possibility to combine them
 into more sophisticated approaches. It furthermore provides an implementation of
-the infrastructure that is required for algorithm selection in practice.
+the infrastructure that is required to build, evaluate and apply algorithm
+portfolios in practice.
 
 
 \section{Anatomy of LLAMA}
@@ -94,7 +95,7 @@ implementation and evaluation of different algorithm selection approaches. It is
 used in competitions or similar settings. While the functionality it provides
 can certainly be used to facilitate the creation of such systems, a lot of the
 technical details for practical algorithm selection systems are highly
-domain-specific. The main audience of LLAMA are researchers that wish
+domain-specific. The main audience LLAMA targets are researchers that wish
 investigate and explore the performance characteristics of algorithm selection
 systems in general.
 
@@ -109,17 +110,18 @@ explicit support for it.
 LLAMA is implemented as an R package\footnote{LLAMA has not been released
 officially yet; a review-only development snapshot is available at
 \url{http://4c.ucc.ie/\textasciitilde{}larsko/sat/llama.tar.gz}. We will make a
-release available to the public through CRAN before SAT.}. There are many
-advantages to this approach; one of the major ones is that all the functionality
-available in R can be used to build performance model. This is not limited to
-the functionality that is implemented in R -- there are interfaces to many other
-packages, such as the well-known Weka machine learning toolkit.
+release available to the public through CRAN before the SAT conference.}. There
+are many advantages to this approach; one of the main ones is that all the
+functionality available in R can be used to build performance model. This is not
+limited to the functionality that is implemented in R -- there are interfaces to
+many other packages, such as the well-known Weka machine learning
+toolkit~\cite{hall_weka_2009}.
 
 The large number of machine learning approaches and algorithms available in R
 makes it possible to use LLAMA to quickly evaluate a range of different
-techniques for algorithm selection on given data, such as the comparison
-presented in~\cite{kotthoff_evaluation_2012}. Being able to do so is crucial for
-achieving good performance in practice.
+techniques for algorithm selection on given data, such as presented
+in~\cite{kotthoff_evaluation_2012}. Being able to do so is crucial for achieving
+good performance in practice.
 
 The implementation of LLAMA provides a set of function that facilitate the
 processing of performance data, the building of algorithm selection models and
@@ -129,7 +131,7 @@ providing a black box that is easy to use, but hard to adjust.
 
 \section{LLAMA for domestic use: an example}
 
-The best way to illustrate the software is to show a concrete example of how to
+The best way to explain LLAMA is to show a concrete example of how to
 use it. In the remainder of this section, we will illustrate how to use LLAMA to
 build and evaluate algorithm portfolio models. The examples given are based on
 the documentation of LLAMA, which is available through R's help system.
@@ -149,7 +151,8 @@ the features of each problem and the performance of each solver on each problem.
 This data structure contains some additional meta-information, such as the label
 of the best solver for each problem. Note that LLAMA does not limit the notion
 of solver performance to be time; the quality of a solution or the progress
-towards finding a solution could be used in the same manner.
+towards finding a solution could be used in the same manner. A data structure
+produced in this way is available in the variable \verb+satsolvers+ here.
 
 \subsection{Harnessing the LLAMA}
 
@@ -157,18 +160,20 @@ To enable scientifically rigorous evaluation of an approach, LLAMA provides
 functions to split a data set into training and test sets. This is one of the
 tedious and error-prone steps that researchers have to deal with in practice and
 that LLAMA aims to make less painful. We call the following command to partition
-the entire data into 10 stratified folds for cross-validation.
+the entire data into 10 stratified folds for
+cross-validation~\cite{kohavi_study_1995}.
 
 \begin{verbatim}
 > folds = cvFolds(satsolvers)
 \end{verbatim}
 
 Training an algorithm portfolio model can be done in a single line. In this
-example, we train a classification model that uses a C4.5 decision tree to,
-based on the features of a problem, predict the fastest solver. The information
-about which is the fastest solver is contained in the meta-data that LLAMA
-computes automatically on reading its input. The implementation for the C4.5
-decision tree is taken from Weka (through the RWeka package).
+example, we train a classification model that uses a C4.5 decision
+tree~\cite{quinlan_c4.5_1993} to, based on the features of a problem, predict
+the fastest solver. The information on the fastest solvers is contained in the
+meta-data that LLAMA computes automatically on reading its input. The
+implementation for the C4.5 decision tree is taken from Weka (through the RWeka
+package).
 
 \begin{verbatim}
 > require(RWeka)
@@ -195,11 +200,12 @@ The above is already a complete example. This demonstrates the power and one of
 the main advantages of LLAMA -- model building and evaluation can be done very
 concisely in just a few lines of R code.
 
-\subsection{Caring for your LLAMA}
+\subsection{Adjusting the harness straps}
 
 Almost all the functions that LLAMA provides take optional parameters for
 customisation. For example, the function to create cross-validation folds will
-create 10 stratified folds by default, but this behaviour can be changed easily.
+create 10 stratified folds by default, but this behaviour can be changed easily
+to create e.g.\ 5 non-stratified folds.
 
 \begin{verbatim}
 > folds = cvFolds(satsolvers, nfolds=5, stratify=F)
@@ -207,7 +213,7 @@ create 10 stratified folds by default, but this behaviour can be changed easily.
 
 Note that argument names are optional in R; the above could be rewritten in a
 more concise manner as \verb+folds = cvFolds(satsolvers, 5, F)+. Similarly, the
-computation of PAR10 scores can be changed to PAR5 instead.
+computation of PAR10 scores could be changed to e.g.\ PAR5 instead.
 
 \begin{verbatim}
 > parscore = sum(unlist(parscores(folds, res$predictions,
@@ -217,7 +223,7 @@ computation of PAR10 scores can be changed to PAR5 instead.
 The main customisation point for building models is with the machine learning
 algorithm, \verb+J48+ in the example above. The parameters that will affect the
 learned model will be passed directly to \verb+J48+ and there is no need for
-LLAMA to provide support for this. In addition, the way parameter are passed to
+LLAMA to provide support for this. In addition, the way parameters are passed to
 different machine learning algorithm implementations in R differ and it is
 infeasible to support all of them through a unified interface.
 
@@ -250,10 +256,10 @@ problems. Again the only change is to call a different function.
 
 Here we use the XMeans clustering algorithm from Weka. For clustering
 approaches, it is advisable to normalise the feature values across the training
-problems. This is achieved automatically by passing an additional parameter to
-the model building function. Note that \verb+normalize+ is part of LLAMA and
-transforms the feature values to achieve a specific distribution. Details are
-given in the documentation.
+problems. This is achieved by passing an additional parameter to the model
+building function. Note that \verb+normalize+ is part of LLAMA and transforms
+the feature values to achieve a specific distribution. Details are given in the
+documentation.
 
 \begin{verbatim}
 > res = cluster(XMeans, folds, pre=normalize)
@@ -288,22 +294,23 @@ predicted performances.
 \section{The further domestication of LLAMA}
 
 The functionality currently implemented in LLAMA facilitates the exploration of
-the performance to many different approaches to algorithm selection, but is far
-from comprehensive. There are a number of extensions of the current
-implementation that we are planning to provide in the future. An example of this
-is the possibility to provide a richer prediction output from the approaches
-that support it. At the moment, the only output of a model is the best algorithm
-to run on a particular problem. If a ranked list of algorithms was provided
-instead, these algorithms could be ran in parallel or according to a schedule.
-The main advantage of this approach is that if a bad prediction was made, the
-impact on overall performance is limited because a list of algorithms has a
-higher probability of containing the best algorithm even if predictions are bad.
+the performance of many different approaches to algorithm selection. While it is
+extensive, there are a number of extensions of the current implementation that
+we are planning to provide in the future. An example of this is the possibility
+to provide a richer prediction output from the approaches that support it. At
+the moment, the only output of a model is the best algorithm to run on a
+particular problem. If a ranked list of algorithms was provided instead, these
+algorithms could be ran in parallel or according to a schedule. The main
+advantage of this approach is that if a bad prediction were made, the impact on
+overall performance is limited because a list of algorithms has a higher
+probability of containing the best algorithm even if predictions are bad.
 
-Another obvious point for extensions is to provide a larger number of approaches
-for building performance models. In particular, there is currently no
-support for the approach that SATzilla uses in its most recent incarnation --
-for each pair of algorithms in the portfolio, train a model that predicts which
-one is faster and collate these predictions~\cite{xu_hydra-mip_2011}.
+Another obvious point for extension is to provide a larger number of
+implementations for different approaches to building performance models. In
+particular, there is currently no support for the approach that SATzilla uses in
+its most recent incarnation -- for each pair of algorithms in the portfolio,
+train a model that predicts which one is faster and collate these
+predictions~\cite{xu_hydra-mip_2011}.
 
 Another line of research into algorithm selection for SAT has focused on
 building hierarchical models which first predict whether a problem is
@@ -315,8 +322,8 @@ of the data that is given to LLAMA.
 It is our intention for LLAMA to develop into a platform that not only
 facilitates the exploration and comparison of different existing approaches, but
 also the rapid prototyping of new approaches. The functions it provides take
-care of many of the infrastructure required to train and evaluate machine
-learning models in a scientifically rigorous way. Researchers wishing to improve
+care of the infrastructure required to train and evaluate machine learning
+models in a scientifically rigorous way. Researchers wishing to improve
 algorithm portfolio selection do not need to concern themselves with the
 infrastructure, but can concentrate on the actual research.
 
