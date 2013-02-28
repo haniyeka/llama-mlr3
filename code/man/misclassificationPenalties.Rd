@@ -36,6 +36,7 @@ Lars Kotthoff
 \code{\link{parscores}}, \code{\link{successes}}
 }
 \examples{
+\dontrun{
 library(RWeka)
 
 data(satsolvers)
@@ -46,5 +47,6 @@ sum(unlist(misclassificationPenalties(trainTest, res$predictions)))
 
 # maximum performance value is best
 sum(unlist(misclassificationPenalties(trainTest, res$predictions, FALSE)))
+}
 }
 \keyword{ ~models }

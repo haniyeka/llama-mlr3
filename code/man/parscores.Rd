@@ -36,6 +36,7 @@ Lars Kotthoff
 \code{\link{misclassificationPenalties}}, \code{\link{successes}}
 }
 \examples{
+\dontrun{
 library(RWeka)
 
 data(satsolvers)
@@ -46,5 +47,6 @@ sum(unlist(parscores(trainTest, res$predictions)))
 
 # use factor of 5 instead of 10.
 sum(unlist(parscores(trainTest, res$predictions, 5)))
+}
 }
 \keyword{ ~models }

@@ -63,6 +63,7 @@ Ensemble Classification for Constraint Solver Configuration.
 \emph{16th International Conference on Principles and Practices of Constraint Programming}, 321--329.
 }
 \examples{
+\dontrun{
 data(satsolvers)
 trainTest = cvFolds(satsolvers)
 
@@ -81,5 +82,6 @@ rese = classify(classifier=list(J48, IBk, svm), data=trainTest)
 
 # ensemble classification with a classifier to combine predictions
 rese = classify(classifier=list(J48, IBk, svm, .combine=J48), data=trainTest)
+}
 }
 \keyword{ ~models }

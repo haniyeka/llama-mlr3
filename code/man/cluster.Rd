@@ -60,6 +60,7 @@ Lars Kotthoff
 \code{\link{classify}}, \code{\link{regression}}
 }
 \examples{
+\dontrun{
 library(RWeka)
 
 data(satsolvers)
@@ -79,5 +80,6 @@ rese = cluster(clusterer=list(XMeans, make_Weka_clusterer("weka/clusterers/EM"),
 
 # ensemble clustering with a classifier to combine predictions
 rese = cluster(clusterer=list(XMeans, make_Weka_clusterer("weka/clusterers/EM"), function(x) { kcca(x, length(satsolvers$performance)) }, .combine=J48), data=trainTest, pre=normalize)
+}
 }
 \keyword{ ~cluster }

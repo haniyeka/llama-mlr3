@@ -31,6 +31,7 @@ Lars Kotthoff
 \code{\link{misclassificationPenalties}}, \code{\link{parscores}}
 }
 \examples{
+\dontrun{
 library(RWeka)
 
 data(satsolvers)
@@ -38,5 +39,6 @@ trainTest = cvFolds(satsolvers)
 
 res = classify(classifier=J48, data=trainTest)
 sum(unlist(successes(trainTest, res$predictions)))
+}
 }
 \keyword{ ~models }

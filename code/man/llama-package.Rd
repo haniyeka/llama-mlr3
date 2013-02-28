@@ -65,6 +65,7 @@ Lars Kotthoff, Algorithm Selection for Combinatorial Search Problems: A survey,
 }
 \keyword{ package }
 \examples{
+\dontrun{
 library(RWeka)
 
 data(satsolvers)
@@ -89,4 +90,5 @@ folds = cvFolds(filtered)
 res = regression(regressor=LinearRegression, data=folds)
 # print the total number of successes
 print(sum(unlist(successes(folds, res$predictions))))
+}
 }

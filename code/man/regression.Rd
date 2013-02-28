@@ -77,6 +77,7 @@ Hybrid Regression-Classification Models for Algorithm Selection.
 \emph{20th European Conference on Artificial Intelligence}, 480--485.
 }
 \examples{
+\dontrun{
 data(satsolvers)
 trainTest = cvFolds(satsolvers)
 
@@ -94,5 +95,6 @@ ress = regression(regressor=LinearRegression, data=trainTest, combine=J48, stack
 
 # add pairwise differences to performance predictions before running classifier
 ress = regression(regressor=LinearRegression, data=trainTest, combine=J48, stack=TRUE, expand=function(x) { cbind(x, combn(c(1:ncol(x)), 2, function(y) { abs(x[,y[1]] - x[,y[2]]) })) })
+}
 }
 \keyword{ ~regression }
