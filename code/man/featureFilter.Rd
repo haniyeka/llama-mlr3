@@ -35,8 +35,7 @@ features. The subset of the features chosen by the filter are saved in the
 Lars Kotthoff
 }
 \examples{
-require(llama)
-require(FSelector)
+library(FSelector)
 
 data(satsolvers)
 d = featureFilter(filter=cfs, satsolvers)

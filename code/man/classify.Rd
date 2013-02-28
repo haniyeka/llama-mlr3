@@ -63,19 +63,17 @@ Ensemble Classification for Constraint Solver Configuration.
 \emph{16th International Conference on Principles and Practices of Constraint Programming}, 321--329.
 }
 \examples{
-require(llama)
-require(RWeka)
-
 data(satsolvers)
 trainTest = cvFolds(satsolvers)
 
+library(RWeka)
 res = classify(classifier=J48, data=trainTest)
 # the total number of successes
 sum(unlist(successes(trainTest, res$predictions)))
 # predictions on the entire data set
 res$predictor(subset(satsolvers$data, TRUE, satsolvers$features))
 
-require(e1071)
+library(e1071)
 res = classify(classifier=svm, data=trainTest)
 
 # ensemble classification

@@ -1,4 +1,3 @@
-require(testthat)
-require(llama)
+library(testthat)
 
 test_package("llama")

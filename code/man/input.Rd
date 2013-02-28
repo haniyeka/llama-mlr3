@@ -45,7 +45,6 @@ error messages if not supplied.
 Lars Kotthoff
 }
 \examples{
-require(llama)
 # features.csv looks something like
 # ID,width,height
 # 0,1.2,3
@@ -58,6 +57,6 @@ require(llama)
 # ID,alg1,alg2
 # 0,T,F
 # ...
-#input(read.csv("features.csv"), read.csv("performance.csv"), read.csv("success.csv"))
+\dontrun{input(read.csv("features.csv"), read.csv("performance.csv"), read.csv("success.csv"))}
 }
 \keyword{ ~models }

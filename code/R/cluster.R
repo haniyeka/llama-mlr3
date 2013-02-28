@@ -1,6 +1,5 @@
 cluster <-
 function(clusterer=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }) {
-    require(foreach)
     if(is.null(clusterer)) {
         stop("No clusterer given!")
     }
@@ -14,6 +13,7 @@ function(clusterer=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         clusterer = clusterer[-which(names(clusterer) == ".combine")]
     }
 
+    i = 1 # prevent warning when checking package
     predictions = foreach(i = 1:length(data$train), .combine=append) %dopar% {
         trf = pre(subset(data$train[[i]], T, data$features))
         tsf = pre(subset(data$test[[i]], T, data$features), trf$meta)

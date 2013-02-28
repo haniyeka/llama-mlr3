@@ -36,8 +36,7 @@ Lars Kotthoff
 \code{\link{parscores}}, \code{\link{successes}}
 }
 \examples{
-require(llama)
-require(RWeka)
+library(RWeka)
 
 data(satsolvers)
 trainTest = cvFolds(satsolvers)

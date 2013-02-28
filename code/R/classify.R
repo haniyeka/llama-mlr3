@@ -1,6 +1,5 @@
 classify <-
 function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }) {
-    require(foreach)
     if(is.null(classifier)) {
         stop("No classifier given!")
     }

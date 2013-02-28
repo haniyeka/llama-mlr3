@@ -65,8 +65,7 @@ Lars Kotthoff, Algorithm Selection for Combinatorial Search Problems: A survey,
 }
 \keyword{ package }
 \examples{
-require(llama)
-require(RWeka)
+library(RWeka)
 
 data(satsolvers)
 trainTest = cvFolds(satsolvers)
@@ -83,7 +82,7 @@ print(sum(unlist(parscores(trainTest, res$predictions))))
 print(res$predictor(subset(satsolvers$data, TRUE, satsolvers$features)))
 
 # filter features and train a regression model
-require(FSelector)
+library(FSelector)
 
 filtered = featureFilter(cfs, satsolvers)
 folds = cvFolds(filtered)

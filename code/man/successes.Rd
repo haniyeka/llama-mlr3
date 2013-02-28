@@ -31,8 +31,7 @@ Lars Kotthoff
 \code{\link{misclassificationPenalties}}, \code{\link{parscores}}
 }
 \examples{
-require(llama)
-require(RWeka)
+library(RWeka)
 
 data(satsolvers)
 trainTest = cvFolds(satsolvers)

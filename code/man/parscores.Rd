@@ -36,8 +36,7 @@ Lars Kotthoff
 \code{\link{misclassificationPenalties}}, \code{\link{successes}}
 }
 \examples{
-require(llama)
-require(RWeka)
+library(RWeka)
 
 data(satsolvers)
 trainTest = cvFolds(satsolvers)

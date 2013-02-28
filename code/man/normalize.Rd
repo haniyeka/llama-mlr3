@@ -36,8 +36,7 @@ data.}
 Lars Kotthoff
 }
 \examples{
-require(llama)
-require(RWeka)
+library(RWeka)
 
 data(satsolvers)
 trainTest = cvFolds(satsolvers)

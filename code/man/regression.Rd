@@ -77,7 +77,6 @@ Hybrid Regression-Classification Models for Algorithm Selection.
 \emph{20th European Conference on Artificial Intelligence}, 480--485.
 }
 \examples{
-require(llama)
 data(satsolvers)
 trainTest = cvFolds(satsolvers)
 
@@ -87,7 +86,7 @@ sum(unlist(successes(trainTest, res$predictions)))
 # predictions on the entire data set
 res$predictor(subset(satsolvers$data, TRUE, satsolvers$features))
 
-require(RWeka)
+library(RWeka)
 res = regression(regressor=LinearRegression, data=trainTest)
 
 # combine performance predictions using classifier

@@ -60,8 +60,7 @@ Lars Kotthoff
 \code{\link{classify}}, \code{\link{regression}}
 }
 \examples{
-require(llama)
-require(RWeka)
+library(RWeka)
 
 data(satsolvers)
 trainTest = cvFolds(satsolvers)
@@ -72,7 +71,7 @@ sum(unlist(successes(trainTest, res$predictions)))
 # predictions on the entire data set
 res$predictor(subset(satsolvers$data, TRUE, satsolvers$features))
 
-require(flexclust)
+library(flexclust)
 res = cluster(clusterer=function(x) { kcca(x, length(satsolvers$performance)) }, data=trainTest, pre=normalize)
 
 # ensemble clustering
