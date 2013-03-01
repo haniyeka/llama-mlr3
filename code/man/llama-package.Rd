@@ -79,6 +79,9 @@ print(sum(unlist(misclassificationPenalties(trainTest, res$predictions))))
 # print the total PAR10 score
 print(sum(unlist(parscores(trainTest, res$predictions))))
 
+# number of total successes for virtual best solver for comparison
+print(sum(unlist(successes(satsolvers, satsolvers$data$best))))
+
 # print predictions on the entire data set
 print(res$predictor(subset(satsolvers$data, TRUE, satsolvers$features)))
 
