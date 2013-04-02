@@ -35,10 +35,12 @@ features. The subset of the features chosen by the filter are saved in the
 Lars Kotthoff
 }
 \examples{
+\dontrun{
 library(FSelector)
 
 data(satsolvers)
 d = featureFilter(filter=cfs, satsolvers)
 d$features
+}
 }
 \keyword{ ~models }

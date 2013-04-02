@@ -36,11 +36,13 @@ data.}
 Lars Kotthoff
 }
 \examples{
+\dontrun{
 library(RWeka)
 
 data(satsolvers)
 trainTest = cvFolds(satsolvers)
 
 cluster(clusterer=XMeans, data=trainTest, pre=normalize)
+}
 }
 \keyword{ ~models }

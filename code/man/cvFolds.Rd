@@ -41,8 +41,6 @@ Lars Kotthoff
 \code{\link{trainTest}}
 }
 \examples{
-library(RWeka)
-
 data(satsolvers)
 trainTest = cvFolds(satsolvers)
 
