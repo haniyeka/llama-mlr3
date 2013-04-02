@@ -7,7 +7,7 @@ function(features, performances, successes=NULL, minimize=T) {
     pnames = setdiff(names(performances), common)
     combined = merge(features, performances)
     optfun = if(minimize) { min } else { max }
-    combined$best = factor(apply(combined, 1, function(x) { pnames[head(which(unlist(x[pnames]) == optfun(unlist(x[pnames]))), 1)] }))
+    combined$best = factor(apply(subset(combined, T, pnames), 1, function(x) { pnames[head(which(unlist(x) == optfun(unlist(x))), 1)] }))
 
     snames = NULL
     if(!is.null(successes)) {
