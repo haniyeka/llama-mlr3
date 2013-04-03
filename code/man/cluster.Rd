@@ -52,6 +52,9 @@ used to combine the ensemble predictions instead of majority voting.
  \item{predictor}{a function that encapsulates the model learned on the
  \emph{entire} data set. Can be called with data for the same features with the
  same feature names as the training data to obtain predictions.}
+ \item{models}{the list of models trained on the \emph{entire} data set. This is
+ meant for debugging/inspection purposes and does not include any models used to
+ combine predictions of individual models.}
 }
 \author{
 Lars Kotthoff
