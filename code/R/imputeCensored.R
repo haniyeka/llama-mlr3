@@ -12,6 +12,7 @@ function(data=NULL, estimator=lm, epsilon=0.1, maxit=1000) {
 
     data$original_data = data$data
 
+    i = 0
     foreach(i = 1:length(data$success)) %dopar% {
         s = data$success[i]
         p = data$performance[i]
