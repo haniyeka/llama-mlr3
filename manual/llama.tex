@@ -1,17 +1,13 @@
-\documentclass{llncs}
+\documentclass{article}
 
 \usepackage[british]{babel}
 \usepackage{cite}
 \usepackage{graphicx}
+\usepackage{url}
 
 \title{LLAMA: Leveraging Learning to Automatically Manage Algorithms}
 
-\author{Lars Kotthoff\thanks{LK is supported by EU FP7 grant 284715. The drawing
-    of a Llama is courtesy of \url{http://www.bluebison.net/}. We thank Yuri
-    Malitsky for suggesting to write this paper.}}
-\institute{University College Cork, Cork Constraint Computation Centre, Cork, Ireland\\
-\email{larsko@4c.ucc.ie}}
-
+\author{Lars Kotthoff}
 
 \begin{document}
 
@@ -23,10 +19,8 @@
 
 \begin{abstract}
 Algorithm portfolio approaches have achieved remarkable improvements over single
-solvers. In the SAT domain, portfolios can be compared to the Industrial
-Revolution in terms of their fundamental effect on how SAT problems are solved.
-However, the implementation of such systems is often highly specialized and
-specific to the problem domain. This makes it difficult for researchers to
+solvers. However, the implementation of such systems is often highly specialized
+and specific to the problem domain. This makes it difficult for researchers to
 explore different techniques for their specific problems. We present LLAMA, a
 modular and extensible toolkit that facilitates the exploration of a range of
 different portfolio techniques on any problem domain. We describe the current
@@ -44,13 +38,14 @@ The idea behind algorithm portfolios is similar to the concept of portfolios in
 economics -- instead of relying on a single entity to always deliver the best
 performance, the risk is spread over multiple entities.
 
-Many contemporary SAT solvers have complementing strengths and weaknesses. On a
-set of problems where one solver exhibits bad performance, another will excel
-while the picture may be reversed on a different set of problems. Algorithm
-portfolios exploit this by relating the structure of the problem to solve to the
-performance of an individual solver or a set of solvers. The concept is closely
-related to the Algorithm Selection Problem~\cite{rice_algorithm_1976}, which is
-concerned with identifying the most suitable algorithm for solving a problem.
+Many contemporary solvers for artificial intelligence problems have
+complementing strengths and weaknesses. On a set of problems where one solver
+exhibits bad performance, another will excel while the picture may be reversed
+on a different set of problems. Algorithm portfolios exploit this by relating
+the structure of the problem to solve to the performance of an individual solver
+or a set of solvers. The concept is closely related to the Algorithm Selection
+Problem~\cite{rice_algorithm_1976}, which is concerned with identifying the most
+suitable algorithm for solving a problem.
 
 SAT is one of the first areas of artificial intelligence that algorithm
 portfolios and algorithm selection techniques have been applied to, and with
@@ -107,10 +102,8 @@ presolver to take care of the easy problems. LLAMA can certainly be used to
 address these issues by providing it with suitable input data, but there is no
 explicit support for it.
 
-LLAMA is implemented as an R package\footnote{LLAMA has not been released
-officially yet; a review-only development snapshot is available at
-\url{http://4c.ucc.ie/\textasciitilde{}larsko/sat/llama.tar.gz}. We will make a
-release available to the public through CRAN before the SAT conference.}. There
+LLAMA is implemented as an R package and can be found at
+\url{http://cran.r-project.org/web/packages/llama/}. There
 are many advantages to this approach; one of the main ones is that all the
 functionality available in R can be used to build performance model. This is not
 limited to the functionality that is implemented in R -- there are interfaces to
@@ -332,7 +325,12 @@ the responsibility of interpreting and validating the results lies with the
 user. However, we have used LLAMA for a number of applications, found and fixed
 a few bugs and are reasonably confident that it will useful to other people.
 
+\section{Acknowledgements}
+
+This work is supported by EU FP7 grant 284715. The drawing of a Llama is
+courtesy of \url{http://www.bluebison.net/}.
+
 \bibliography{\jobname}
-\bibliographystyle{splncs03}
+\bibliographystyle{plain}
 
 \end{document}
