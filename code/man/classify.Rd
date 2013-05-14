@@ -8,7 +8,8 @@ Build a classification model that predicts the algorithm to use based on the
 features of the problem.
 }
 \usage{
-classify(classifier = NULL, data = NULL, pre = function(x, y=NULL) { list(features=x) })
+classify(classifier = NULL, data = NULL,
+    pre = function(x, y=NULL) { list(features=x) })
 }
 \arguments{
   \item{classifier}{

@@ -8,7 +8,9 @@ Build a regression model that predicts the algorithm to use based on the
 features of the problem.
 }
 \usage{
-regression(regressor = NULL, data = NULL, pre = function(x, y=NULL) { list(features=x) }, combine = min, stack = F, expand = identity)
+regression(regressor = NULL, data = NULL,
+    pre = function(x, y=NULL) { list(features=x) },
+    combine = min, stack = F, expand = identity)
 }
 \arguments{
   \item{regressor}{
@@ -97,7 +99,9 @@ res = regression(regressor=LinearRegression, data=trainTest)
 ress = regression(regressor=LinearRegression, data=trainTest, combine=J48, stack=TRUE)
 
 # add pairwise differences to performance predictions before running classifier
-ress = regression(regressor=LinearRegression, data=trainTest, combine=J48, stack=TRUE, expand=function(x) { cbind(x, combn(c(1:ncol(x)), 2, function(y) { abs(x[,y[1]] - x[,y[2]]) })) })
+ress = regression(regressor=LinearRegression, data=trainTest, combine=J48, stack=TRUE,
+    expand=function(x) { cbind(x, combn(c(1:ncol(x)), 2,
+        function(y) { abs(x[,y[1]] - x[,y[2]]) })) })
 }
 }
 \keyword{ ~regression }

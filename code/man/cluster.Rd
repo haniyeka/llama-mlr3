@@ -8,7 +8,8 @@ Build a cluster model that predicts the algorithm to use based on the features
 of the problem.
 }
 \usage{
-cluster(clusterer = NULL, data = NULL, pre = function(x, y=NULL) { list(features=x) })
+cluster(clusterer = NULL, data = NULL,
+    pre = function(x, y=NULL) { list(features=x) })
 }
 \arguments{
   \item{clusterer}{
@@ -76,13 +77,18 @@ sum(unlist(successes(trainTest, res$predictions)))
 res$predictor(subset(satsolvers$data, TRUE, satsolvers$features))
 
 library(flexclust)
-res = cluster(clusterer=function(x) { kcca(x, length(satsolvers$performance)) }, data=trainTest, pre=normalize)
+res = cluster(clusterer=function(x) { kcca(x, length(satsolvers$performance)) },
+    data=trainTest, pre=normalize)
 
 # ensemble clustering
-rese = cluster(clusterer=list(XMeans, make_Weka_clusterer("weka/clusterers/EM"), function(x) { kcca(x, length(satsolvers$performance)) }), data=trainTest, pre=normalize)
+rese = cluster(clusterer=list(XMeans, make_Weka_clusterer("weka/clusterers/EM"),
+    function(x) { kcca(x, length(satsolvers$performance)) }),
+    data=trainTest, pre=normalize)
 
 # ensemble clustering with a classifier to combine predictions
-rese = cluster(clusterer=list(XMeans, make_Weka_clusterer("weka/clusterers/EM"), function(x) { kcca(x, length(satsolvers$performance)) }, .combine=J48), data=trainTest, pre=normalize)
+rese = cluster(clusterer=list(XMeans, make_Weka_clusterer("weka/clusterers/EM"),
+    function(x) { kcca(x, length(satsolvers$performance)) }, .combine=J48),
+    data=trainTest, pre=normalize)
 }
 }
 \keyword{ ~cluster }
