@@ -79,6 +79,7 @@ Hydra-MIP: Automated Algorithm Configuration and Selection for Mixed Integer Pro
 Problems with Combinatorial Explosion}, 16--30.
 }
 \examples{
+\dontrun{
 data(satsolvers)
 trainTest = cvFolds(satsolvers)
 
@@ -94,5 +95,6 @@ res = classifyPairs(classifier=J48, data=trainTest, minimize=FALSE)
 
 # combine predictions using J48 induced classifier instead of majority vote
 res = classifyPairs(classifier=J48, data=trainTest, combinator=J48)
+}
 }
 \keyword{ ~models }
