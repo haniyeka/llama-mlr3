@@ -1,0 +1,79 @@
+classifyPairs <-
+function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }, minimize=T, combinator=NULL) {
+    if(is.null(classifier)) {
+        stop("No classifier given!")
+    }
+    if(is.null(data) || length(data$train) == 0 || length(data$test) == 0) {
+        stop("Need data with train/test split!")
+    }
+
+    combns = combn(data$performance, 2)
+    predictions = foreach(i = 1:length(data$train), .combine=append) %dopar% {
+        trf = pre(subset(data$train[[i]], T, data$features))
+        tsf = pre(subset(data$test[[i]], T, data$features), trf$meta)
+
+        trainpredictions = matrix(nrow=nrow(trf$features), ncol=ncol(combns))
+        pairpredictions = matrix(nrow=nrow(tsf$features), ncol=ncol(combns))
+        for (j in 1:ncol(combns)) {
+            if(minimize) {
+                cmp = function(x, y) {
+                    sapply(data$train[[i]][[x]] < data$train[[i]][[y]], function(z) { if(z) { x } else { y } })
+                }
+            } else {
+                cmp = function(x, y) {
+                    sapply(data$train[[i]][[x]] > data$train[[i]][[y]], function(z) { if(z) { x } else { y } })
+                }
+            }
+            labels = factor(cmp(combns[1,j], combns[2,j]))
+            model = classifier(labels~., data=trf$features)
+            if(is.function(combinator)) { # only do this if we need it
+                trainpredictions[,j] = as.character(predict(model, trf$features))
+            }
+            pairpredictions[,j] = as.character(predict(model, tsf$features))
+        }
+
+        if(is.function(combinator)) {
+            combinedmodel = combinator(data$train[[i]]$best~., data=data.frame(trainpredictions))
+            combinedpredictions = as.character(predict(combinedmodel, data.frame(pairpredictions)))
+        } else {
+            combinedpredictions = apply(pairpredictions, 1, function(l) { names(sort(table(l), decreasing=T)[1]) })
+        }
+        return(list(combinedpredictions))
+    }
+
+    fs = pre(subset(data$data, T, data$features))
+    models = lapply(1:ncol(combns), function(i) {
+        if(minimize) {
+            cmp = function(x, y) {
+                sapply(data$data[[x]] < data$data[[y]], function(z) { if(z) { x } else { y } })
+            }
+        } else {
+            cmp = function(x, y) {
+                sapply(data$data[[x]] > data$data[[y]], function(z) { if(z) { x } else { y } })
+            }
+        }
+        labels = factor(cmp(combns[1,i], combns[2,i]))
+        return(classifier(labels~., data=fs$features))
+    })
+    if(is.function(combinator)) {
+        trainpredictions = matrix(nrow=nrow(fs$features), ncol=ncol(combns))
+        for(i in 1:ncol(combns)) {
+            trainpredictions[,i] = as.character(predict(models[[i]], fs$features))
+        }
+        combinedmodel = combinator(data$data$best~., data=data.frame(trainpredictions))
+    }
+
+    return(list(predictions=predictions, models=models, predictor=function(x) {
+        tsf = pre(subset(x, T, data$features), fs$meta)
+        ensemblepredictions = matrix(nrow=nrow(tsf$features), ncol=ncol(combns))
+        for(i in 1:ncol(combns)) {
+            ensemblepredictions[,i] = as.character(predict(models[[i]], tsf$features))
+        }
+        if(is.function(combinator)) {
+            combinedpredictions = as.character(predict(combinedmodel, data.frame(ensemblepredictions)))
+        } else {
+            combinedpredictions = apply(ensemblepredictions, 1, function(l) { names(sort(table(l), decreasing=T)[1]) })
+        }
+        return(combinedpredictions)
+    }))
+}

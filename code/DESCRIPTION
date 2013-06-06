@@ -1,8 +1,8 @@
 Package: llama
 Type: Package
 Title: Leveraging Learning to Automatically Manage Algorithms
-Version: 0.2
-Date: 2013-05-14
+Version: 0.3
+Date: 2013-06-06
 Author: Lars Kotthoff, contributions by Barry Hurley
 Maintainer: Lars Kotthoff <larsko@4c.ucc.ie>
 Description: Provides functionality to train and evaluate algorithm selection models for portfolios.

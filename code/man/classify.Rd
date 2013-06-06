@@ -59,7 +59,7 @@ predictions instead of majority voting.
 Lars Kotthoff
 }
 \seealso{
-\code{\link{cluster}}, \code{\link{regression}}
+\code{\link{classifyPairs}}, \code{\link{cluster}}, \code{\link{regression}}
 }
 \references{
 Kotthoff, L., Miguel, I., Nightingale, P. (2010)

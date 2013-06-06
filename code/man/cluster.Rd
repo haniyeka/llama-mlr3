@@ -61,7 +61,7 @@ used to combine the ensemble predictions instead of majority voting.
 Lars Kotthoff
 }
 \seealso{
-\code{\link{classify}}, \code{\link{regression}}
+\code{\link{classify}}, \code{\link{classifyPairs}}, \code{\link{regression}}
 }
 \examples{
 \dontrun{
