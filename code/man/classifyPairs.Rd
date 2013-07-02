@@ -58,7 +58,12 @@ slower than the other approaches that train a single model or one for each
 algorithm.
 }
 \value{
- \item{predictions}{a list of lists with the predictions for each test set.}
+ \item{predictions}{a list of lists of data frames with the predictions for each
+ test set. Each data frame has columns \code{algorithm} and \code{score} and is
+ sorted according to preference, with the most preferred algorithm first. The
+ score corresponds to the number of times the respective algorithm was predicted
+ to be faster. If stacking is used, each data frame contains simply the best
+ algorithm with a score of 1.}
  \item{predictor}{a function that encapsulates the classifier learned on the
  \emph{entire} data set. Can be called with data for the same features with the
  same feature names as the training data to obtain predictions.}

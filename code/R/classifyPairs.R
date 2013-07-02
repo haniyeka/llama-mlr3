@@ -1,3 +1,4 @@
+predNames = c("algorithm", "score")
 classifyPairs <-
 function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }, minimize=T, combinator=NULL) {
     if(is.null(classifier)) {
@@ -34,9 +35,10 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
 
         if(is.function(combinator)) {
             combinedmodel = combinator(data$train[[i]]$best~., data=data.frame(trainpredictions))
-            combinedpredictions = as.character(predict(combinedmodel, data.frame(pairpredictions)))
+            preds = as.character(predict(combinedmodel, data.frame(pairpredictions)))
+            combinedpredictions = lapply(preds, function(l) { setNames(data.frame(table(l)), predNames) })
         } else {
-            combinedpredictions = apply(pairpredictions, 1, function(l) { names(sort(table(l), decreasing=T)[1]) })
+            combinedpredictions = apply(pairpredictions, 1, function(l) { setNames(data.frame(as.table(sort(table(l), decreasing=T))), predNames) })
         }
         return(list(combinedpredictions))
     }
@@ -65,14 +67,15 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
 
     return(list(predictions=predictions, models=models, predictor=function(x) {
         tsf = pre(subset(x, T, data$features), fs$meta)
-        ensemblepredictions = matrix(nrow=nrow(tsf$features), ncol=ncol(combns))
+        pairpredictions = matrix(nrow=nrow(tsf$features), ncol=ncol(combns))
         for(i in 1:ncol(combns)) {
-            ensemblepredictions[,i] = as.character(predict(models[[i]], tsf$features))
+            pairpredictions[,i] = as.character(predict(models[[i]], tsf$features))
         }
         if(is.function(combinator)) {
-            combinedpredictions = as.character(predict(combinedmodel, data.frame(ensemblepredictions)))
+            preds = as.character(predict(combinedmodel, data.frame(pairpredictions)))
+            combinedpredictions = lapply(preds, function(l) { setNames(data.frame(table(l)), predNames) })
         } else {
-            combinedpredictions = apply(ensemblepredictions, 1, function(l) { names(sort(table(l), decreasing=T)[1]) })
+            combinedpredictions = apply(pairpredictions, 1, function(l) { setNames(data.frame(as.table(sort(table(l), decreasing=T))), predNames) })
         }
         return(combinedpredictions)
     }))
