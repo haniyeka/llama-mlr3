@@ -10,8 +10,7 @@ Performance data for 19 SAT solvers on 2433 SAT instances.
 \usage{data(satsolvers)}
 \format{
 \code{satsolvers} is a list in the format returned by \code{input} and
-expected by the other functions of portfolio toolkit. The list has the
-following components.
+expected by the other functions of LLAMA. The list has the following components.
 
 \describe{
  \item{data:}{The original input data merged. That is, the data frames processed
