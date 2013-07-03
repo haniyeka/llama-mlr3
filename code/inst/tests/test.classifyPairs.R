@@ -33,6 +33,7 @@ test_that("classifyPairs respects minimize", {
     d = list(data=rbind(fold, fold), train=list(fold), test=list(fold), features=c("a"), performance=c("foo", "bar"))
     res = classifyPairs(classifier=testclassifier, d, minimize=F)
     expect_true(all(sapply(1:length(res$predictions), function(i) { sapply(res$predictions[[i]], function(x) { x == data.frame(algorithm="bar", score=1) }) })))
+    expect_true(all(sapply(res$predictor(fold), function(x) { x == data.frame(algorithm="bar", score=1) })))
 })
 
 test_that("classifyPairs allows combination function", {
@@ -40,4 +41,5 @@ test_that("classifyPairs allows combination function", {
     d = list(data=rbind(fold, fold), train=list(fold), test=list(fold), features=c("a"), performance=c("foo", "bar"))
     res = classifyPairs(classifier=testclassifier, d, combinator=othertestclassifier)
     expect_true(all(sapply(1:length(res$predictions), function(i) { sapply(res$predictions[[i]], function(x) { x == data.frame(algorithm="a", score=1) }) })))
+    expect_true(all(sapply(res$predictor(fold), function(x) { x == data.frame(algorithm="a", score=1) })))
 })
