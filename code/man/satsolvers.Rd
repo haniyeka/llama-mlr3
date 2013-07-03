@@ -34,8 +34,9 @@ features were measured. In addition to the performance (time) on each instance,
 data on whether a solver timed out on an instance is included.
 }
 \source{
-TODO
-%%  ~~ reference to a publication or URL from which the data were obtained ~~
+Hurley, B., Kotthoff, L., Malitsky, Y., O'Sullivan, B. (2013)
+Proteus: A Hierarchical Portfolio of Solvers and Transformations.
+\emph{arXiv:1306.5606}.
 }
 \seealso{
 \code{\link{input}}

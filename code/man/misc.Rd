@@ -33,11 +33,13 @@ is first. The score is 1 if the respective algorithm is chosen for the instance,
 Lars Kotthoff
 }
 \examples{
+\dontrun{
 data(satsolvers)
 
 # number of total successes for virtual best solver
 print(sum(successes(satsolvers, vbs(satsolvers))))
 # number of total successes for single best solver
 print(sum(successes(satsolvers, singleBest(satsolvers))))
+}
 }
 \keyword{ ~models }
