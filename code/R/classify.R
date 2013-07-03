@@ -1,4 +1,3 @@
-predNames = c("algorithm", "score")
 classify <-
 function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }) {
     if(is.null(classifier)) {

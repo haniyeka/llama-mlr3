@@ -1,4 +1,3 @@
-predNames = c("algorithm", "score")
 classifyPairs <-
 function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }, minimize=T, combinator=NULL) {
     if(is.null(classifier)) {

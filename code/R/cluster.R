@@ -1,4 +1,3 @@
-predNames = c("algorithm", "score")
 cluster <-
 function(clusterer=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }) {
     if(is.null(clusterer)) {
