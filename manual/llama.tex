@@ -1013,38 +1013,14 @@ SATzilla code.
 \section{The further domestication of LLAMA}
 
 The functionality currently implemented in LLAMA facilitates the exploration of
-the performance of many different approaches to algorithm selection. While it is
-extensive, there are a number of extensions of the current implementation that
-we are planning to provide in the future. An example of this is the possibility
-to provide a richer prediction output from the approaches that support it. At
-the moment, the only output of a model is the best algorithm to run on a
-particular problem. If a ranked list of algorithms was provided instead, these
-algorithms could be ran in parallel or according to a schedule. The main
-advantage of this approach is that if a bad prediction were made, the impact on
-overall performance is limited because a list of algorithms has a higher
-probability of containing the best algorithm even if predictions are bad.
-
-Another obvious point for extension is to provide a larger number of
-implementations for different approaches to building performance models. In
-particular, there is currently no support for the approach that SATzilla uses in
-its most recent incarnation -- for each pair of algorithms in the portfolio,
-train a model that predicts which one is faster and collate these
-predictions~\cite{xu_hydra-mip_2011}.
-
-Another line of research into algorithm selection for SAT has focused on
-building hierarchical models which first predict whether a problem is
-satisfiable or not and have different models for solver selection for each
-outcome~\cite{xu_hierarchical_2007}. While there is currently no explicit
-support for approaches like this, they can be implemented through partitioning
-of the data that is given to LLAMA.
-
-It is our intention for LLAMA to develop into a platform that not only
-facilitates the exploration and comparison of different existing approaches, but
-also the rapid prototyping of new approaches. The functions it provides take
-care of the infrastructure required to train and evaluate machine learning
-models in a scientifically rigorous way. Researchers wishing to improve
-algorithm portfolio selection do not need to concern themselves with the
-infrastructure, but can concentrate on the actual research.
+the performance of many different approaches to algorithm selection. It is our
+intention for LLAMA to develop into a platform that not only facilitates the
+exploration and comparison of different existing approaches, but also the rapid
+prototyping of new approaches. The functions it provides take care of the
+infrastructure required to train and evaluate machine learning models in a
+scientifically rigorous way. Researchers wishing to improve algorithm portfolio
+selection do not need to concern themselves with the infrastructure, but can
+concentrate on the actual research.
 
 LLAMA is still at an early stage of development and bugs may occur. In the end,
 the responsibility of interpreting and validating the results lies with the
