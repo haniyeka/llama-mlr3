@@ -389,12 +389,13 @@ C4.5 decision tree, we can run the following code.
 > parscore = mean(unlist(parscores(folds, model|$\$$|predictions)))
 > solved = sum(unlist(successes(folds, model|$\$$|predictions)))
 \end{lstlisting}
-The \lstinline{parscores} and \lstinline{successes} evaluation functions, along
-with their cousin \lstinline{misclassificationPenalties}, take the data for
-which the predictions were made as their first argument and the predictions as
-the second. Optional arguments can be given to specify the penalty factor or the
-time-out value. By default, the performance value given for an unsuccessful run
-is assumed to be the time-out.
+On the example data, we get 5966.314 for the mean PAR10 score and 2034 solved
+instances. The \lstinline{parscores} and \lstinline{successes} evaluation
+functions, along with their cousin \lstinline{misclassificationPenalties}, take
+the data for which the predictions were made as their first argument and the
+predictions as the second. Optional arguments can be given to specify the
+penalty factor or the time-out value. By default, the performance value given
+for an unsuccessful run is assumed to be the time-out.
 
 All evaluation functions return a list of the respective values for the chosen
 algorithm for each instance. That is, if there are 100 instances in the data,
@@ -410,7 +411,13 @@ with a score value. The number of algorithms in the data frame and the meaning
 of the score value depend on the model-building function that is used and are
 explained in the respective on-line help pages. In this case, each data frame
 will contain only a single algorithm with a score of 1, meaning that this is the
-algorithm that was predicted by the one classifier.
+algorithm that was predicted by the one classifier. An individual prediction
+looks like this.
+\begin{lstlisting}
+> model|$\$$|predictions[[1]][[1]]
+  algorithm score
+1     clasp     1
+\end{lstlisting}
 
 \medskip
 
@@ -433,11 +440,14 @@ model are.
 > sbparscore = mean(unlist(parscores(data, singleBest(data))))
 > sbsolved = sum(unlist(successes(data, singleBest(data))))
 \end{lstlisting}
-
 Comparing those numbers to the ones from the model that we trained should give
 us a better idea of its performance. Ideally, the model performance should be
 better than the one of the single best solver and as close to the virtual best
-as possible.
+as possible. On the example data, we get a mean PAR10 score of 4631.264 and 2125
+solved instances for the VBS, and a mean PAR10 score of 6265.218 and 2014 solved
+instances for the best single solver. Our classification model definitely
+improves on the single best solver, but is still quite a bit away from the
+virtual best.
 
 \medskip
 
@@ -474,11 +484,39 @@ model, we now need to train one regression model for each algorithm in the
 portfolio (if you're using the example SAT data, 19 different models).
 
 The structure returned by the call is the same as for classification and PAR10
-scores and similar are calculated in the same way. LLAMA offers a unified
-interface for all its model-building functions that makes it easy to quickly try
-different approaches. The difference is that the prediction data frames now
-contain a row for each algorithm in the portfolio and the score denotes the
-predicted performance value.
+scores and similar are calculated in the same way. We get 5567.844 as mean PAR10
+score and 2061 solved instances on the example data -- an improvement on our
+earlier classification model. LLAMA offers a unified interface for all its
+model-building functions that makes it easy to quickly try different approaches.
+The difference is that the prediction data frames now contain a row for each
+algorithm in the portfolio and the score denotes the predicted performance
+value.
+\begin{lstlisting}
+> model|$\$$|predictions[[1]][[1]]
+        algorithm      score
+1            rsat -1635.0998
+2         glucose -1416.7498
+3           sat4j -1343.9015
+4  minisat_noelim -1274.5337
+5       lingeling -1263.9562
+6         minisat -1258.8574
+7      cirminisat -1253.8154
+8         picosat -1208.2085
+9        precosat -1196.2020
+10            mxc -1157.7457
+11           riss -1124.0546
+12    glueminisat -1115.8982
+13  cryptominisat -1094.3992
+14          clasp -1092.4642
+15       qutersat -1075.9823
+16       march_rw -1022.1229
+17    MPhaseSAT64  -985.7842
+18          kcnfs  -945.6193
+19      contrasat  -337.4312
+\end{lstlisting}
+Apart from the fact that the regression model is predicting negative runtimes,
+it appears to work quite well. Negative runtimes do not matter here, as we only
+use them to rank the algorithms.
 
 By default, the \lstinline{regression} function assumes that the lowest
 performance value denotes the best algorithm (like \lstinline{input}). For the
@@ -508,6 +546,33 @@ model for each pair of algorithms needs to be trained. This approach offers
 great potential for parallelisation though; for more details, see
 Section~\ref{sec:parallel}.
 
+On the example data, we get a mean PAR10 score of 5899.071 and 2037 solved
+instances. The data frame for an individual prediction now looks as follows; the
+score corresponds to the number of votes.
+\begin{lstlisting}
+> model|$\$$|predictions[[1]][[1]]
+        algorithm score
+1           clasp    18
+2        march_rw    17
+3             mxc    16
+4      cirminisat    15
+5       lingeling    14
+6         picosat    13
+7        precosat    12
+8     glueminisat    11
+9        qutersat    10
+10           rsat     9
+11          kcnfs     7
+12    MPhaseSAT64     6
+13           riss     6
+14  cryptominisat     5
+15        minisat     5
+16 minisat_noelim     3
+17        glucose     2
+18      contrasat     1
+19          sat4j     1
+\end{lstlisting}
+
 \medskip
 
 A different approach to algorithm selection that is used for example in
@@ -518,28 +583,428 @@ this time using RWeka's \verb+XMeans+ clustering algorithm.
 \begin{lstlisting}
 > model = cluster(XMeans, folds)
 \end{lstlisting}
-The return value corresponds to the usual format. The prediction data frames
-contain all portfolio algorithms ranked by performance. The score corresponds to
-the number of instances in the respective cluster that the respective algorithm
-was best for.
+The return value corresponds to the usual format. We get a mean PAR10 score of
+6695.465 and 1986 solved instances. The prediction data frames contain all
+portfolio algorithms ranked by performance. The score corresponds to the number
+of instances in the respective cluster that the respective algorithm was best
+for.
+\begin{lstlisting}
+> model|$\$$|predictions[[1]][[1]]
+        algorithm score
+1         picosat    92
+2             mxc    75
+3           clasp    67
+4         glucose    39
+5      cirminisat    21
+6   cryptominisat    20
+7       lingeling    16
+8        march_rw    14
+9     glueminisat    12
+10        minisat    12
+11          kcnfs     5
+12 minisat_noelim     5
+13       precosat     3
+14           rsat     3
+15    MPhaseSAT64     2
+16      contrasat     1
+17       qutersat     0
+18           riss     0
+19          sat4j     0
+\end{lstlisting}
 
 
 \section{Advanced functionality}
 
+The previous section gave a glimpse of the core functionality of LLAMA. There is
+much more functionality beyond that though. All the functions we have used
+previously take additional arguments that allow them to be customised. The model
+building functions can work with several machine learning algorithms instead of
+just one. There are more functions that do exciting things\footnote{For suitable
+definitions of ``exciting''.}.
+
 \subsection{Processing the input data}
+
+The feature and performance data is often messy -- there are missing values,
+the values of some of the features are the same on all instances, or there is no
+correlation between feature values and performance. All of this can impact the
+performance of machine learning models. LLAMA provides functionality to mitigate
+this.
 
 \subsubsection{Selecting the most important features}
 
+Feature selection is a process by which the features that are relevant for
+making a particular prediction are identified. If, for example, the values of
+one feature are the same on all problem instances, the feature does not
+contribute anything and can be omitted. If on the other hand the values of a
+feature change as the prediction to be made changes, we definitely want to
+include this feature.
+
+LLAMA does not offer any actual feature filtering algorithms, just like it does
+not offer any machine learning algorithms. Rather, it provides the
+infrastructure to use existing algorithms, which are plentiful in R. As an
+example, we will use the FSelector package, which provides a number of such
+functions.
+
+Feature filtering in LLAMA is done through the \lstinline{featureFilter}
+function. It takes a filtering algorithm and the data frame to use, which has to
+be in the usual LLAMA format, i.e.\ what is returned by the \lstinline{input}
+function.
+\begin{lstlisting}
+require(FSelector)
+newdata = featureFilter(cfs, data)
+\end{lstlisting}
+The function takes the entire data and runs the feature filtering algorithm to
+determine the effectiveness of the features with respect to predicting the best
+algorithm. The features which are retained after filtering will be used in the
+returned data frame.
+
+This new data can now be used to split into training and test sets and build new
+models.
+\begin{lstlisting}
+> newfolds = cvFolds(newdata)
+> model = classify(J48, newfolds)
+\end{lstlisting}
+For the new model with filtered features, we get a mean PAR10 score of 5804.397
+and 2044 solved instances -- an improvement on our earlier model that used all
+the features.
+
 \subsubsection{Normalising feature values}
+
+For some types of models, it may be desirable to normalise the feature values
+such that they cover the same range over all features. If, for example, we
+compute the distance between two instances based on the feature values in
+Euclidean space and the values for a particular feature happen to be 1000 times
+larger than the other ones, this feature will have the highest impact on the
+result, even though it may not be important.
+
+LLAMA provides a function that allows to normalise the values of features before
+they are passed to the model learner. This functionality is different from the
+feature filtering, which is independent from any further operations. To
+normalise the feature values, scaling factors need to be computed. These same
+scaling factors need to be applied when working with new data, i.e.\ when using
+the predictor function returned by the model builders.
+
+This is why normalisation is implemented as an optional argument to the
+model-building functions instead of a standalone functions. The scaling factors
+are computed for the training data and saved in the environment such that they
+can be applied to new data later.
+
+LLAMA currently provides only a single function, \lstinline{normalize}, for
+feature value normalisation. This function scales the feature values such that
+the range for all features is -1 to 1. It is specified through the
+\lstinline{pre} argument.
+\begin{lstlisting}
+> model = cluster(XMeans, folds, pre=normalize)
+\end{lstlisting}
+We are using the cluster model builder here, as clustering is an application
+that intrinsically relies on distance measures and is likely to be most affected
+by large differences in the range of feature values. The feature values can be
+normalized for all of the other model-building functions in the same way.
+
+On the example data, the mean PAR10 score is 6779.793 and the number of solved
+instances 1980. In this particular case, normalisation does not seem to improve
+the performance.
 
 \subsubsection{Imputing censored runtimes}
 
+Working with empirical performance data is often difficult. If the problem
+instances are challenging, some of the algorithms may take a very long time to
+solve them -- longer than one is prepared to wait. Usually, algorithms are run
+with a time-out. That is, if the algorithm did not find a solution after a
+certain amount of time, it is terminated -- its runtime is \emph{censored}.
+While allows to gather data in more reasonable amounts of time, the result makes
+machine learning more difficult -- if an algorithm timed out, the recorded
+runtime is not actually the value we want to predict.
+
+One way of addressing this issue is to impute the censored runtimes by learning
+a machine learning model to predict the runtime on the instances that did not
+time out and then apply it to the instances that timed out. This process can be
+repeated to get better models and estimates~\cite{schmee_simple_1979}.
+
+This method is implemented in LLAMA in the \lstinline{imputeCensored} function.
+Its arguments are a LLAMA data frame, the regression algorithm to model the
+runtime, and termination conditions. Similar to \lstinline{featureFilter}, it
+returns a new data frame with the imputed censored runtimes. Note that, similar
+to the regression model learner, the imputation function does not check the
+plausibility of the results -- it is possible that the predicted runtimes are
+less than the time-out!
+\begin{lstlisting}
+> imputed = imputeCensored(data, LinearRegression)
+> imputedFolds = cvFolds(imputed)
+> model = regression(LinearRegression, imputedFolds)
+\end{lstlisting}
+Note that the performance of a model built on imputed data cannot be compared to
+models built on the original censored data. All of the instances in the data
+will be solvable, as there is no time limit any more.
+
 \subsection{Meta-learning techniques -- ensembles and stacking}
+
+One of the main strengths of LLAMA is that meta-learning techniques can be
+applied to all of the model building functions easily. The idea behind
+meta-learning is similar to that of algorithm portfolios -- instead of relying
+on a single machine learning algorithm and the model it learns to deliver good
+predictions, we use several that (hopefully) complement each other.
+
+The two meta-learning concepts implemented in LLAMA are
+ensembles~\cite{dietterich_ensemble_2000} and
+stacking~\cite{wolpert_stacked_1992}. In ensemble learning, multiple machine
+learning algorithms are run on the same data, learning multiple independent
+models. The predictions of each model are then combined to determine the overall
+prediction. In stacking on the other hand, several machine learning algorithms
+are layered on top of each other. That is, the first layer learns a model based
+on the actual data, while the second layer takes the predictions of the first
+layer as input. The two approaches can be combined -- the predictions of an
+ensemble may be used as the input to a second layer of machine learning that
+makes the final prediction.
+
+For the \lstinline{classify} model building functions, both ensemble learning
+and stacking have been implemented. To use an ensemble, the first argument
+becomes a list of classification algorithms instead of a single one. To use
+stacking, that list should have a member named \lstinline{.combine}.
+\begin{lstlisting}
+> require(e1071)
+> ensembleModel = classify(list(J48, svm, IBk), folds)
+> stackedEnsembleModel = classify(list(J48, svm, IBk, .combine=J48), folds)
+\end{lstlisting}
+We are using the \verb+svm+ classifier from the e1071 package in addition
+to classifiers from RWeka here. The mean PAR10 scores for the ensemble and
+stacked ensemble models on the example data are 5929.604 and 6602.42,
+respectively. The numbers of solved instances are 2036 and 1991. Compared to the
+model based on the single \verb+J48+ classifier, ensemble learning improves
+performance a bit, but stacking does not help.
+
+The prediction data frame for ensemble models has the number of votes for each
+algorithm as score.
+\begin{lstlisting}
+> ensembleModel|$\$$|predictions[[1]][[2]]
+      algorithm score
+1           mxc     2
+2 cryptominisat     1
+\end{lstlisting}
+
+\medskip
+
+For regression models, stacking as described in~\cite{kotthoff_hybrid_2012} is
+implemented. Instead of aggregating the predicted performance values by ranking
+them directly, a classifier is learned to predict, given the performance
+predictions, the best algorithm. To achieve this, a classification algorithm is
+given as the \lstinline{combine} argument and the \lstinline{stack} argument is
+set to true.
+\begin{lstlisting}
+> stackedModel = regression(lm, folds, combine=J48, stack=T)
+\end{lstlisting}
+On the example data, this stacked model achieves a mean PAR10 score of 6257.381
+and 2014 solved instances. The performance is worse than for the non-stacked
+approach used earlier. The reason for this is that the non-stacked combination
+function, choosing the algorithm with the lowest predicted value, is very hard
+to learn when considering the performance values independently and not the
+relation between them.
+
+LLAMA does provide an additional argument for \lstinline{regression} that allows
+to make this task easier. The \lstinline{expand} argument allows to specify a
+function that, given the performance predictions, can augment the inputs to the
+classifier. In this case, we want to add the pairwise absolute differences
+between the predicted performances of algorithms.
+\begin{lstlisting}
+> stackedModel = regression(lm, folds, combine=J48, stack=T,
+    expand=function(x) {
+        cbind(x, combn(c(1:ncol(x)), 2, function(y) {
+            abs(x[,y[1]] - x[,y[2]])
+        }))
+    })
+\end{lstlisting}
+While the function given here may appear cryptic at first, it demonstrates one o
+the advantages of the implementation of LLAMA as an R package. It allows to use
+arbitrary R functions to process data. The mean PAR10 score achieved by this
+model is 6178.127 and the number of solved instances 2020. An improvement over
+the stacked model without expansion.
+
+For the \lstinline{classifyPairs} model builder, LLAMA supports meta-learning in
+the same way as for \lstinline{regression}. Stacking can be used to provide a
+classification algorithm in the \lstinline{combinator} argument that learns to
+predict the best algorithm, given the votes by the classifiers for pairs of algorithms.
+
+The \lstinline{cluster} model builder supports meta-learning techniques in the
+same way as \lstinline{classify}. More details and examples can be found in the
+on-line documentation for each of the model builders.
 
 \subsection{Parallel execution}\label{sec:parallel}
 
+Some of the models can take a very long time to train. Most of the operations
+are independent though and can be parallelised easily. LLAMA uses the
+\lstinline{foreach(...) %dopar%}
+construct provided by the foreach package to parallelise execution across
+cross-validation folds. That is, the model for each iteration will be trained
+and tested in parallel. The \lstinline{%dopar%}
+construct provides transparent parallelisation that executes sequentially if no
+suitable parallel backend is loaded. All the user has to do to enable parallel
+execution is to load a parallel backend, for example the doMC package for
+multi-core support.
+\begin{lstlisting}
+> require(doMC)
+> registerDoMC()
+\end{lstlisting}
+After running these commands, all subsequent calls to LLAMA model building
+functions will take advantage of a multi-core architecture.
 
-\section{Case study: SATzilla 2012}\label{sec:case:satzilla}
+Note that the implementation assumes that the machine learning algorithms can be
+run in parallel and independently. This is not the case for the functions
+provided by RWeka, as they rely on a Java interface that is not thread-safe. The
+Weka machine learning algorithms can still be used with parallel execution
+though if they are wrapped in a function that loads the RWeka package such that
+each thread has its own copy of the Java interface.
+
+
+\section{Case study: SATzilla}\label{sec:case:satzilla}
+
+Algorithm selection systems often have additional components for which there is
+no explicit support in LLAMA. This is not necessarily an obstacle though, much
+additional functionality can be achieved by partitioning the data appropriately
+and using other functionality that R provides.
+
+This section outlines how to implement SATzilla with the help of LLAMA and R. A
+full implementation is beyond the scope of this document; instead, this section
+serves as a guide to researchers wishing to implement such measures. There are
+several techniques that the various versions of SATzilla use to make algorithm
+portfolios more performance in practice. We will sketch the implementation of
+each in turn before putting it all together. The techniques used in this section
+are described in more details in the SATzilla papers
+(e.g.~\cite{xu_satzilla_2008,xu_hierarchical_2007,xu_hydra-mip_2011}).
+
+\subsection{Presolver}
+
+There are problem instances that can be solved almost instantaneously. For
+these, the overhead of computing features, running the algorithm selection
+model, and selecting a solver is too high. Using a portfolio is always going to
+be slower for these problems. To avoid this issue, we can run a presolver for a
+short amount of time.
+
+This step is largely independent of training algorithm selection models. We do
+however need to take into account that the problems that are solved by the
+presolver within its time limit do not require algorithms to be selected for
+them, so we should remove them from the data before training the model. This is
+done easily in R.
+\begin{lstlisting}
+> performanceData = read.csv("performance.csv")
+> presolveLimit = 1
+> presolver = "minisat"
+> newPerformanceData = subset(performanceData, performanceData[presolver] > presolveLimit)
+> data = input(read.csv("features.csv"), newPerformanceData)
+\end{lstlisting}
+Assuming that our presolver is minisat with a time-out of 1 second, we can
+filter the data as above before passing it to \lstinline{input}. There is no
+need to filter the feature data, as LLAMA will discard any items it cannot
+match. The resulting LLAMA data frame can be used as usual to train and evaluate
+models.
+
+\subsection{Prediction of satisfiability}
+
+SAT solvers often behave differently depending on whether an instance is
+satisfiable or not. In practice, it can make sense to distinguish between these
+instances in algorithm portfolios. This requires a larger number of machine
+learning models. First, we need to be able to predict whether a given instance
+is satisfiable or not. Second, we need different algorithm selection models for
+the satisfiable and unsatisfiable cases.
+
+To achieve this, we require additional data on whether an instance is
+satisfiable or not.
+\begin{lstlisting}
+> performanceData = read.csv("performance.csv")
+> featureData = read.csv("features.csv")
+> featureNames = names(featureData)[-1]
+> satisfiable = read.csv("satisfiable.csv")
+> satisfiableModel = J48(satisfiable|$\$$|satisfiable~., data=subset(featureData, T, featureNames))
+> satisfiableData = input(featureData, subset(performanceData, satisfiable|$\$$|satisfiable))
+> unsatisfiableData = input(featureData, subset(performanceData, !satisfiable|$\$$|satisfiable))
+\end{lstlisting}
+For simplicity, we assume that the first column of the feature file is an ID and
+that the order of the instances in the feature, performance, and satisfiable
+files is the same. The \lstinline{satisfiableModel} can now be used to predict
+the satisfiability of a new instance, while the LLAMA data frames
+\lstinline{satisfiableData} and \lstinline{unsatisfiableData} can be used to
+train and evaluate algorithm selection models for the respective parts of the
+instance space.
+
+\subsection{Prediction of feature computation time}
+
+Computing the features of an instance is integral to algorithm selection
+systems. This information can be related to the performance of the algorithms to
+make predictions as to which algorithm to use in a particular case. However,
+sometimes just computing the features can take longer than it would take to
+solve the instance. It is clearly desirable to identify these cases before
+starting to compute the features.
+
+To achieve this, we can train yet another machine learning model that, given a
+small and cheaply computable subset of the features, predicts the time required
+to compute the remaining features. If the time is too high, we simply run a
+backup solver on the instance. Such instances should not be used in the training
+and evaluation of the algorithm selection model.
+\begin{lstlisting}
+> featureTimes = read.csv("featureTimes.csv")
+> reducedFeatureData = read.csv("reducedFeatures.csv")
+> reducedFeatureNames = names(reducedFeatureData)[-1]
+> featureTimeModel = LinearRegression(featureTimes|$\$$|time~., data=subset(reducedFeatureData, T, reducedFeatureNames))
+> featureTimeLimit = 1
+> data = subset(subset(read.csv("features.csv"), featureTimes|$\$$|time < featureTimeLimit), read.csv("performance.csv"))
+\end{lstlisting}
+Similar assumptions as in the section above are made. The LLAMA data frame can
+now again be used in the usual manner to train algorithm selection models.
+
+\subsection{Putting it all together}
+
+The techniques outlined in the previous section can now be put together to
+implement a system similar to SATzilla.
+\begin{lstlisting}
+> performanceData = read.csv("performance.csv")
+> featureData = read.csv("features.csv")
+> featureNames = names(featureData)[-1]
+> reducedFeatureData = read.csv("reducedFeatures.csv")
+> reducedFeatureNames = names(reducedFeatureData)[-1]
+> featureTimes = read.csv("featureTimes.csv")
+> satisfiable = read.csv("satisfiable.csv")
+
+> presolveLimit = 1
+> presolver = "minisat"
+> featureTimeLimit = 1
+
+> toSolve = (performanceData[presolver] > presolveLimit)&(featureTimes|$\$$|time < featureTimeLimit)
+> featureTimeModel = LinearRegression(featureTimes|$\$$|time~., data=subset(reducedFeatureData, T, reducedFeatureNames))
+> satisfiableModel = J48(satisfiable|$\$$|satisfiable~., data=subset(featureData, toSolve, featureNames))
+
+> satisfiableData = input(featureData, subset(performanceData, satisfiable|$\$$|satisfiable&toSolve))
+> unsatisfiableData = input(featureData, subset(performanceData, (!satisfiable|$\$$|satisfiable)&toSolve))
+
+> satisfiableFolds = cvFolds(satisfiableData)
+> unsatisfiableFolds = cvFolds(unsatisfiableData)
+> satisfiableModel = classifyPairs(J48, satisfiableFolds)
+> unsatisfiableModel = classifyPairs(J48, unsatisfiableFolds)
+\end{lstlisting}
+Let's walk through it step by step. First, we read all the relevant data, as in
+the individual steps above. Then we set our time limits and the presolver. The
+data we want to train algorithm selection models for comprises the instances
+that are not solved by the presolver and for which the feature prediction time
+is not too long. We save the Boolean mask that encodes these conditions in
+\lstinline{toSolve} to be able to filter the data later.
+
+After that, we train our first two models -- one to predict the feature
+computation time and the other to predict whether an instance is satisfiable or
+not. For the feature computation time, we need to consider all the data, whereas
+for the prediction of satisfiability we only need the instances that we want
+algorithm selection models for.
+
+Then, we partition the data based on satisfiability and pass them to
+\lstinline{include}, filtering the instances that we do not require algorithm
+selection for. Finally, we proceed in the usual LLAMA manner by partitioning the
+data into folds and learning a SATzilla 2012-style pairwise classification
+model.
+
+To make predictions on new data, we would use the two preliminary models to
+determine feature computation time and satisfiability and then the
+\lstinline{predictor} member of either the \lstinline{satisfiableModel} or the
+\lstinline{unsatisfiableModel}.
+
+If you think that this is complex and quite difficult, have a look at the actual
+SATzilla code.
 
 
 \section{Case study: Visualising the data}\label{sec:case:vis}
