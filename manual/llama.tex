@@ -4,6 +4,7 @@
 \usepackage{cite}
 \usepackage{graphicx}
 \usepackage{url}
+\usepackage{afterpage}
 \renewcommand*\ttdefault{txtt}
 \usepackage{listings}
 \lstset{language=R,escapechar=|,mathescape,basicstyle=\ttfamily,breaklines=true,breakatwhitespace=true}
@@ -21,7 +22,7 @@
 \thispagestyle{empty}
 
 \begin{center}
-\includegraphics[scale=.8]{llama.jpg}
+\includegraphics[width=.5\textwidth]{llama.jpg}
 \end{center}
 
 \begin{abstract}
@@ -48,8 +49,8 @@ This document corresponds to LLAMA version 0.4.
 So you know about algorithm portfolios and selection and just want to get
 started. Here we go. In your R shell, type
 \begin{lstlisting}
-> install.packages("llama")
-> require(llama)
+install.packages("llama")
+require(llama)
 \end{lstlisting}
 to install and load LLAMA. We're going to assume that you have two input CSV
 files for your data -- one with features and one with times. The rows designate
@@ -57,29 +58,29 @@ problem instances and the columns feature and solver names. Both files have an
 ``ID'' column that allows to link them. Load them into the data structure
 required by LLAMA as follows.
 \begin{lstlisting}
-> data = input(read.csv("features.csv"), read.csv("times.csv"))
+data = input(read.csv("features.csv"), read.csv("times.csv"))
 \end{lstlisting}
 You can also use the SAT solver data that comes with LLAMA by running
 \lstinline{data(satsolvers)} followed by \lstinline{data = satsolvers}. Now
 partition the entire set of instances into training and test.
 \begin{lstlisting}
-> tt = trainTest(data)
+tt = trainTest(data)
 \end{lstlisting}
 This will give you a 60\% training, 40\% test split. Now we're ready to train
 our first model. To do that, we'll need some machine learning algorithms --
 we're going to use RWeka, which gives us access to everything in Weka. Load
 RWeka and train a simple classification model that predicts the best algorithm.
 \begin{lstlisting}
-> require(RWeka)
-> model = classify(J48, tt)
+require(RWeka)
+model = classify(J48, tt)
 \end{lstlisting}
 Great! Now let's see how well this model is doing and compare its performance to
 the virtual best solver (VBS) and the single best solver in terms of average
 PAR10 score.
 \begin{lstlisting}
-> mean(unlist(parscores(tt, model|$\$$|predictions)))
-> mean(unlist(parscores(data, vbs(data))))
-> mean(unlist(parscores(data, singleBest(data))))
+mean(unlist(parscores(tt, model|$\$$|predictions)))
+mean(unlist(parscores(data, vbs(data))))
+mean(unlist(parscores(data, singleBest(data))))
 \end{lstlisting}
 You can use any other classification algorithms instead of \verb+J48+ of course.
 You can also train regression or cluster models, use different train/test splits
@@ -226,7 +227,7 @@ usually with examples of how to use it. To access a help page, simply type
 LLAMA is available on CRAN. On a computer connected to the internet, all you
 have to do is open an R terminal and type
 \begin{lstlisting}
-> install.packages("llama")
+install.packages("llama")
 \end{lstlisting}
 Alternatively, you can use the graphical package manager your R distribution
 provides, or download the package file yourself and install it manually.
@@ -294,7 +295,7 @@ success.csv:
 \end{verbatim}
 You can load this data into LLAMA as follows.
 \begin{lstlisting}
-> data = input(read.csv("features.csv"), read.csv("times.csv"), read.csv("success.csv"))
+data = input(read.csv("features.csv"), read.csv("times.csv"), read.csv("success.csv"))
 \end{lstlisting}
 
 The \lstinline{input()} function automatically computes all the meta data
@@ -311,8 +312,8 @@ available.
 
 To use this data, type
 \begin{lstlisting}
-> data(satsolvers)
-> satsolvers
+data(satsolvers)
+satsolvers
 \end{lstlisting}
 If you want to run the following commands with this data, run
 \lstinline{data = satsolvers}.
@@ -328,7 +329,7 @@ deal with in practice and that LLAMA aims to make less painful. To split the
 data into 60\% training and 40\% test sets, we can run the following command,
 assuming that your data is available in the \lstinline{data} variable.
 \begin{lstlisting}
-> split = trainTest(data)
+split = trainTest(data)
 \end{lstlisting}
 The second (optional) argument of the function specifies what fraction of the
 total data should be used for testing. If, instead of a 60-40 split, we want a
@@ -346,7 +347,7 @@ create data folds for cross-validation~\cite{kohavi_study_1995}, which is in
 general seen as a more reliable way of evaluating the performance of a learning
 algorithm. To partition the entire data into 10 stratified folds, run
 \begin{lstlisting}
-> folds = cvFolds(satsolvers)
+folds = cvFolds(satsolvers)
 \end{lstlisting}
 The optional argument \lstinline{nfolds} allows to specify the number of folds.
 The default behaviour is again to stratify the folds; this can be turned of in
@@ -363,8 +364,8 @@ Weka. For this, we load the \verb+RWeka+ package and call \lstinline{classify()}
 with the name of the machine learning algorithm and the data folds created
 above.
 \begin{lstlisting}
-> require(RWeka)
-> model = classify(J48, folds)
+require(RWeka)
+model = classify(J48, folds)
 \end{lstlisting}
 
 The call to \lstinline{classify} trains and tests models on each
@@ -386,8 +387,8 @@ meaning that time-outs are penalized by a factor of 10. To compute the average
 PAR10 score and the total number of solved instances of the approach using the
 C4.5 decision tree, we can run the following code.
 \begin{lstlisting}
-> parscore = mean(unlist(parscores(folds, model|$\$$|predictions)))
-> solved = sum(unlist(successes(folds, model|$\$$|predictions)))
+parscore = mean(unlist(parscores(folds, model|$\$$|predictions)))
+solved = sum(unlist(successes(folds, model|$\$$|predictions)))
 \end{lstlisting}
 On the example data, we get 5966.314 for the mean PAR10 score and 2034 solved
 instances. The \lstinline{parscores} and \lstinline{successes} evaluation
@@ -414,7 +415,7 @@ will contain only a single algorithm with a score of 1, meaning that this is the
 algorithm that was predicted by the one classifier. An individual prediction
 looks like this.
 \begin{lstlisting}
-> model|$\$$|predictions[[1]][[1]]
+model|$\$$|predictions[[1]][[1]]
   algorithm score
 1     clasp     1
 \end{lstlisting}
@@ -434,11 +435,11 @@ LLAMA provides convenience functions that allow to compare to both virtual best
 and single best solver. They are used in the same way as the predictions from a
 model are.
 \begin{lstlisting}
-> vbsparscore = mean(unlist(parscores(data, vbs(data))))
-> vbssolved = sum(unlist(successes(data, vbs(data))))
+vbsparscore = mean(unlist(parscores(data, vbs(data))))
+vbssolved = sum(unlist(successes(data, vbs(data))))
 
-> sbparscore = mean(unlist(parscores(data, singleBest(data))))
-> sbsolved = sum(unlist(successes(data, singleBest(data))))
+sbparscore = mean(unlist(parscores(data, singleBest(data))))
+sbsolved = sum(unlist(successes(data, singleBest(data))))
 \end{lstlisting}
 Comparing those numbers to the ones from the model that we trained should give
 us a better idea of its performance. Ideally, the model performance should be
@@ -455,7 +456,7 @@ As mentioned above, the model-building function also returns a prediction
 function that allows to work with new data. As an example, we will use it to
 make predictions for the data that we have.
 \begin{lstlisting}
-> model|$\$$|predictor(subset(data|$\$$|data, TRUE, data|$\$$|features))
+model|$\$$|predictor(subset(data|$\$$|data, TRUE, data|$\$$|features))
 \end{lstlisting}
 
 \subsection{Other available model types}
@@ -476,7 +477,7 @@ a different function and pass in a machine learning algorithm that is able to
 learn models to predict numeric quantities as an argument. We use RWeka's
 \verb+LinearRegression+ as an example.
 \begin{lstlisting}
-> model = regression(LinearRegression, folds)
+model = regression(LinearRegression, folds)
 \end{lstlisting}
 You will notice that running this command takes longer than for the
 classification example. This is because instead of a single classification
@@ -492,7 +493,7 @@ The difference is that the prediction data frames now contain a row for each
 algorithm in the portfolio and the score denotes the predicted performance
 value.
 \begin{lstlisting}
-> model|$\$$|predictions[[1]][[1]]
+model|$\$$|predictions[[1]][[1]]
         algorithm      score
 1            rsat -1635.0998
 2         glucose -1416.7498
@@ -539,7 +540,7 @@ be used to rank all of the portfolio algorithms. This approach is also
 implemented in LLAMA. The function is called \lstinline{classifyPairs} and
 conforms to the usual interface.
 \begin{lstlisting}
-> model = classifyPairs(J48, folds)
+model = classifyPairs(J48, folds)
 \end{lstlisting}
 Running this command on the example SAT data will take quite a long time, as a
 model for each pair of algorithms needs to be trained. This approach offers
@@ -550,7 +551,7 @@ On the example data, we get a mean PAR10 score of 5899.071 and 2037 solved
 instances. The data frame for an individual prediction now looks as follows; the
 score corresponds to the number of votes.
 \begin{lstlisting}
-> model|$\$$|predictions[[1]][[1]]
+model|$\$$|predictions[[1]][[1]]
         algorithm score
 1           clasp    18
 2        march_rw    17
@@ -581,7 +582,7 @@ the best algorithm to each cluster based on the algorithm performances on the
 instances in the cluster. Again the only change is to call a different function,
 this time using RWeka's \verb+XMeans+ clustering algorithm.
 \begin{lstlisting}
-> model = cluster(XMeans, folds)
+model = cluster(XMeans, folds)
 \end{lstlisting}
 The return value corresponds to the usual format. We get a mean PAR10 score of
 6695.465 and 1986 solved instances. The prediction data frames contain all
@@ -589,7 +590,7 @@ portfolio algorithms ranked by performance. The score corresponds to the number
 of instances in the respective cluster that the respective algorithm was best
 for.
 \begin{lstlisting}
-> model|$\$$|predictions[[1]][[1]]
+model|$\$$|predictions[[1]][[1]]
         algorithm score
 1         picosat    92
 2             mxc    75
@@ -661,8 +662,8 @@ returned data frame.
 This new data can now be used to split into training and test sets and build new
 models.
 \begin{lstlisting}
-> newfolds = cvFolds(newdata)
-> model = classify(J48, newfolds)
+newfolds = cvFolds(newdata)
+model = classify(J48, newfolds)
 \end{lstlisting}
 For the new model with filtered features, we get a mean PAR10 score of 5804.397
 and 2044 solved instances -- an improvement on our earlier model that used all
@@ -694,7 +695,7 @@ feature value normalisation. This function scales the feature values such that
 the range for all features is -1 to 1. It is specified through the
 \lstinline{pre} argument.
 \begin{lstlisting}
-> model = cluster(XMeans, folds, pre=normalize)
+model = cluster(XMeans, folds, pre=normalize)
 \end{lstlisting}
 We are using the cluster model builder here, as clustering is an application
 that intrinsically relies on distance measures and is likely to be most affected
@@ -729,9 +730,9 @@ to the regression model learner, the imputation function does not check the
 plausibility of the results -- it is possible that the predicted runtimes are
 less than the time-out!
 \begin{lstlisting}
-> imputed = imputeCensored(data, LinearRegression)
-> imputedFolds = cvFolds(imputed)
-> model = regression(LinearRegression, imputedFolds)
+imputed = imputeCensored(data, LinearRegression)
+imputedFolds = cvFolds(imputed)
+model = regression(LinearRegression, imputedFolds)
 \end{lstlisting}
 Note that the performance of a model built on imputed data cannot be compared to
 models built on the original censored data. All of the instances in the data
@@ -762,9 +763,9 @@ and stacking have been implemented. To use an ensemble, the first argument
 becomes a list of classification algorithms instead of a single one. To use
 stacking, that list should have a member named \lstinline{.combine}.
 \begin{lstlisting}
-> require(e1071)
-> ensembleModel = classify(list(J48, svm, IBk), folds)
-> stackedEnsembleModel = classify(list(J48, svm, IBk, .combine=J48), folds)
+require(e1071)
+ensembleModel = classify(list(J48, svm, IBk), folds)
+stackedEnsembleModel = classify(list(J48, svm, IBk, .combine=J48), folds)
 \end{lstlisting}
 We are using the \verb+svm+ classifier from the e1071 package in addition
 to classifiers from RWeka here. The mean PAR10 scores for the ensemble and
@@ -776,7 +777,7 @@ performance a bit, but stacking does not help.
 The prediction data frame for ensemble models has the number of votes for each
 algorithm as score.
 \begin{lstlisting}
-> ensembleModel|$\$$|predictions[[1]][[2]]
+ensembleModel|$\$$|predictions[[1]][[2]]
       algorithm score
 1           mxc     2
 2 cryptominisat     1
@@ -791,7 +792,7 @@ predictions, the best algorithm. To achieve this, a classification algorithm is
 given as the \lstinline{combine} argument and the \lstinline{stack} argument is
 set to true.
 \begin{lstlisting}
-> stackedModel = regression(lm, folds, combine=J48, stack=T)
+stackedModel = regression(lm, folds, combine=J48, stack=T)
 \end{lstlisting}
 On the example data, this stacked model achieves a mean PAR10 score of 6257.381
 and 2014 solved instances. The performance is worse than for the non-stacked
@@ -806,7 +807,7 @@ function that, given the performance predictions, can augment the inputs to the
 classifier. In this case, we want to add the pairwise absolute differences
 between the predicted performances of algorithms.
 \begin{lstlisting}
-> stackedModel = regression(lm, folds, combine=J48, stack=T,
+stackedModel = regression(lm, folds, combine=J48, stack=T,
     expand=function(x) {
         cbind(x, combn(c(1:ncol(x)), 2, function(y) {
             abs(x[,y[1]] - x[,y[2]])
@@ -841,8 +842,8 @@ suitable parallel backend is loaded. All the user has to do to enable parallel
 execution is to load a parallel backend, for example the doMC package for
 multi-core support.
 \begin{lstlisting}
-> require(doMC)
-> registerDoMC()
+require(doMC)
+registerDoMC()
 \end{lstlisting}
 After running these commands, all subsequent calls to LLAMA model building
 functions will take advantage of a multi-core architecture.
@@ -885,11 +886,11 @@ presolver within its time limit do not require algorithms to be selected for
 them, so we should remove them from the data before training the model. This is
 done easily in R.
 \begin{lstlisting}
-> performanceData = read.csv("performance.csv")
-> presolveLimit = 1
-> presolver = "minisat"
-> newPerformanceData = subset(performanceData, performanceData[presolver] > presolveLimit)
-> data = input(read.csv("features.csv"), newPerformanceData)
+performanceData = read.csv("performance.csv")
+presolveLimit = 1
+presolver = "minisat"
+newPerformanceData = subset(performanceData, performanceData[presolver] > presolveLimit)
+data = input(read.csv("features.csv"), newPerformanceData)
 \end{lstlisting}
 Assuming that our presolver is minisat with a time-out of 1 second, we can
 filter the data as above before passing it to \lstinline{input}. There is no
@@ -909,13 +910,13 @@ the satisfiable and unsatisfiable cases.
 To achieve this, we require additional data on whether an instance is
 satisfiable or not.
 \begin{lstlisting}
-> performanceData = read.csv("performance.csv")
-> featureData = read.csv("features.csv")
-> featureNames = names(featureData)[-1]
-> satisfiable = read.csv("satisfiable.csv")
-> satisfiableModel = J48(satisfiable|$\$$|satisfiable~., data=subset(featureData, T, featureNames))
-> satisfiableData = input(featureData, subset(performanceData, satisfiable|$\$$|satisfiable))
-> unsatisfiableData = input(featureData, subset(performanceData, !satisfiable|$\$$|satisfiable))
+performanceData = read.csv("performance.csv")
+featureData = read.csv("features.csv")
+featureNames = names(featureData)[-1]
+satisfiable = read.csv("satisfiable.csv")
+satisfiableModel = J48(satisfiable|$\$$|satisfiable~., data=subset(featureData, T, featureNames))
+satisfiableData = input(featureData, subset(performanceData, satisfiable|$\$$|satisfiable))
+unsatisfiableData = input(featureData, subset(performanceData, !satisfiable|$\$$|satisfiable))
 \end{lstlisting}
 For simplicity, we assume that the first column of the feature file is an ID and
 that the order of the instances in the feature, performance, and satisfiable
@@ -940,12 +941,12 @@ to compute the remaining features. If the time is too high, we simply run a
 backup solver on the instance. Such instances should not be used in the training
 and evaluation of the algorithm selection model.
 \begin{lstlisting}
-> featureTimes = read.csv("featureTimes.csv")
-> reducedFeatureData = read.csv("reducedFeatures.csv")
-> reducedFeatureNames = names(reducedFeatureData)[-1]
-> featureTimeModel = LinearRegression(featureTimes|$\$$|time~., data=subset(reducedFeatureData, T, reducedFeatureNames))
-> featureTimeLimit = 1
-> data = subset(subset(read.csv("features.csv"), featureTimes|$\$$|time < featureTimeLimit), read.csv("performance.csv"))
+featureTimes = read.csv("featureTimes.csv")
+reducedFeatureData = read.csv("reducedFeatures.csv")
+reducedFeatureNames = names(reducedFeatureData)[-1]
+featureTimeModel = LinearRegression(featureTimes|$\$$|time~., data=subset(reducedFeatureData, T, reducedFeatureNames))
+featureTimeLimit = 5
+data = subset(subset(read.csv("features.csv"), featureTimes|$\$$|time < featureTimeLimit), read.csv("performance.csv"))
 \end{lstlisting}
 Similar assumptions as in the section above are made. The LLAMA data frame can
 now again be used in the usual manner to train algorithm selection models.
@@ -955,29 +956,29 @@ now again be used in the usual manner to train algorithm selection models.
 The techniques outlined in the previous section can now be put together to
 implement a system similar to SATzilla.
 \begin{lstlisting}
-> performanceData = read.csv("performance.csv")
-> featureData = read.csv("features.csv")
-> featureNames = names(featureData)[-1]
-> reducedFeatureData = read.csv("reducedFeatures.csv")
-> reducedFeatureNames = names(reducedFeatureData)[-1]
-> featureTimes = read.csv("featureTimes.csv")
-> satisfiable = read.csv("satisfiable.csv")
+performanceData = read.csv("performance.csv")
+featureData = read.csv("features.csv")
+featureNames = names(featureData)[-1]
+reducedFeatureData = read.csv("reducedFeatures.csv")
+reducedFeatureNames = names(reducedFeatureData)[-1]
+featureTimes = read.csv("featureTimes.csv")
+satisfiable = read.csv("satisfiable.csv")
 
-> presolveLimit = 1
-> presolver = "minisat"
-> featureTimeLimit = 1
+presolveLimit = 1
+presolver = "minisat"
+featureTimeLimit = 5
 
-> toSolve = (performanceData[presolver] > presolveLimit)&(featureTimes|$\$$|time < featureTimeLimit)
-> featureTimeModel = LinearRegression(featureTimes|$\$$|time~., data=subset(reducedFeatureData, T, reducedFeatureNames))
-> satisfiableModel = J48(satisfiable|$\$$|satisfiable~., data=subset(featureData, toSolve, featureNames))
+toSolve = (performanceData[presolver] > presolveLimit)&(featureTimes|$\$$|time < featureTimeLimit)
+featureTimeModel = LinearRegression(featureTimes|$\$$|time~., data=subset(reducedFeatureData, T, reducedFeatureNames))
+satisfiableModel = J48(satisfiable|$\$$|satisfiable~., data=subset(featureData, toSolve, featureNames))
 
-> satisfiableData = input(featureData, subset(performanceData, satisfiable|$\$$|satisfiable&toSolve))
-> unsatisfiableData = input(featureData, subset(performanceData, (!satisfiable|$\$$|satisfiable)&toSolve))
+satisfiableData = input(featureData, subset(performanceData, satisfiable|$\$$|satisfiable&toSolve))
+unsatisfiableData = input(featureData, subset(performanceData, (!satisfiable|$\$$|satisfiable)&toSolve))
 
-> satisfiableFolds = cvFolds(satisfiableData)
-> unsatisfiableFolds = cvFolds(unsatisfiableData)
-> satisfiableModel = classifyPairs(J48, satisfiableFolds)
-> unsatisfiableModel = classifyPairs(J48, unsatisfiableFolds)
+satisfiableFolds = cvFolds(satisfiableData)
+unsatisfiableFolds = cvFolds(unsatisfiableData)
+satisfiableModel = classifyPairs(J48, satisfiableFolds)
+unsatisfiableModel = classifyPairs(J48, unsatisfiableFolds)
 \end{lstlisting}
 Let's walk through it step by step. First, we read all the relevant data, as in
 the individual steps above. Then we set our time limits and the presolver. The
@@ -1003,11 +1004,261 @@ determine feature computation time and satisfiability and then the
 \lstinline{predictor} member of either the \lstinline{satisfiableModel} or the
 \lstinline{unsatisfiableModel}.
 
-If you think that this is complex and quite difficult, have a look at the actual
-SATzilla code.
+Our SATzilla-style solver now looks something like this.
+\begin{lstlisting}
+function myPortfolioSolver(instance) {
+    presolver = "minisat"
+    presolveTimeout = 1
+    backupsolver = "clasp"
+    featureTimeout = 5
+
+    result = runSolver(instance, presolver, timeout=presolveTimeout)
+    if(!isSolved(result)) {
+        simpleFeatures = getSimpleFeatures(instance)
+        featureTime = predict(featureTimeMode, simpleFeatures)
+        if((featureTime > featureTimeLimit) {
+            return(runSolver(instance, backupsolver))
+        } else {
+            features = getFeatures(instance)
+            satisfiable = predict(satisfiableModel, features)
+            if(satisfiable) {
+                solver = satisfiableModel|$\$$|predictor(features)
+            } else {
+                solver = unsatisfiableModel|$\$$|predictor(features)
+            }
+            return(runSolver(instance, solver))
+        }
+    } else {
+        return(result)
+    }
+}
+\end{lstlisting}
 
 
 \section{Case study: Visualising the data}\label{sec:case:vis}
+
+Our final case study is going to be a bit more graphic than the previous rather
+dry sections -- we are going to have a look at visualising the data we have been
+working with. R offers many possibilities for doing so and surveying them all
+is far beyond the scope of this manual. We only give a flavour of what
+visualisations can be done.
+
+It is always useful to have a look at the data one will be working with. In our
+case, there are two main groups of data -- the performance values and the
+features. Let's have a look at the performance values first. Throughout this
+section, we will be using the example SAT data, but the same methodology applies
+to any other data in LLAMA format. As we have a large amount of data to
+visualise, we are going to use heatmaps.
+\begin{lstlisting}
+data(satsolvers)
+times = subset(satsolvers|$\$$|data, T, satsolvers|$\$$|performance)
+par(mar=c(7,1,3,1))
+cols = gray(seq(1, 0, length.out=255))
+image(t(as.matrix(times)), axes=F, col=cols)
+axis(1, labels=satsolvers|$\$$|performance, at=seq(0, 1, 1/(length(satsolvers|$\$$|performance)-1)), las=2)
+legend("top", legend=c(min(times), max(times)), fill=c("white", "black"), bty="n", inset=-0.12, xpd=NA)
+\end{lstlisting}
+The graph created by this code is shown in Figure~\ref{fig:times}. After
+extracting the performance values (runtimes in this case) from the LLAMA data
+frame, setting some plot parameters and creating a black and white colour scale,
+we plot the heatmap, axis, and legend. The map shows the time each solver takes
+on each instance.
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[width=.9\textwidth]{times}
+\caption{Runtimes by solver and instance from almost instantaneous solve (white)
+to timeout (black).}
+\label{fig:times}
+\end{center}
+\end{figure}
+
+There is a large spread of runtimes in our data, with most instances being
+solved either instantaneously or timing out. The figure looks accordingly, with
+most colours being either white or black and very little grey in between.
+Plotting the log of the runtime is more informative
+(Figure~\ref{fig:times-log}).
+\begin{lstlisting}
+image(log(t(as.matrix(times))), axes=F, col=cols)
+axis(1, labels=satsolvers|$\$$|performance, at=seq(0, 1, 1/(length(satsolvers|$\$$|performance)-1)), las=2)
+legend("top", legend=c(min(times), max(times)), fill=c("white", "black"), bty="n", inset=-0.12, xpd=NA)
+\end{lstlisting}
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[width=.9\textwidth]{times-log}
+\caption{Log runtimes by solver and instance from almost instantaneous solve
+(white) to timeout (black).}
+\label{fig:times-log}
+\end{center}
+\end{figure}
+
+When doing algorithm selection, we are usually more interested in how the
+performance of a solver compares to the other solvers in the portfolio rather
+than the absolute value. We can plot the rank of each solver on each instance in
+a similar fashion to before. The resulting plot is shown in
+Figure~\ref{fig:rank}.
+\begin{lstlisting}
+image(apply(times, 1, order), axes=F, col=cols)
+axis(1, labels=satsolvers|$\$$|performance, at=seq(0, 1, 1/(length(satsolvers|$\$$|performance)-1)), las=2)
+legend("top", legend=c(1, length(satsolvers|$\$$|performance)), fill=c("white", "black"), bty="n", inset=-0.12, xpd=NA)
+\end{lstlisting}
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[width=.9\textwidth]{rank}
+\caption{Solver ranks on each instance from first (white) to last (black).}
+\label{fig:rank}
+\end{center}
+\end{figure}
+
+\medskip
+
+The same kind of visual analysis can be applied to the features. This is
+probably even more important that analysing the performance data, as the
+features are used to create the models we are going to use for algorithm
+selection. If the features are bad, the models will not be good either. Let's do
+the same kind of plot we did for the solvers for the features.
+\begin{lstlisting}
+features = subset(satsolvers|$\$$|data, T, satsolvers|$\$$|features)
+par(mar=c(10,1,3,1))
+image(t(as.matrix(features)), axes=F, col=cols)
+axis(1, labels=satsolvers|$\$$|features, at=seq(0, 1, 1/(length(satsolvers|$\$$|features)-1)), las=2)
+legend("top", legend=c(min(features), max(features)), fill=c("white", "black"), bty="n", inset=-0.12, xpd=NA)
+\end{lstlisting}
+The resulting plot is shown in Figure~\ref{fig:features}. The values for four of
+the features are much higher than the rest. It is hard to see the variance of
+the feature values for a particular feature over the set of instances because of
+this.
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[width=.9\textwidth]{features}
+\caption{Feature values on each instance from lowest (white) to highest
+(black).}
+\label{fig:features}
+\end{center}
+\end{figure}
+
+We get a better plot from the normalised feature values
+(Figure~\ref{fig:features-norm}).
+\begin{lstlisting}
+nFeatures = normalize(features)
+par(mar=c(10,1,1,1))
+image(t(as.matrix(nFeatures|$\$$|features)), axes=F, col=cols)
+axis(1, labels=satsolvers|$\$$|features, at=seq(0, 1, 1/(length(satsolvers|$\$$|features)-1)), las=2)
+\end{lstlisting}
+The features for the example data are not very good. For quite a lot of them,
+there is almost no variation and others have only two different values.
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[width=.9\textwidth]{features-norm}
+\caption{Normalised feature values on each instance from -1 (white) to 1
+(black).}
+\label{fig:features-norm}
+\end{center}
+\end{figure}
+
+%\afterpage{\clearpage}
+
+We can apply the same kind of analysis to the prediction results. This allows us
+to get an idea of what the machine learning algorithms are doing, where they
+work well and where things could be improved. The following code creates a
+heatmap of the PAR10 scores of a classification model on all instances. We are
+using the log of the PAR10 scores to get more shades of grey.
+\begin{lstlisting}
+folds = cvFolds(satsolvers)
+model = classify(J48, folds)
+scores = unlist(parscores(folds, model|$\$$|predictions))
+par(mar=c(1,1,1,10))
+image(log(t(as.matrix(scores))), axes=F, col=cols)
+legend("right", legend=quantile(scores), fill=gray(seq(1, 0, length.out=5)), bty="n", inset=-0.3, xpd=NA)
+\end{lstlisting}
+The resulting plot is shown in Figure~\ref{fig:classification}. It gives us some
+idea of what's going on, but looks more like a bar code than anything else.
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[width=.9\textwidth]{classification}
+\caption{PAR10 scores for a \texttt{J48} classification model.}
+\label{fig:classification}
+\end{center}
+\end{figure}
+
+The power of heatmaps comes from being able to compare multiple entities. A more
+useful plot compares the performance of the classification model to the
+performance of other models. The following code can be used to generate such a
+plot (Figure~\ref{fig:comparison}).
+\begin{lstlisting}
+folds = cvFolds(satsolvers)
+model1 = classify(J48, folds)
+model2 = regression(LinearRegression, folds)
+model3 = classifyPairs(J48, folds)
+model4 = cluster(XMeans, folds)
+scores1 = unlist(parscores(folds, model1|$\$$|predictions))
+scores2 = unlist(parscores(folds, model2|$\$$|predictions))
+scores3 = unlist(parscores(folds, model3|$\$$|predictions))
+scores4 = unlist(parscores(folds, model4|$\$$|predictions))
+par(mar=c(10,1,1,1))
+names = c(paste("classify", "J48", mean(scores1), sep="\n"), paste("regression", "LinearRegression", mean(scores2), sep="\n"), paste("classifyPairs", "J48", mean(scores3), sep="\n"), paste("cluster", "XMeans", mean(scores4), sep="\n"))
+scores = c(scores1, scores2, scores3, scores4)
+image(log(t(matrix(scores, ncol=4))), axes=F, col=cols)
+axis(1, labels=names, at=seq(0, 1, 1/(length(names)-1)), las=1, tick=F, line=1)
+legend("bottom", legend=quantile(scores), fill=gray(seq(1, 0, length.out=5)), bty="n", inset=-0.4, xpd=NA)
+\end{lstlisting}
+This comparison is actually quite insightful. The predictions of the regression
+model usually incur a higher PAR10 score (overall, the column is darker than the
+others), but its mean PAR10 score is lower than for the other models. It also
+shows us that for this specific scenario, there is almost no difference between
+the single and pairwise classification models.
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[width=.9\textwidth]{comparison}
+\caption{PAR10 scores for four different models. The number in each label shows
+the mean PAR10 score across all instances.}
+\label{fig:comparison}
+\end{center}
+\end{figure}
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[width=.9\textwidth]{rank-diff}
+\caption{Difference between actual and predicted rank for the regression model.
+Red means that an algorithm was predicted to be worse than it actually was, blue
+that it was predicted to be better. Predicted and actual rank agree for white.}
+\label{fig:rank-diff}
+\end{center}
+\end{figure}
+
+As a final example, we will plot the differences in predicted and actual rank
+for the regression model. The heatmap resulting from the code below is shown in
+Figure~\ref{fig:rank-diff}.
+\begin{lstlisting}
+par(mar=c(7,1,1,5))
+ranks = apply(sapply(unlist(model2|$\$$|predictions, recursive=F), function(x) { x|$\$$|algorithm }), 2, function(y) { as.vector(sapply(y, function(z) { which(z == satsolvers|$\$$|performance) })) })
+diffs = apply(times, 1, order)-ranks
+cols = c(colorRampPalette(c("red", "white"))(128), colorRampPalette(c("white", "blue"))(128))
+breaks = c(seq(min(diffs), 0-1/128, length.out=128), 0, seq(0+1/128, max(diffs), length.out=128))
+image(diffs, axes=F, col=cols, breaks=breaks)
+axis(1, labels=satsolvers|$\$$|performance, at=seq(0, 1, 1/(length(satsolvers|$\$$|performance)-1)), las=2)
+legend("right", legend=quantile(diffs), fill=cols[quantile(1:length(cols))], bty="n", inset=-0.15, xpd=NA)
+\end{lstlisting}
+The plot is a bit messy, but there are some insights to be gained. Looking at
+the solvers that perform well overall (e.g.\ minisat, left column), we can see
+that they are predominantly red, i.e.\ most of the time they are predicted to be
+worse than they actually are. For the solvers that exhibit bad performance
+(e.g.\ rsat, right column), we observe that they are predominantly blue, meaning
+that they are usually predicted to be better than they actually are. This
+indicates that improvements are to be had by training better machine learning
+models in this particular scenario.
+
+\medskip
+
+The examples above only scratch the surface of the visualisations that are
+possible in R. While none of the examples shown depends on LLAMA, the data
+structures it provides facilitate the creation of such plots to some extent.
 
 
 \section{The further domestication of LLAMA}
