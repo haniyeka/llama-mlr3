@@ -15,8 +15,8 @@ them.
 \tabular{ll}{
 Package: \tab llama\cr
 Type: \tab Package\cr
-Version: \tab 0.3\cr
-Date: \tab 2013-06-06\cr
+Version: \tab 0.4\cr
+Date: \tab 2013-07-05\cr
 Depends: \tab plyr, foreach\cr
 Suggests: \tab RWeka, FSelector\cr
 License: \tab BSD\cr
@@ -63,8 +63,13 @@ contributions by Barry Hurley
 Maintainer: Lars Kotthoff <larsko@4c.ucc.ie>
 }
 \references{
-Lars Kotthoff, Algorithm Selection for Combinatorial Search Problems: A survey,
-2012
+Kotthoff, L. (2013)
+LLAMA: Leveraging Learning to Automatically Manage Algorithms.
+\emph{arXiv:1306.1031}.
+
+Kotthoff, L. (2012)
+Algorithm Selection for Combinatorial Search Problems: A survey.
+\emph{University College Cork (Technical Report)}.
 }
 \keyword{ package }
 \examples{
