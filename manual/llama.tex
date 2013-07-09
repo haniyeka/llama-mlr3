@@ -332,7 +332,7 @@ assuming that your data is available in the \lstinline{data} variable.
 split = trainTest(data)
 \end{lstlisting}
 The second (optional) argument of the function specifies what fraction of the
-total data should be used for testing. If, instead of a 60-40 split, we want a
+total data should be used for training. If, instead of a 60-40 split, we want a
 70-30 split, all we need to do is run \lstinline{split = trainTest(data, 0.7)}.
 
 By default, the training and test partitions are \emph{stratified}. That is, the
@@ -340,7 +340,7 @@ distribution of best-algorithm labels in both partitions is approximately equal.
 If, for example, solver A is the best on 90\% of the instances and solver B on
 the remaining 10\% in the training set, the same will be the case in the test
 set. To turn off this behaviour, give the additional argument
-\lstinline{statify = F}.
+\lstinline{stratify = F}.
 
 In addition to a simple train-test split, LLAMA also provides a function to
 create data folds for cross-validation~\cite{kohavi_study_1995}, which is in
