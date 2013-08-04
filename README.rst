@@ -39,13 +39,14 @@ You can also use the SAT solver data that comes with LLAMA by running
     data(satsolvers)
     data = satsolvers
 
-Now partition the entire set of instances into training and test.
+Now partition the entire set of instances into training and test sets for
+cross-validation.
 
 ::
 
-    tt = trainTest(data)
+    folds = cvFolds(data)
 
-This will give you a 60% training, 40% test split. Now we're ready to train
+This will give you 10 folds for cross-validation. Now we're ready to train
 our first model. To do that, we'll need some machine learning algorithms --
 we're going to use RWeka, which gives us access to everything in Weka. Load
 RWeka and train a simple classification model that predicts the best algorithm.
@@ -53,7 +54,7 @@ RWeka and train a simple classification model that predicts the best algorithm.
 ::
 
     require(RWeka)
-    model = classify(J48, tt)
+    model = classify(J48, folds)
 
 Great! Now let's see how well this model is doing and compare its performance to
 the virtual best solver (VBS) and the single best solver in terms of average
@@ -61,7 +62,7 @@ PAR10 score.
 
 ::
 
-    mean(unlist(parscores(tt, model$predictions)))
+    mean(unlist(parscores(folds, model$predictions)))
     mean(unlist(parscores(data, vbs(data))))
     mean(unlist(parscores(data, singleBest(data))))
 
