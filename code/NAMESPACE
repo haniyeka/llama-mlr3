@@ -2,6 +2,7 @@ export(
     classify,
     classifyPairs,
     cluster,
+    contributions,
     cvFolds,
     featureFilter,
     input,
