@@ -7,7 +7,7 @@ Analysis functions
 Functions for analysing portfolios.
 }
 \usage{
-contributions(data = NULL, minimize = TRUE)
+contributions(data = NULL, minimize = TRUE, limit = 100)
 }
 \arguments{
   \item{data}{
@@ -16,13 +16,23 @@ contributions(data = NULL, minimize = TRUE)
 \item{minimize}{
   whether the minimum performance value is best. Default true.
 }
+\item{limit}{
+  the maximum number of orderings of the algorithms to evaluate. If the number
+  of possible orderings is larger than this, \code{limit} orderings will be
+  sampled uniformly from it. Default 100.
+}
 }
 \details{
 \code{contributions} analyses the marginal contributions of the algorithms in
 the portfolio to its overall performance. For each algorithm, the difference in
-performance with and without it for all possible subsets of algorithms is
-recorded. The marginal contribution of the algorithm is defined as the mean of
-those values.
+performance, in terms of algorithm performance given in the input data, with and
+without it for all possible subsets of algorithms is recorded. The marginal
+contribution of the algorithm is defined as the mean of those values.
+
+This function requires \eqn{n\cdot 2^{n-1}}{n * 2^(n-1)} orderings to be
+evaluated, which becomes very expensive very quickly. The \code{limit} parameter
+mitigates that -- if there are too many orderings, a uniformly sampled subset is
+evaluated. This is faster, but less accurate.
 }
 \value{
 A table listing the marginal contributions for each algorithm in the portfolio.

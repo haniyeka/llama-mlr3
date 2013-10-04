@@ -15,3 +15,10 @@ test_that("contributions respects minimize", {
 test_that("contributions raises error if no data given", {
     expect_error(contributions(), "Need data to determine contributions!")
 })
+
+test_that("contributions allows to specify limit", {
+    d = list(data=data.frame(a=c(1,2,3), b=c(4,2,1)), performance=c("a", "b"))
+    cs = contributions(d, limit=1)
+    expect_equal(cs[[1]], 2)
+    expect_equal(cs[[2]], 3)
+})
