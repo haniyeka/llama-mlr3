@@ -1,5 +1,5 @@
 contributions <-
-function(data=NULL, minimize=T, limit=100) {
+function(data=NULL, minimize=TRUE, limit=100) {
     if(is.null(data)) {
         stop("Need data to determine contributions!")
     }

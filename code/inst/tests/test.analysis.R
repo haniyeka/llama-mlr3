@@ -18,7 +18,7 @@ test_that("contributions raises error if no data given", {
 
 test_that("contributions allows to specify limit", {
     d = list(data=data.frame(a=c(1,2,3), b=c(4,2,1)), performance=c("a", "b"))
-    cs = contributions(d, limit=1)
-    expect_equal(cs[[1]], 2)
-    expect_equal(cs[[2]], 3)
+    cs = contributions(d, limit=2)
+    expect_equal(cs[[1]], 3)
+    expect_equal(cs[[2]], 2)
 })
