@@ -7,35 +7,27 @@ Analysis functions
 Functions for analysing portfolios.
 }
 \usage{
-contributions(data = NULL, minimize = TRUE, limit = 100)
+contributions(data = NULL)
 }
 \arguments{
   \item{data}{
   the data to use. The structure returned by \code{input}.
 }
-\item{minimize}{
-  whether the minimum performance value is best. Default true.
-}
-\item{limit}{
-  the maximum number of orderings of the algorithms to evaluate. If the number
-  of possible orderings is larger than this, \code{limit} orderings will be
-  sampled uniformly from it. Default 100.
-}
 }
 \details{
 \code{contributions} analyses the marginal contributions of the algorithms in
-the portfolio to its overall performance. For each algorithm, the difference in
-performance, in terms of algorithm performance given in the input data, with and
-without it for all possible subsets of algorithms is recorded. The marginal
-contribution of the algorithm is defined as the mean of those values.
+the portfolio to its overall performance. More specifically, the Shapley value
+for a specific algorithm is computed as the "value" of the portfolio with the
+algorithm minus the "value" without the algorithm. This is done over all
+possible portfolio compositions.
 
-This function requires \eqn{n\cdot 2^{n-1}}{n * 2^(n-1)} orderings to be
-evaluated, which becomes very expensive very quickly. The \code{limit} parameter
-mitigates that -- if there are too many orderings, a uniformly sampled subset is
-evaluated. This is faster, but less accurate.
+This function is currently only implemented for cases where the objective is to
+minimise the performance value, which is the case for runtime for example. The
+function will still work in other cases, but the reported values will be
+incorrect.
 }
 \value{
-A table listing the marginal contributions for each algorithm in the portfolio.
+A table listing the Shapley values for each algorithm in the portfolio.
 The higher the value, the more the respective algorithm contributes to the
 overall performance of the portfolio.
 }

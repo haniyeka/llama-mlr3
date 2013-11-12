@@ -18,3 +18,4 @@ export(
 )
 importFrom(plyr, ddply)
 importFrom(foreach, foreach, "%dopar%")
+importFrom(rJava, J, .jpackage, .jarray)
