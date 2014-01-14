@@ -19,7 +19,7 @@ Version: \tab 0.5\cr
 Date: \tab 2014-01-14\cr
 Depends: \tab plyr, rJava, parallelMap\cr
 Suggests: \tab RWeka, FSelector, e1071, flexclust, testthat\cr
-License: \tab BSD\cr
+License: \tab BSD_3_clause\cr
 }
 The package provides functions to read performance data, build performance
 models that enable selection of algorithms (using external machine learning
