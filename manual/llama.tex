@@ -880,11 +880,12 @@ iteration will be trained and tested in parallel. The \lstinline{parallelMap}
 construct provides transparent parallelisation that executes sequentially if no
 suitable parallel backend is loaded. All the user has to do to enable parallel
 execution is to load a parallel backend, for example through
-\lstinline{parallelStartSocket()}.
-multi-core support.
+\lstinline{parallelStartSocket()}. Libraries used in the spawned processes
+should be specified through \lstinline{parallelLibrary}.
 \begin{lstlisting}
 library(parallelMap)
 parallelStartSocket(2) # use 2 CPUs
+parallelLibrary("llama", "RWeka")
 # LLAMA code
 \end{lstlisting}
 After running these commands, all subsequent calls to LLAMA model building
