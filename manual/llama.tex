@@ -39,7 +39,7 @@ illustrate its usage on a set of example SAT problems.
 \vspace*{\stretch{1}}
 
 \begin{center}
-This document corresponds to LLAMA version 0.4.
+This document corresponds to LLAMA version 0.5.
 \end{center}
 
 \end{titlepage}
@@ -739,6 +739,45 @@ Note that the performance of a model built on imputed data cannot be compared to
 models built on the original censored data. All of the instances in the data
 will be solvable, as there is no time limit any more.
 
+\subsection{Portfolio analysis}
+
+LLAMA provides the \lstinline{contributions} function to analyse the
+contributions a single algorithm makes to a portfolio using techniques from game
+theory~\cite{rahwan_game_2013}. Running this on the example data distributed
+with the package gives the following result:
+
+\begin{lstlisting}
+sort(contributions(satsolvers))
+         clasp  cryptominisat       qutersat 
+   -42499.1089     -8854.7117       740.2909 
+       glucose            mxc       march_rw 
+     4678.7110     28069.9128     33521.0780 
+   MPhaseSAT64       precosat        picosat 
+    44008.3382     54136.9820     64197.8563 
+   glueminisat      lingeling      contrasat 
+    67935.5264     76489.3100     78365.7487 
+         sat4j           riss     cirminisat 
+    82804.3613     88360.4072     89550.5715 
+       minisat minisat_noelim           rsat 
+    99151.8748    108837.5158    180762.3266 
+         kcnfs 
+   238407.9801 
+\end{lstlisting}
+
+The negative numbers designate solvers that do not contribute anything to the
+portfolio, but causes its performance to decrease. The solver \verb+kncfs+ makes
+the largest contribution, even though its performance on its own is not
+particularly good. One of the best overall solvers, \verb+clasp+, actually
+decreases the performance of the portfolio.
+
+This analysis can be used to determine which algorithms should be included and
+which ones should be omitted from a portfolio. Note that it is entirely separate
+from learning a model to make the predictions necessary to choose a solver from
+the portfolio for a particular problem instance. As such, the theoretical best
+portfolio might not be the best portfolio to learn models for. To achieve the
+best performance in practice, the combination of portfolio and algorithm
+selection model has to be evaluated.
+
 \subsection{Meta-learning techniques -- ensembles and stacking}
 
 One of the main strengths of LLAMA is that meta-learning techniques can be
@@ -834,27 +873,27 @@ on-line documentation for each of the model builders.
 
 Some of the models can take a very long time to train. Most of the operations
 are independent though and can be parallelised easily. LLAMA uses the
-\lstinline{foreach(...) %dopar%}
-construct provided by the foreach package to parallelise execution across
-cross-validation folds. That is, the model for each iteration will be trained
-and tested in parallel. The \lstinline{%dopar%}
+\lstinline{parallelMap} construct from the parallelMap
+package\footnote{\url{https://github.com/berndbischl/parallelMap}} to
+parallelise execution across cross-validation folds. That is, the model for each
+iteration will be trained and tested in parallel. The \lstinline{parallelMap}
 construct provides transparent parallelisation that executes sequentially if no
 suitable parallel backend is loaded. All the user has to do to enable parallel
-execution is to load a parallel backend, for example the doMC package for
+execution is to load a parallel backend, for example through
+\lstinline{parallelStartSocket()}.
 multi-core support.
 \begin{lstlisting}
-require(doMC)
-registerDoMC()
+library(parallelMap)
+parallelStartSocket(2) # use 2 CPUs
+# LLAMA code
 \end{lstlisting}
 After running these commands, all subsequent calls to LLAMA model building
-functions will take advantage of a multi-core architecture.
+functions will be parallelised across 2 CPUs.
 
-Note that the implementation assumes that the machine learning algorithms can be
-run in parallel and independently. This is not the case for the functions
-provided by RWeka, as they rely on a Java interface that is not thread-safe. The
-Weka machine learning algorithms can still be used with parallel execution
-though if they are wrapped in a function that loads the RWeka package such that
-each thread has its own copy of the Java interface.
+Note that the functions provided by RWeka rely on a Java interface that is not
+thread-safe. The Weka machine learning algorithms can still be used with
+parallel execution though if a backend is used that runs separate processes,
+such as the sockets backend used above.
 
 
 \section{Case study: SATzilla}\label{sec:case:satzilla}
@@ -872,6 +911,11 @@ portfolios more performance in practice. We will sketch the implementation of
 each in turn before putting it all together. The techniques used in this section
 are described in more details in the SATzilla papers
 (e.g.~\cite{xu_satzilla_2008,xu_hierarchical_2007,xu_hydra-mip_2011}).
+
+The main difference of the implementation sketched here and SATzilla is that we
+treat all problem instances the same way, without computing any weights that
+determine the ``importance'' of the problem instance. In practice, using weights
+is almost always a good idea.
 
 \subsection{Presolver}
 
