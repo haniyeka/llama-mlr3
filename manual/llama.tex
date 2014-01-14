@@ -887,6 +887,7 @@ library(parallelMap)
 parallelStartSocket(2) # use 2 CPUs
 parallelLibrary("llama", "RWeka")
 # LLAMA code
+parallelStop()
 \end{lstlisting}
 After running these commands, all subsequent calls to LLAMA model building
 functions will be parallelised across 2 CPUs.
