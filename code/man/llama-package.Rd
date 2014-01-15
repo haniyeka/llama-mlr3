@@ -15,8 +15,8 @@ them.
 \tabular{ll}{
 Package: \tab llama\cr
 Type: \tab Package\cr
-Version: \tab 0.5\cr
-Date: \tab 2014-01-14\cr
+Version: \tab 0.5.1\cr
+Date: \tab 2014-01-15\cr
 Depends: \tab plyr, rJava, parallelMap\cr
 Suggests: \tab RWeka, FSelector, e1071, flexclust, testthat\cr
 License: \tab BSD_3_clause\cr
