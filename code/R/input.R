@@ -1,6 +1,6 @@
 input <-
-function(features, performances, successes=NULL, minimize=T) {
-    if(nrow(features) != nrow(performances) || (!is.null(successes) && (nrow(features) != nrow(successes) || nrow(performances) != nrow(successes)))) {
+function(features, performances, successes=NULL, costs=NULL, minimize=T) {
+    if(nrow(features) != nrow(performances) || (!is.null(successes) && (nrow(features) != nrow(successes) || nrow(performances) != nrow(successes))) || (!is.null(costs) && (nrow(features) != nrow(costs) || nrow(performances) != nrow(costs)))) {
         warning("Different number of rows in data frames, taking only common rows.")
     }
     common = intersect(names(features), names(performances))
@@ -27,5 +27,20 @@ function(features, performances, successes=NULL, minimize=T) {
         snames = setdiff(names(successes), common)
     }
 
-    return(list(data=combined, features=setdiff(names(features), common), performance=pnames, success=snames))
+    if(!is.null(costs)) {
+        if(is.numeric(costs)) {
+            # same cost for everything
+            combined$cost = rep.int(costs, times=length(combined$best))
+            cnames = c("cost")
+        } else {
+            commonCosts = intersect(names(costs), common)
+            if(length(commonCosts) == 0) {
+                stop("Costs can't be linked to rest of data -- no common columns!")
+            }
+            combined = merge(combined, costs, by=common)
+            cnames = setdiff(names(costs), common)
+        }
+    }
+
+    return(list(data=combined, features=setdiff(names(features), common), performance=pnames, success=snames, cost=cnames))
 }

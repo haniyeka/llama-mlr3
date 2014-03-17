@@ -1,5 +1,5 @@
 successes <-
-function(data=NULL, model=NULL) {
+function(data=NULL, model=NULL, timeout=NULL) {
     if(is.null(data) || is.null(model)) {
         stop("Need both data and model to calculate successes!")
     }
@@ -22,10 +22,27 @@ function(data=NULL, model=NULL) {
         data$test = list(data$data)
         predictions = list(predictions)
     }
+
+    if(is.null(timeout)) {
+        # if timeout value wasn't given, assume maximum from data set
+        timeout = max(subset(data$data, T, data$performance))
+    }
     return(unlist(lapply(1:length(data$test), function(i) {
         sapply(1:nrow(data$test[[i]]), function(j) {
+            perfs = subset(data$test[[i]][j,], T, data$performance)
             successes = subset(data$test[[i]][j,], T, data$success)
-            as.logical(successes[which(data$performance == as.character(predictions[[i]][[j]]$algorithm[1]))])
-            })
-        })))
+            if(is.null(data$cost)) {
+                costs = 0
+            } else {
+                costs = sum(subset(data$test[[i]][j,], T, data$cost))
+            }
+            chosen = which(data$performance == predictions[[i]][[j]]$algorithm[1])
+            value = as.numeric(perfs[chosen]) + costs
+            if(!as.logical(successes[chosen]) || value > timeout) {
+                FALSE
+            } else {
+                TRUE
+            }
+        })
+    })))
 }

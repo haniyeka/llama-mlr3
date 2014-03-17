@@ -22,15 +22,26 @@ function(data=NULL, model=NULL, factor=10, timeout=NULL) {
         data$test = list(data$data)
         predictions = list(predictions)
     }
+
+    if(is.null(timeout)) {
+        # if timeout value wasn't given, assume maximum from data set
+        timeout = max(subset(data$data, T, data$performance))
+    }
     return(unlist(lapply(1:length(data$test), function(i) {
         sapply(1:nrow(data$test[[i]]), function(j) {
             perfs = subset(data$test[[i]][j,], T, data$performance)
             successes = subset(data$test[[i]][j,], T, data$success)
-            score = as.numeric(perfs[which(data$performance == predictions[[i]][[j]]$algorithm[1])])
-            if(!as.logical(successes[which(data$performance == predictions[[i]][[j]]$algorithm[1])])) {
-                score = (if(is.null(timeout)) { score } else { timeout }) * factor
+            if(is.null(data$cost)) {
+                costs = 0
+            } else {
+                costs = sum(subset(data$test[[i]][j,], T, data$cost))
+            }
+            chosen = which(data$performance == predictions[[i]][[j]]$algorithm[1])
+            score = as.numeric(perfs[chosen]) + costs
+            if(!as.logical(successes[chosen]) || score > timeout) {
+                score = timeout * factor
             }
             score
-            })
-        })))
+        })
+    })))
 }

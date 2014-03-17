@@ -12,7 +12,8 @@ misclassificationPenalties(data, model, minimize = T)
 }
 \arguments{
   \item{data}{the data used to induce the model. The same as given to
-      \code{classify}, \code{cluster} or \code{regression}.}
+      \code{classify}, \code{classifyPairs}, \code{cluster} or
+      \code{regression}.}
   \item{model}{the algorithm selection model. Can be either a model
       returned by one of the model-building functions or a function that returns
       predictions such as \code{vbs} or the predictor function of a trained

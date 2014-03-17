@@ -1,7 +1,7 @@
 test_that("successes returns successes", {
     fold = data.frame(a=rep.int(1, 5), b=rep.int(0, 5),
         d=rep.int(F, 5), e=rep.int(T, 5))
-    d = list(test=list(fold, fold), performance=c("a", "b"), success=c("d", "e"))
+    d = list(data=rbind(fold, fold), test=list(fold, fold), performance=c("a", "b"), success=c("d", "e"))
     as = rep.int(list(data.frame(algorithm="a", score=1)), 5)
     bs = rep.int(list(data.frame(algorithm="b", score=1)), 5)
     modela = list(predictions=list(as, as))
@@ -28,4 +28,18 @@ test_that("successes works without test split", {
 
     expect_equal(sum(successes(d, modela)), 0)
     expect_equal(sum(successes(d, modelb)), 10)
+})
+
+test_that("sucesses takes feature costs into account", {
+    fold = data.frame(a=rep.int(1, 5), b=rep.int(0, 5),
+        d=rep.int(T, 5), e=rep.int(T, 5), c=rep.int(1, 5))
+    d = list(data=rbind(fold, fold), test=list(fold, fold), performance=c("a", "b"), success=c("d", "e"), cost=c("c"))
+    as = rep.int(list(data.frame(algorithm="a", score=1)), 5)
+    bs = rep.int(list(data.frame(algorithm="b", score=1)), 5)
+    modela = list(predictions=list(as, as))
+    modelb = list(predictions=list(bs, bs))
+
+    expect_equal(sum(successes(d, modela, timeout=1.5)), 0)
+    expect_equal(sum(successes(d, modela, timeout=5)), 10)
+    expect_equal(sum(successes(d, modelb, timeout=1.5)), 10)
 })

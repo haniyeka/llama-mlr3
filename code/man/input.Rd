@@ -7,18 +7,24 @@ Read data
 Reads performance data that can be used to train and evaluate models.
 }
 \usage{
-input(features, performances, successes = NULL, minimize = T)
+input(features, performances, successes = NULL, costs = NULL, minimize = T)
 }
 \arguments{
   \item{features}{
-  data frame that contains the feature values for each problem.
+  data frame that contains the feature values for each problem instance.
 }
   \item{performances}{
-  data frame that contains the performance values for each problem.
+  data frame that contains the performance values for each problem instance.
 }
   \item{successes}{
   data frame that contains the success values (true/false) for each
-  problem. Optional.
+  problem instance. Optional.
+}
+  \item{costs}{
+  either a single number or a data frame that contains the cost of the features
+  for each problem instance. If a number is specified, it is assumed to denote
+  the cost for all problem instances (i.e. the cost is always the same).
+  Optional.
 }
   \item{minimize}{
   whether the minimum performance value is best. Default true.
@@ -27,19 +33,24 @@ input(features, performances, successes = NULL, minimize = T)
 \details{
 \code{input} takes a list of data frames and processes them as follows. The
 feature and performance data are joined by looking for common column names in
-the two files (usually an ID of the problem). For each problem, the best
-algorithm according to the read performance data is computed.
+the two files (usually an ID of the problem instance). For each problem, the
+best algorithm according to the read performance data is computed.
 
 The data frame that describes whether an algorithm was successful on a problem
 is optional. If \code{parscores} or \code{successes} are to be used to
 evaluate the learned models, this argument is required however and will lead to
 error messages if not supplied.
+
+Similary, optional feature costs can be supplied as a single number (same cost
+for every problem instance) or a data frame with the ID of a problem instance
+and its feature cost.
 }
 \value{
 \item{data}{the combined data (features, performance, successes).}
 \item{features}{a list of names denoting problem features.}
 \item{performance}{a list of names denoting algorithm performances.}
 \item{success}{a list of names denoting algorithm successes.}
+\item{cost}{a list of names denoting feature costs.}
 }
 \author{
 Lars Kotthoff
@@ -58,6 +69,6 @@ Lars Kotthoff
 # 0,T,F
 # ...
 \dontrun{input(read.csv("features.csv"), read.csv("performance.csv"),
-    read.csv("success.csv"))}
+    read.csv("success.csv"), costs=10)}
 }
 \keyword{ ~models }
