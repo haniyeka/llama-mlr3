@@ -7,22 +7,22 @@ Success
 Was the problem solved successfully using the chosen algorithm?
 }
 \usage{
-successes(data, predictions)
+successes(data, model)
 }
 \arguments{
   \item{data}{the data used to induce the model. The same as given to
       \code{classify}, \code{cluster} or \code{regression}.}
-  \item{predictions}{the predictions. Can be a list of lists as returned by
-      \code{classify}, \code{cluster} or \code{regression} or a
-      list as returned by the predictor return value of those functions.}
+  \item{model}{the algorithm selection model. Can be either a model
+      returned by one of the model-building functions or a function that returns
+      predictions such as \code{vbs} or the predictor function of a trained
+      model.}
 }
 \details{
-Returns TRUE if the chosen algorithm successfully solved the problem, FALSE
-otherwise for each datum.
+Returns TRUE if the chosen algorithm successfully solved the problem instance,
+FALSE otherwise for each problem instance.
 }
 \value{
-A list (or list of lists, depending on the format of \code{predictions}) of the
-success values.
+A list of the success values.
 }
 \author{
 Lars Kotthoff
@@ -37,8 +37,8 @@ library(RWeka)
 data(satsolvers)
 trainTest = cvFolds(satsolvers)
 
-res = classify(classifier=J48, data=trainTest)
-sum(unlist(successes(trainTest, res$predictions)))
+model = classify(classifier=J48, data=trainTest)
+sum(successes(trainTest, model))
 }
 }
 \keyword{ ~models }

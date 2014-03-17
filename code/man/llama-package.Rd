@@ -84,16 +84,16 @@ library(RWeka)
 data(satsolvers)
 trainTest = cvFolds(satsolvers)
 
-res = classify(classifier=J48, data=trainTest)
+model = classify(classifier=J48, data=trainTest)
 # print the total number of successes
-print(sum(unlist(successes(trainTest, res$predictions))))
+print(sum(successes(trainTest, model)))
 # print the total misclassification penalty
-print(sum(unlist(misclassificationPenalties(trainTest, res$predictions))))
+print(sum(misclassificationPenalties(trainTest, model)))
 # print the total PAR10 score
-print(sum(unlist(parscores(trainTest, res$predictions))))
+print(sum(parscores(trainTest, model)))
 
 # number of total successes for virtual best solver for comparison
-print(sum(successes(satsolvers, vbs(satsolvers))))
+print(sum(successes(satsolvers, vbs)))
 
 # print predictions on the entire data set
 print(res$predictor(subset(satsolvers$data, TRUE, satsolvers$features)))
@@ -103,8 +103,8 @@ library(FSelector)
 
 filtered = featureFilter(cfs, satsolvers)
 folds = cvFolds(filtered)
-res = regression(regressor=LinearRegression, data=folds)
+model = regression(regressor=LinearRegression, data=folds)
 # print the total number of successes
-print(sum(unlist(successes(folds, res$predictions))))
+print(sum(successes(folds, model)))
 }
 }

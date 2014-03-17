@@ -50,15 +50,15 @@ Lars Kotthoff
 data(satsolvers)
 
 # number of total successes for virtual best solver
-print(sum(successes(satsolvers, vbs(satsolvers))))
+print(sum(successes(satsolvers, vbs)))
 # number of total successes for single best solver
-print(sum(successes(satsolvers, singleBest(satsolvers))))
+print(sum(successes(satsolvers, singleBest)))
 
 # sum of PAR10 scores for single best solver by PAR10 score
-print(sum(parscores(satsolvers, singleBestByPar(satsolvers))))
+print(sum(parscores(satsolvers, singleBestByPar)))
 
 # number of total successes for single best solver by successes
-print(sum(successes(satsolvers, singleBestBySuccesses(satsolvers))))
+print(sum(successes(satsolvers, singleBestBySuccesses)))
 }
 }
 \keyword{ ~models }
