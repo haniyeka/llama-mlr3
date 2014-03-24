@@ -27,6 +27,9 @@ function(features, performances, successes=NULL, costs=NULL, minimize=T) {
         snames = setdiff(names(successes), common)
     }
 
+    retval = list(data=combined, features=setdiff(names(features), common), performance=pnames, success=snames)
+
+
     if(!is.null(costs)) {
         if(is.numeric(costs)) {
             # same cost for everything
@@ -40,7 +43,8 @@ function(features, performances, successes=NULL, costs=NULL, minimize=T) {
             combined = merge(combined, costs, by=common)
             cnames = setdiff(names(costs), common)
         }
+        retval$cost = cnames
     }
 
-    return(list(data=combined, features=setdiff(names(features), common), performance=pnames, success=snames, cost=cnames))
+    return(retval)
 }
