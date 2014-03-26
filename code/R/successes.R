@@ -34,7 +34,13 @@ function(data=NULL, model=NULL, timeout=NULL) {
             if(is.null(data$cost)) {
                 costs = 0
             } else {
-                costs = sum(subset(data$test[[i]][j,], T, data$cost))
+                if(is.null(data$costGroups)) {
+                    costs = sum(subset(data$test[[i]][j,], T, data$features))
+                } else {
+                    # figure out which feature groups are being used
+                    usedGroups = subset(data$cost, sapply(data$cost, function(x) { length(intersect(data$costGroups[x], data$features)) > 0 }))
+                    costs = sum(subset(data$test[[i]][j,], T, usedGroups))
+                }
             }
             chosen = which(data$performance == predictions[[i]][[j]]$algorithm[1])
             value = as.numeric(perfs[chosen]) + costs

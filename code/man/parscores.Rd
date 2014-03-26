@@ -28,9 +28,11 @@ parscores(data, model, factor = 10, timeout)
 Returns the penalized average runtime performances of the respective chosen
 algorithm on each problem instance.
 
-If feature costs have been given, they are added to the performance of the
-chosen algorithm. If after that the performance value is above the timeout
-value, the timeout value multiplied by the factor is assumed.
+If feature costs have been given, the cost of the used features or feature
+groups is added to the performance of the chosen algorithm. The used features
+are determined by examining the the \code{features} member of \code{data}, not
+the model. If after that the performance value is above the timeout value, the
+timeout value multiplied by the factor is assumed.
 }
 \value{
 A list of the penalized average runtimes.

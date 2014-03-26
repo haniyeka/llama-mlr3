@@ -1,3 +1,4 @@
+# FIXME: when excess (i.e. with no corresponding performance or feature) successes or costs are specified, no warning/error is given
 input <-
 function(features, performances, successes=NULL, costs=NULL, minimize=T) {
     if(nrow(features) != nrow(performances) || (!is.null(successes) && (nrow(features) != nrow(successes) || nrow(performances) != nrow(successes)))) {
@@ -41,13 +42,35 @@ function(features, performances, successes=NULL, costs=NULL, minimize=T) {
             # same cost for everything
             combined$cost = rep.int(costs, times=length(combined$best))
             cnames = c("cost")
-        } else {
+        } else if(is.data.frame(costs)) {
             commonCosts = intersect(names(costs), common)
             if(length(commonCosts) == 0) {
                 stop("Costs can't be linked to rest of data -- no common columns!")
             }
-            combined = merge(combined, costs, by=common)
             cnames = setdiff(names(costs), common)
+            if(length(intersect(cnames, retval$features)) != length(retval$features)) {
+                stop(paste("Costs (", paste(cnames, collapse=", "), ") and features (", paste(retval$features, collapse=", "), ") are disjoint!", sep=""))
+            }
+            cnames = as.vector(sapply(cnames, function(x) { paste(x, "cost", sep="_") }))
+            names(costs) = c(commonCosts, cnames)
+            combined = merge(combined, costs, by=common)
+        } else if(is.list(costs)) {
+            # cost groups
+            retval$costGroups = costs$groups
+            commonCosts = intersect(names(costs$values), common)
+            cnames = setdiff(names(costs$values), common)
+            if(length(commonCosts) == 0) {
+                stop("Costs can't be linked to rest of data -- no common columns!")
+            }
+            if(length(intersect(do.call(c, costs$groups), retval$features)) != length(retval$features)) {
+                stop(paste("Cost groups (", paste(do.call(c, costs$groups), collapse=", "), ") and features (", paste(retval$features, collapse=", "), ") are disjoint!", sep=""))
+            }
+            if(length(intersect(names(costs$groups), cnames)) != length(names(costs$groups))) {
+                stop(paste("Cost groups (", paste(do.call(c, costs$groups), collapse=", "), ") and costs (", paste(cnames, collapse=", "), ") are disjoint!", sep=""))
+            }
+            combined = merge(combined, costs$values, by=common)
+        } else {
+            stop("Invalid format for costs!")
         }
         retval$cost = cnames
         retval$data = combined

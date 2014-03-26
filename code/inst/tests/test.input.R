@@ -53,18 +53,68 @@ test_that("input allows to specify single cost for all", {
     expect_equal(data$data$cost, rep.int(3, 5))
 })
 
-test_that("input allows to costs", {
+test_that("input allows to specify costs", {
     a = data.frame(a=c(1:5), b=rep.int(1, 5))
     b = data.frame(a=c(1:5), c=rep.int(1, 5))
 
-    data = input(a, b, costs=data.frame(a=c(1:5), e=c(1:5)))
+    data = input(a, b, costs=data.frame(a=c(1:5), b=c(1:5)))
     expect_equal(data$features, c("b"))
     expect_equal(data$performance, c("c"))
-    expect_equal(data$cost, c("e"))
-    expect_equal(data$data$e, c(1:5))
+    expect_equal(data$cost, c("b_cost"))
+    expect_equal(data$data$b_cost, c(1:5))
 })
 
-test_that("input warns about different number of rows", {
+test_that("input allows to specify costs for groups", {
+    a = data.frame(a=c(1:5), b=rep.int(1, 5), f=rep.int(1, 5))
+    b = data.frame(a=c(1:5), c=rep.int(1, 5))
+
+    groups = list(g1=c("b"), g2=c("f"))
+    costs = list(groups=groups, values=data.frame(a=c(1:5), g1=c(1:5), g2=c(1:5)))
+
+    data = input(a, b, costs=costs)
+    expect_equal(data$features, c("b", "f"))
+    expect_equal(data$performance, c("c"))
+    expect_equal(data$costGroups, groups)
+    expect_equal(data$cost, c("g1", "g2"))
+    expect_equal(data$data$g1, c(1:5))
+    expect_equal(data$data$g2, c(1:5))
+})
+
+test_that("input stops on invalid cost format", {
+    a = data.frame(a=c(1:5), b=rep.int(1, 5))
+    b = data.frame(a=c(1:5), c=rep.int(1, 5))
+
+    expect_error(input(a, b, costs="foo"), "Invalid format for costs!")
+})
+
+test_that("input stops if features and costs disagree", {
+    a = data.frame(a=c(1:5), b=rep.int(1, 5))
+    b = data.frame(a=c(1:5), c=rep.int(1, 5))
+
+    expect_error(input(a, b, costs=data.frame(a=c(1:5), f=c(1:5))), "Costs ")
+})
+
+test_that("input stops if features and cost groups disagree", {
+    a = data.frame(a=c(1:5), b=rep.int(1, 5), g=rep.int(1, 5))
+    b = data.frame(a=c(1:5), c=rep.int(1, 5))
+
+    groups = list(g1=c("b"), g2=c("f"))
+    costs = list(groups=groups, values=data.frame(a=c(1:5), g1=c(1:5), g2=c(1:5)))
+
+    expect_error(input(a, b, costs=costs), "Cost groups ")
+})
+
+test_that("input stops if cost groups and specified costs disagree", {
+    a = data.frame(a=c(1:5), b=rep.int(1, 5), f=rep.int(1, 5))
+    b = data.frame(a=c(1:5), c=rep.int(1, 5))
+
+    groups = list(g1=c("b"), g2=c("f"))
+    costs = list(groups=groups, values=data.frame(a=c(1:5), g1=c(1:5)))
+
+    expect_error(input(a, b, costs=costs), "Cost groups ")
+})
+
+test_that("input warns about differing number of rows", {
     a = data.frame(a=c(1:6), b=rep.int(1, 6))
     b = data.frame(a=c(1:5), c=rep.int(1, 5))
 

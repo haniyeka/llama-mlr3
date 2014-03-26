@@ -25,9 +25,11 @@ successes(data, model, timeout)
 Returns TRUE if the chosen algorithm successfully solved the problem instance,
 FALSE otherwise for each problem instance.
 
-If feature costs have been given, they are added to the performance of the
-chosen algorithm. If after that the performance value is above the timeout
-value, \code{FALSE} is assumed. If whether an algorithm was successful is not
+If feature costs have been given, the cost of the used features or feature
+groups is added to the performance of the chosen algorithm. The used features
+are determined by examining the the \code{features} member of \code{data}, not
+the model. If after that the performance value is above the timeout value,
+\code{FALSE} is assumed. If whether an algorithm was successful is not
 determined by performance and feature costs, don't pass costs when creating the
 LLAMA data frame.
 }
