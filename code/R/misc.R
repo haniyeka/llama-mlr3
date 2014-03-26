@@ -7,7 +7,7 @@ function(data=NULL) {
     return(lapply(data$data$best, function(l) { setNames(data.frame(as.table(sort(table(l), decreasing=T))), predNames) }))
 }
 
-singleBest <-
+singleBestByCount <-
 function(data=NULL) {
     if(is.null(data)) {
         stop("Need data to determine single best!")
@@ -43,3 +43,5 @@ function(data=NULL) {
     preds = rep.int(best, length(data$data$best))
     return(lapply(preds, function(l) { setNames(data.frame(table(l)), predNames) }))
 }
+
+singleBest <- singleBestByPar
