@@ -1,6 +1,6 @@
 input <-
 function(features, performances, successes=NULL, costs=NULL, minimize=T) {
-    if(nrow(features) != nrow(performances) || (!is.null(successes) && (nrow(features) != nrow(successes) || nrow(performances) != nrow(successes))) || (!is.null(costs) && (nrow(features) != nrow(costs) || nrow(performances) != nrow(costs)))) {
+    if(nrow(features) != nrow(performances) || (!is.null(successes) && (nrow(features) != nrow(successes) || nrow(performances) != nrow(successes)))) {
         warning("Different number of rows in data frames, taking only common rows.")
     }
     common = intersect(names(features), names(performances))
@@ -8,6 +8,12 @@ function(features, performances, successes=NULL, costs=NULL, minimize=T) {
         stop("Performance can't be linked to features -- no common columns!")
     }
     pnames = setdiff(names(performances), common)
+
+    ids = factor(do.call(paste0, subset(features, T, common)))
+    if(length(ids) != length(levels(ids))) {
+        stop("Common columns do not provide unique IDs!")
+    }
+
     combined = merge(features, performances, by=common)
     optfun = if(minimize) { min } else { max }
     combined$best = factor(apply(subset(combined, T, pnames), 1, function(x) { pnames[head(which(unlist(x) == optfun(unlist(x))), 1)] }))
@@ -44,6 +50,7 @@ function(features, performances, successes=NULL, costs=NULL, minimize=T) {
             cnames = setdiff(names(costs), common)
         }
         retval$cost = cnames
+        retval$data = combined
     }
 
     return(retval)
