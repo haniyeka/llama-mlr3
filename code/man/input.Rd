@@ -56,6 +56,7 @@ Similarly, feature costs are optional.
 \item{features}{a list of names denoting problem features.}
 \item{performance}{a list of names denoting algorithm performances.}
 \item{success}{a list of names denoting algorithm successes.}
+\item{minimize}{true if the smaller performance values are better, else false.}
 \item{cost}{a list of names denoting feature costs.}
 \item{costGroups}{a list of list of names denoting which features belong to
 which group. Only returned if cost groups are given as input.}

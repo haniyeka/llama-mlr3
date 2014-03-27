@@ -34,7 +34,7 @@ function(features, performances, successes=NULL, costs=NULL, minimize=T) {
         snames = setdiff(names(successes), common)
     }
 
-    retval = list(data=combined, features=setdiff(names(features), common), performance=pnames, success=snames)
+    retval = list(data=combined, features=setdiff(names(features), common), performance=pnames, success=snames, minimize=minimize)
 
 
     if(!is.null(costs)) {
