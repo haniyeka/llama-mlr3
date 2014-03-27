@@ -44,4 +44,13 @@ function(data=NULL) {
     return(lapply(preds, function(l) { setNames(data.frame(table(l)), predNames) }))
 }
 
-singleBest <- singleBestByPar
+singleBest <-
+function(data=NULL) {
+    if(is.null(data)) {
+        stop("Need data to determine single best!")
+    }
+
+    best = names(sort(sapply(data$performance, function(x) { sum(subset(data$data, select=x)) }), decreasing=!data$minimize))[1]
+    preds = rep.int(best, length(data$data$best))
+    return(lapply(preds, function(l) { setNames(data.frame(table(l)), predNames) }))
+}
