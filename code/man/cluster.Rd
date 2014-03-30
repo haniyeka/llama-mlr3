@@ -9,6 +9,7 @@ of the problem.
 }
 \usage{
 cluster(clusterer = NULL, data = NULL,
+    bestBy = "performance",
     pre = function(x, y=NULL) { list(features=x) })
 }
 \arguments{
@@ -23,6 +24,10 @@ cluster(clusterer = NULL, data = NULL,
   the data to use with training and test sets. The structure returned by
   \code{trainTest} or \code{cvFolds}.
 }
+  \item{bestBy}{
+  the criteria by which to determine the best algorithm in a cluster. Can be one
+  of "performance", "count", "successes". Optional. Defaults to "performance".
+}
   \item{pre}{
   a function to preprocess the data. Currently only \code{normalize}.
   Optional. Does nothing by default.
@@ -31,9 +36,13 @@ cluster(clusterer = NULL, data = NULL,
 \details{
 \code{cluster} takes \code{data} and processes it using \code{pre} (if
 supplied). \code{clusterer} is called to cluster the data. For each cluster, the
-best algorithm is identified as the one with the best overall performance on the
-problems in that cluster. The learned model is used to cluster the test data and
-predict algorithms accordingly.
+best algorithm is identified according to the criteria given in \code{bestBy}.
+If \code{bestBy} is "performance", the best algorithm is the one with the best
+overall performance across all instances in the cluster. If it is "count", the
+best algorithm is the one that has the best performance most often. If it is
+"successes", the best algorithm is the one with the highest number of successes
+across all instances in the cluster. The learned model is used to cluster the
+test data and predict algorithms accordingly.
 
 The evaluation across the training and test sets will be parallelized
 automatically if a suitable backend for parallel computation is loaded.
@@ -82,6 +91,10 @@ res = cluster(clusterer=XMeans, data=trainTest, pre=normalize)
 sum(unlist(successes(trainTest, res$predictions)))
 # predictions on the entire data set
 res$predictor(subset(satsolvers$data, TRUE, satsolvers$features))
+
+# determine best by number of successes
+res = cluster(clusterer=XMeans, data=trainTest, bestBy="successes", pre=normalize)
+sum(unlist(successes(trainTest, res$predictions)))
 
 library(flexclust)
 res = cluster(clusterer=function(x) { kcca(x, length(satsolvers$performance)) },
