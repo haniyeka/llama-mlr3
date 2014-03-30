@@ -1,5 +1,5 @@
 misclassificationPenalties <-
-function(data=NULL, model=NULL, minimize=T) {
+function(data=NULL, model=NULL) {
     if(is.null(data) || is.null(model)) {
         stop("Need both data and model to calculate misclassification penalties!")
     }
@@ -21,7 +21,7 @@ function(data=NULL, model=NULL, minimize=T) {
         predictions = list(predictions)
     }
 
-    optfun = if(minimize) { min } else { max }
+    optfun = if(data$minimize) { min } else { max }
 
     return(unlist(lapply(1:length(data$test), function(i) {
         sapply(1:nrow(data$test[[i]]), function(j) {

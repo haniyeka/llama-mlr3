@@ -1,5 +1,5 @@
 classifyPairs <-
-function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }, minimize=T, combinator=NULL) {
+function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }, combinator=NULL) {
     if(is.null(classifier)) {
         stop("No classifier given!")
     }
@@ -15,7 +15,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
         trainpredictions = matrix(nrow=nrow(trf$features), ncol=ncol(combns))
         pairpredictions = matrix(nrow=nrow(tsf$features), ncol=ncol(combns))
         for (j in 1:ncol(combns)) {
-            if(minimize) {
+            if(data$minimize) {
                 cmp = function(x, y) {
                     sapply(data$train[[i]][[x]] < data$train[[i]][[y]], function(z) { if(z) { x } else { y } })
                 }
@@ -44,7 +44,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
 
     fs = pre(subset(data$data, T, data$features))
     models = lapply(1:ncol(combns), function(i) {
-        if(minimize) {
+        if(data$minimize) {
             cmp = function(x, y) {
                 sapply(data$data[[x]] < data$data[[y]], function(z) { if(z) { x } else { y } })
             }

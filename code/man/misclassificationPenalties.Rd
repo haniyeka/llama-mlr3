@@ -8,7 +8,7 @@ Calculates the penalty incurred because of making incorrect decisions, i.e.
 choosing suboptimal algorithms.
 }
 \usage{
-misclassificationPenalties(data, model, minimize = T)
+misclassificationPenalties(data, model)
 }
 \arguments{
   \item{data}{the data used to induce the model. The same as given to
@@ -18,8 +18,6 @@ misclassificationPenalties(data, model, minimize = T)
       returned by one of the model-building functions or a function that returns
       predictions such as \code{vbs} or the predictor function of a trained
       model.}
-  \item{minimize}{is the minimum performance value the best or worst? Default T
-      for best.}
 }
 \details{
 Compares the performance of the respective chosen algorithm to the performance
