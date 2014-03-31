@@ -29,7 +29,7 @@ function(features, performances, successes=NULL, costs=NULL, minimize=T) {
         if(length(intersect(successNames, pnames)) != length(successNames)) {
             stop(paste("Successes (", paste(successNames, collapse=", "), ") and performances (", paste(pnames, collapse=", "), ") for different algorithms given!", sep=""))
         }
-        names(successes) = c(commonSuccess, sapply(successNames, function(x) { paste(x, "success", sep="_") }))
+        names(successes) = c(commonSuccess, sapply(successNames[order(match(successNames, pnames))], function(x) { paste(x, "success", sep="_") }))
         combined = merge(combined, successes, by=common)
         snames = setdiff(names(successes), common)
     }

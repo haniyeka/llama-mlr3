@@ -42,6 +42,19 @@ test_that("input reads features, performances and successes", {
     expect_equal(data$data$best, factor(rep.int("c", 5)))
 })
 
+test_that("input orders successes by performances", {
+    a = data.frame(a=c(1:5), b=rep.int(1, 5))
+    b = data.frame(a=c(1:5), c=rep.int(1, 5), d=rep.int(2, 5))
+    c = data.frame(a=c(1:5), d=rep.int(F, 5), c=rep.int(T, 5))
+
+    data = input(a, b, c)
+    expect_equal(data$features, c("b"))
+    expect_equal(data$performance, c("c", "d"))
+    expect_equal(data$success, c("c_success", "d_success"))
+    expect_equal(dim(data$data), c(5, 7))
+    expect_equal(data$data$best, factor(rep.int("c", 5)))
+})
+
 test_that("input allows to specify single cost for all", {
     a = data.frame(a=c(1:5), b=rep.int(1, 5))
     b = data.frame(a=c(1:5), c=rep.int(1, 5))
