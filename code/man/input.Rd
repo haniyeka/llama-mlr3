@@ -42,7 +42,9 @@ input(features, performances, successes = NULL, costs = NULL, minimize = T)
 \code{input} takes a list of data frames and processes them as follows. The
 feature and performance data are joined by looking for common column names in
 the two data frames (usually an ID of the problem instance). For each problem,
-the best algorithm according to the given performance data is computed.
+the best algorithm according to the given performance data is computed. Ties are
+broken by the overall performance, then the order in which the algorithms are
+given in the performance data frame.
 
 The data frame that describes whether an algorithm was successful on a problem
 is optional. If \code{parscores} or \code{successes} are to be used to
