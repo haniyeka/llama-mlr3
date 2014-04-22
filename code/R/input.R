@@ -16,11 +16,13 @@ function(features, performances, successes=NULL, costs=NULL, minimize=T) {
     }
 
     combined = merge(features, performances, by=common)
-    # compute sum of performances for tie breaking
-    perfs = subset(combined, select=pnames)
-    order = names(sort(sapply(perfs, sum), decreasing=!minimize))
-    optfun = if(minimize) { which.min } else { which.max }
-    combined$best = factor(apply(perfs[order], 1, function(x) { order[optfun(unlist(x))] }))
+    optfun = if(minimize) { min } else { max }
+    combined$best = apply(subset(combined, select=pnames), 1,
+        function(x) {
+            factor(pnames[which(unlist(x) == optfun(unlist(x)))])
+        })
+    # simplify...
+    names(combined$best) = NULL
 
     snames = NULL
     if(!is.null(successes)) {

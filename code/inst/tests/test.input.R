@@ -30,14 +30,15 @@ test_that("input determines best with max", {
     expect_equal(data$data$best, factor(rep.int("d", 5)))
 })
 
-test_that("input determines best and breaks ties by global best", {
+test_that("input determines best and reports all ties", {
     a = data.frame(a=c(1:5), b=rep.int(1, 5))
     b = data.frame(a=c(1:5), c=c(2,2,3,4,5), d=c(1,2,3,4,5))
 
     data = input(a, b)
     expect_equal(data$features, c("b"))
     expect_equal(data$performance, c("c", "d"))
-    expect_equal(data$data$best, factor(rep.int("d", 5)))
+    expectedBest = list(factor("d"), factor(c("c", "d")), factor(c("c", "d")), factor(c("c", "d")), factor(c("c", "d")))
+    expect_equal(data$data$best, expectedBest)
 })
 
 test_that("input reads features, performances and successes", {
