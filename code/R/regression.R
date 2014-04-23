@@ -7,6 +7,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         stop("Need data with train/test split!")
     }
 
+    totalBests = breakBestTies(data)
     predictions = parallelMap(function(i) {
         trf = pre(subset(data$train[[i]], T, data$features))
         tsf = pre(subset(data$test[[i]], T, data$features), trf$meta)
@@ -22,7 +23,8 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         }
 
         if(stack) {
-            combinedmodel = combine(data$train[[i]]$best~., data=data.frame(expand(trainpredictions)))
+            trainBests = breakBestTies(data, i)
+            combinedmodel = combine(trainBests~., data=data.frame(expand(trainpredictions)))
             preds = as.character(predict(combinedmodel, data.frame(expand(performancePredictions))))
             combinedpredictions = lapply(preds, function(l) { setNames(data.frame(table(l)), predNames) })
         } else {
@@ -48,7 +50,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         for (i in 1:length(data$performance)) {
             trainpredictions[,i] = predict(models[[i]], fs$features)
         }
-        combinedmodel = combine(data$data$best~., data=data.frame(expand(trainpredictions)))
+        combinedmodel = combine(totalBests~., data=data.frame(expand(trainpredictions)))
     }
 
     return(list(predictions=predictions, models=models, predictor=function(x) {

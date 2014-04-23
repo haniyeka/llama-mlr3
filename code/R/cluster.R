@@ -16,7 +16,7 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
     if(bestBy == "performance") {
         innerbest = function(ss) { sort(sapply(data$performance, function(x) { sum(ss[x]) }), decreasing=!data$minimize) }
     } else if(bestBy == "count") {
-        innerbest = function(ss) { sort(table(ss$best), decreasing=!data$minimize) }
+        innerbest = function(ss) { sort(table(unlist(ss$best)), decreasing=!data$minimize) }
     } else if(bestBy == "successes") {
         if(is.null(data$success)) {
             stop("Need successes to determine best by successes!")
@@ -61,7 +61,8 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
             }
         }
         if(is.function(combinator)) {
-            combinedmodel = combinator(data$train[[i]]$best~., data=data.frame(trainpredictions))
+            trainBests = breakBestTies(data, i)
+            combinedmodel = combinator(trainBests~., data=data.frame(trainpredictions))
             featureData = matrix(nrow=nrow(tsf$features), ncol=length(clusterer))
             for(k in 1:nrow(featureData)) {
                 for(j in 1:ncol(featureData)) {
@@ -102,7 +103,8 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
         for(j in 1:length(clusterer)) {
             trainpredictions[,j] = sapply(models[[j]](fs$features), function(x) { as.character(x[1,1]) })
         }
-        combinedmodel = combinator(data$data$best~., data=data.frame(trainpredictions))
+        totalBests = breakBestTies(data)
+        combinedmodel = combinator(totalBests~., data=data.frame(trainpredictions))
     }
 
     return(list(predictions=predictions, models=models, predictor=function(x) {

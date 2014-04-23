@@ -57,12 +57,16 @@ function(data=NULL) {
 }
 
 breakBestTies <-
-function(data=NULL) {
+function(data=NULL, fold=NULL) {
     if(is.null(data)) {
         stop("Need data to break ties!")
     }
 
-    perfs = subset(data$data, select=data$performance)
+    if(is.null(fold)) {
+        perfs = subset(data$data, select=data$performance)
+    } else {
+        perfs = subset(data$train[[fold]], select=data$performance)
+    }
     order = names(sort(sapply(perfs, sum), decreasing=!data$minimize))
     optfun = if(data$minimize) { which.min } else { which.max }
     best = factor(apply(perfs[order], 1, function(x) { order[optfun(unlist(x))] }))

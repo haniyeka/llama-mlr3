@@ -7,6 +7,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
         stop("Need data with train/test split!")
     }
 
+    totalBests = breakBestTies(data)
     combns = combn(data$performance, 2)
     predictions = parallelMap(function(i) {
         trf = pre(subset(data$train[[i]], T, data$features))
@@ -33,7 +34,8 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
         }
 
         if(is.function(combinator)) {
-            combinedmodel = combinator(data$train[[i]]$best~., data=data.frame(trainpredictions))
+            trainBests = breakBestTies(data, i)
+            combinedmodel = combinator(trainBests~., data=data.frame(trainpredictions))
             preds = as.character(predict(combinedmodel, data.frame(pairpredictions)))
             combinedpredictions = lapply(preds, function(l) { setNames(data.frame(table(l)), predNames) })
         } else {
@@ -61,7 +63,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
         for(i in 1:ncol(combns)) {
             trainpredictions[,i] = as.character(predict(models[[i]], fs$features))
         }
-        combinedmodel = combinator(data$data$best~., data=data.frame(trainpredictions))
+        combinedmodel = combinator(totalBests~., data=data.frame(trainpredictions))
     }
 
     return(list(predictions=predictions, models=models, predictor=function(x) {

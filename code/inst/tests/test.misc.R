@@ -143,3 +143,11 @@ test_that("break best ties recomputes bests without ties", {
 
     expect_equal(breakBestTies(d), factor(c("a", "a", "b")))
 })
+
+test_that("break best ties accepts fold argument", {
+    fold = data=data.frame(a=c(1,2,3), b=c(2,2,2.5))
+    d = list(data=rbind(fold, fold), performance=c("a", "b"), minimize=T, train=list(fold))
+
+    expect_equal(breakBestTies(d), factor(c("a", "a", "b", "a", "a", "b")))
+    expect_equal(breakBestTies(d, 1), factor(c("a", "a", "b")))
+})
