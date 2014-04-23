@@ -1,5 +1,5 @@
 test_that("trainTest splits", {
-    d = list(data=data.frame(a=rep.int(0, 10), best=rep.int(0, 10)), minimize=T, performance=c("a"))
+    d = list(data=data.frame(a=rep.int(0, 10), best=rep.int(0, 10)))
 
     dtt = trainTest(d)
     expect_equal(length(dtt$train), 1)
@@ -9,7 +9,7 @@ test_that("trainTest splits", {
 })
 
 test_that("trainTest allows to specify split ratio", {
-    d = list(data=data.frame(a=rep.int(0, 10), best=rep.int(0, 10)), minimize=T, performance=c("a"))
+    d = list(data=data.frame(a=rep.int(0, 10), best=rep.int(0, 10)))
 
     dtt = trainTest(d, trainpart=0.1)
     expect_equal(length(dtt$train), 1)
@@ -19,7 +19,7 @@ test_that("trainTest allows to specify split ratio", {
 })
 
 test_that("trainTest stratifies", {
-    d = list(data=data.frame(a=rep.int(0, 10), best=c(rep.int(0, 5), rep.int(1, 5))), minimize=T, performance=c("a"))
+    d = list(data=data.frame(a=rep.int(0, 10), best=c(rep.int(0, 5), rep.int(1, 5))))
 
     dtt = trainTest(d)
     expect_equal(length(dtt$train), 1)

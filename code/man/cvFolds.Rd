@@ -29,9 +29,6 @@ best algorithms in each fold will be approximately the same. The folds are
 assembled into training and test sets by combining $n-1$ folds for training and
 using the remaining fold for testing. The sets are added to the original data
 set and returned.
-
-After the split, the best algorithms are recomputed to break possible ties by
-the overall best in the respective training sets.
 }
 \value{
 \item{train}{a list of data sets for training.}
@@ -46,12 +43,12 @@ Lars Kotthoff
 }
 \examples{
 data(satsolvers)
-folds = cvFolds(satsolvers)
+trainTest = cvFolds(satsolvers)
 
 # use 5 folds instead of the default 10
-folds5 = cvFolds(satsolvers, 5)
+trainTest5 = cvFolds(satsolvers, 5)
 
 # don't stratify
-foldsU = cvFolds(satsolvers, stratify=FALSE)
+trainTestU = cvFolds(satsolvers, stratify=FALSE)
 }
 \keyword{ ~models }

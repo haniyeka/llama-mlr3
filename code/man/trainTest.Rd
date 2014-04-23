@@ -25,9 +25,6 @@ Partitions the data set into training and test set according to the specified
 fraction. The training and test set are added to the original data and returned.
 If requested, the distribution of the best algorithms in training and test set
 is approximately the same, i.e. the sets are stratified.
-
-After the split, the best algorithms are recomputed to break possible ties by
-the overall best in the training set.
 }
 \value{
 \item{train}{a (one-element) list of data sets for training.}
