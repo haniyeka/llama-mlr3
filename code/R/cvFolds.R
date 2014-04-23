@@ -7,7 +7,7 @@ function(data, nfolds=10, stratify=T) {
     if(stratify) {
         data$data$stratifier = sapply(data$data$best, paste, collapse="-")
     }
-    tmp = ddply(data$data, if(stratify) .(stratifier), function(x) {
+    tmp = ddply(data$data, if(stratify) "stratifier", function(x) {
         n = nrow(x)
         x$fold = rep(1:nfolds, length.out = n)[sample(n, n)]
         x
