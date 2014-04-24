@@ -85,7 +85,7 @@ Lars Kotthoff
 \code{\link{regressionPairs}}
 }
 \examples{
-\dontrun{
+#\dontrun{
 data(satsolvers)
 folds = cvFolds(satsolvers)
 
@@ -109,6 +109,6 @@ rese = cluster(clusterer=list(makeLearner("cluster.XMeans"),
 rese = cluster(clusterer=list(makeLearner("cluster.XMeans"),
     makeLearner("cluster.SimpleKMeans"), makeLearner("cluster.EM"),
     .combine=makeLearner("classif.J48")), data=folds, pre=normalize)
-}
+#}
 }
 \keyword{ ~cluster }

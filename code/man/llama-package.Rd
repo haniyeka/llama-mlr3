@@ -64,7 +64,7 @@ Algorithm Selection for Combinatorial Search Problems: A survey.
 }
 \keyword{ package }
 \examples{
-\dontrun{
+#\dontrun{
 data(satsolvers)
 folds = cvFolds(satsolvers)
 
@@ -90,5 +90,5 @@ folds = cvFolds(filtered)
 model = regression(regressor=makeLearner("regr.lm"), data=folds)
 # print the total number of successes
 print(sum(successes(folds, model)))
-}
+#}
 }

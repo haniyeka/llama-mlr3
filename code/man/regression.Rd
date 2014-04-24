@@ -82,7 +82,7 @@ Hybrid Regression-Classification Models for Algorithm Selection.
 \emph{20th European Conference on Artificial Intelligence}, 480--485.
 }
 \examples{
-\dontrun{
+#\dontrun{
 data(satsolvers)
 folds = cvFolds(satsolvers)
 
@@ -106,5 +106,5 @@ ress = regression(regressor=makeLearner("regr.ksvm"),
                   expand=function(x) { cbind(x, combn(c(1:ncol(x)), 2,
                          function(y) { abs(x[,y[1]] - x[,y[2]]) })) })
 }
-}
+#}
 \keyword{ ~regression }

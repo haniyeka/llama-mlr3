@@ -76,7 +76,7 @@ Ensemble Classification for Constraint Solver Configuration.
 \emph{16th International Conference on Principles and Practices of Constraint Programming}, 321--329.
 }
 \examples{
-\dontrun{
+#\dontrun{
 data(satsolvers)
 folds = cvFolds(satsolvers)
 
@@ -100,6 +100,6 @@ rese = classify(classifier=list(makeLearner("classif.J48"),
                                 makeLearner("classif.svm"),
                                 .combine=makeLearner("classif.J48")),
                 data=folds)
-}
+#}
 }
 \keyword{ ~models }

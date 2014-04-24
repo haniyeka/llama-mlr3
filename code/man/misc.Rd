@@ -51,7 +51,7 @@ is first. The score is 1 if the respective algorithm is chosen for the instance,
 Lars Kotthoff
 }
 \examples{
-\dontrun{
+#\dontrun{
 data(satsolvers)
 
 # number of total successes for virtual best solver
@@ -67,6 +67,6 @@ print(sum(parscores(satsolvers, singleBestByPar,
 # number of total successes for single best solver by successes
 print(sum(successes(satsolvers, singleBestBySuccesses,
     addCosts = FALSE)))
-}
+#}
 }
 \keyword{ ~models }

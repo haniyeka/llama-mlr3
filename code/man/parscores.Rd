@@ -57,7 +57,7 @@ Lars Kotthoff
 \code{\link{misclassificationPenalties}}, \code{\link{successes}}
 }
 \examples{
-\dontrun{
+#\dontrun{
 data(satsolvers)
 folds = cvFolds(satsolvers)
 
@@ -69,6 +69,6 @@ sum(parscores(folds, model, 5))
 
 # explicitly specify timeout.
 sum(parscores(folds, model, timeout = 3600))
-}
+#}
 }
 \keyword{ ~models }

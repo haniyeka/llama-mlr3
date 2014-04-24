@@ -38,10 +38,10 @@ A Game Theoretic Approach to Measure Contributions in Algorithm Portfolios.
 \emph{Technical Report RR-13-11, University of Oxford}.
 }
 \examples{
-\dontrun{
+#\dontrun{
 data(satsolvers)
 
 contributions(satsolvers)
-}
+#}
 }
 \keyword{ ~models }

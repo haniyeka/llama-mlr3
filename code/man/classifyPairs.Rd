@@ -83,7 +83,7 @@ Hydra-MIP: Automated Algorithm Configuration and Selection for Mixed Integer Pro
 Problems with Combinatorial Explosion}, 16--30.
 }
 \examples{
-\dontrun{
+#\dontrun{
 data(satsolvers)
 folds = cvFolds(satsolvers)
 
@@ -97,6 +97,6 @@ res$predictor(subset(satsolvers$data, TRUE, satsolvers$features))
 res = classifyPairs(classifier=makeLearner("classif.J48"),
                     data=folds,
                     combinator=makeLearner("classif.J48"))
-}
+#}
 }
 \keyword{ ~models }

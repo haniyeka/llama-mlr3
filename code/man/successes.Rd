@@ -56,12 +56,12 @@ Lars Kotthoff
 \code{\link{misclassificationPenalties}}, \code{\link{parscores}}
 }
 \examples{
-\dontrun{
+#\dontrun{
 data(satsolvers)
 folds = cvFolds(satsolvers)
 
 model = classify(classifier=makeLearner("classif.J48"), data=folds)
 sum(successes(folds, model))
-}
+#}
 }
 \keyword{ ~models }
