@@ -15,8 +15,8 @@ them.
 \tabular{ll}{
 Package: \tab llama\cr
 Type: \tab Package\cr
-Version: \tab 0.5.2\cr
-Date: \tab 2014-01-29\cr
+Version: \tab 0.6\cr
+Date: \tab 2014-04-24\cr
 Depends: \tab plyr, rJava, parallelMap\cr
 Suggests: \tab RWeka, FSelector, e1071, flexclust, testthat\cr
 License: \tab BSD_3_clause\cr
@@ -72,9 +72,9 @@ Kotthoff, L. (2013)
 LLAMA: Leveraging Learning to Automatically Manage Algorithms.
 \emph{arXiv:1306.1031}.
 
-Kotthoff, L. (2012)
+Kotthoff, L. (2014)
 Algorithm Selection for Combinatorial Search Problems: A survey.
-\emph{University College Cork (Technical Report)}.
+\emph{AI Magazine}.
 }
 \keyword{ package }
 \examples{
