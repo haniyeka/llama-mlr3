@@ -7,4 +7,4 @@ satsolvers = input(features,
           read.csv("successes.csv"),
           costs=list(groups=list(all=tail(names(features), -1)), values=read.csv("feature-times.csv")))
 
-save(satsolvers, file='satsolvers.rda')
+save(satsolvers, file='satsolvers.rda', compress='xz')
