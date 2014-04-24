@@ -82,15 +82,15 @@ Algorithm Selection for Combinatorial Search Problems: A survey.
 library(RWeka)
 
 data(satsolvers)
-trainTest = cvFolds(satsolvers)
+folds = cvFolds(satsolvers)
 
-model = classify(classifier=J48, data=trainTest)
+model = classify(classifier=J48, data=folds)
 # print the total number of successes
-print(sum(successes(trainTest, model)))
+print(sum(successes(folds, model)))
 # print the total misclassification penalty
-print(sum(misclassificationPenalties(trainTest, model)))
+print(sum(misclassificationPenalties(folds, model)))
 # print the total PAR10 score
-print(sum(parscores(trainTest, model)))
+print(sum(parscores(folds, model)))
 
 # number of total successes for virtual best solver for comparison
 print(sum(successes(satsolvers, vbs)))
