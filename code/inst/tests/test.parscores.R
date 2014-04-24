@@ -82,9 +82,9 @@ test_that("parscores does not cost unused features", {
 })
 
 test_that("parscores takes feature cost groups into account", {
-    fold = data.frame(a=rep.int(1, 5), f=rep.int(0, 5), g=rep.int(0, 5),
+    fold = data.frame(a=rep.int(1, 5), e=rep.int(0, 5), f=rep.int(0, 5), g=rep.int(0, 5),
         d=rep.int(T, 5), g1=rep.int(1, 5), g2=rep.int(1, 5))
-    groups = list(g1=c("f"), g2=c("g"))
+    groups = list(g1=c("e", "f"), g2=c("g"))
     d = list(data=rbind(fold, fold), test=list(fold, fold), performance=c("a"), success=c("d"), costGroups=groups, cost=c("g1", "g2"), features=c("f", "g"))
     e = d
     e$features = c("f")
