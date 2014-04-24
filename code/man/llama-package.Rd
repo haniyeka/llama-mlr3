@@ -96,7 +96,7 @@ print(sum(parscores(folds, model)))
 print(sum(successes(satsolvers, vbs)))
 
 # print predictions on the entire data set
-print(res$predictor(subset(satsolvers$data, TRUE, satsolvers$features)))
+print(model$predictor(subset(satsolvers$data, TRUE, satsolvers$features)))
 
 # filter features and train a regression model
 library(FSelector)

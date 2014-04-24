@@ -86,7 +86,7 @@ trainTest = cvFolds(satsolvers)
 library(RWeka)
 res = classifyPairs(classifier=J48, data=trainTest)
 # the total number of successes
-sum(unlist(successes(trainTest, res$predictions)))
+sum(successes(trainTest, res))
 # predictions on the entire data set
 res$predictor(subset(satsolvers$data, TRUE, satsolvers$features))
 

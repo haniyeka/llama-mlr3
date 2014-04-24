@@ -44,9 +44,6 @@ trainTest = cvFolds(satsolvers)
 
 model = classify(classifier=J48, data=trainTest)
 sum(misclassificationPenalties(trainTest, model))
-
-# maximum performance value is best
-sum(misclassificationPenalties(trainTest, model, FALSE))
 }
 }
 \keyword{ ~models }

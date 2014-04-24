@@ -88,13 +88,13 @@ trainTest = cvFolds(satsolvers)
 
 res = cluster(clusterer=XMeans, data=trainTest, pre=normalize)
 # the total number of successes
-sum(unlist(successes(trainTest, res$predictions)))
+sum(successes(trainTest, res))
 # predictions on the entire data set
 res$predictor(subset(satsolvers$data, TRUE, satsolvers$features))
 
 # determine best by number of successes
 res = cluster(clusterer=XMeans, data=trainTest, bestBy="successes", pre=normalize)
-sum(unlist(successes(trainTest, res$predictions)))
+sum(successes(trainTest, res))
 
 library(flexclust)
 res = cluster(clusterer=function(x) { kcca(x, length(satsolvers$performance)) },
