@@ -48,13 +48,13 @@ cross-validation.
 
 This will give you 10 folds for cross-validation. Now we're ready to train
 our first model. To do that, we'll need some machine learning algorithms --
-we're going to use RWeka, which gives us access to everything in Weka. Load
-RWeka and train a simple classification model that predicts the best algorithm.
+we're going to use a random forest here. Load the randomForest package
+and train a simple classification model that predicts the best algorithm.
 
 ::
 
-    require(RWeka)
-    model = classify(J48, folds)
+    require(randomForest)
+    model = classify(randomForest, folds)
 
 Great! Now let's see how well this model is doing and compare its performance to
 the virtual best solver (VBS) and the single best solver in terms of average
@@ -62,14 +62,23 @@ PAR10 score.
 
 ::
 
-    mean(unlist(parscores(folds, model$predictions)))
-    mean(unlist(parscores(data, vbs(data))))
-    mean(unlist(parscores(data, singleBest(data))))
+    mean(parscores(folds, model))
+    mean(parscores(data, vbs))
+    mean(parscores(data, singleBest))
 
-You can use any other classification algorithms instead of ``J48`` of course.
-You can also train regression or cluster models, use different train/test splits
-or preprocess the data by selecting the most important features. More details in
-the on-line documentation and the manual.
+These are the numbers I get for the ``satsolvers`` data:
+
+:virtual best: 4645.169
+:model: 5584.216
+:single best: 5779.526
+
+While we are far off the virtual best, our classifier beats the single best
+algorithm! Not bad for a model trained in a single line of code.
+
+You can use any other classification algorithms instead of ``randomForest`` of
+course. You can also train regression or cluster models, use different
+train/test splits or preprocess the data by selecting the most important
+features. More details in the on-line documentation and the manual.
 
 More information
 ================
