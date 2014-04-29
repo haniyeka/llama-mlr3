@@ -61,11 +61,15 @@ used to combine the ensemble predictions instead of majority voting.
  \item{predictions}{a list of lists of data frames with the predictions for each
  test set. Each data frame has columns \code{algorithm} and \code{score} and is
  sorted according to preference, with the most preferred algorithm first. The
- score corresponds to the number of training instances that the respective
- algorithm was the best on. If more than one clustering algorithm is used, the
- score corresponds to the sum of all instances across all clusterers. If
- stacking is used, each data frame contains simply the best algorithm with a
- score of 1.}
+ score corresponds to the cumulative performance value for the respective
+ algorithm in the cluster the instance was assigned to. That is, if
+ \code{bestBy} is "performance", it is the sum of the performance over all
+ training instances. If \code{bestBy} is "count", the score corresponds to the
+ number of training instances that the respective algorithm was the best on, and
+ if it is "successes" it corresponds to the number of training instances solved.
+ If more than one clustering algorithm is used, the score corresponds to the sum
+ of all instances across all clusterers. If stacking is used, each data frame
+ contains simply the best algorithm with a score of 1.}
  \item{predictor}{a function that encapsulates the model learned on the
  \emph{entire} data set. Can be called with data for the same features with the
  same feature names as the training data to obtain predictions.}
