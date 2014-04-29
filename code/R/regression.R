@@ -1,5 +1,5 @@
 regression <-
-function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }, combine=min, stack=F, expand=identity) {
+function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }, combine=NULL, expand=identity) {
     if(is.null(regressor)) {
         stop("No regressor given!")
     }
@@ -16,20 +16,19 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         performancePredictions = matrix(nrow=nrow(tsf$features), ncol=length(data$performance))
         for (j in 1:length(data$performance)) {
             model = regressor(data$train[[i]][[data$performance[j]]]~., data=trf$features)
-            if(stack) {
+            if(!is.null(combine)) {
                 trainpredictions[,j] = predict(model, trf$features)
             }
             performancePredictions[,j] = predict(model, tsf$features)
         }
 
-        if(stack) {
+        if(!is.null(combine)) {
             trainBests = breakBestTies(data, i)
             combinedmodel = combine(trainBests~., data=data.frame(expand(trainpredictions)))
             preds = as.character(predict(combinedmodel, data.frame(expand(performancePredictions))))
             combinedpredictions = lapply(preds, function(l) { setNames(data.frame(table(l)), predNames) })
         } else {
-            # this is hacky and should be replaced...
-            if(deparse(combine) == ".Primitive(\"min\")") {
+            if(data$minimize) {
                 decreasing = F
             } else {
                 decreasing = T
@@ -45,7 +44,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         data$data[[data$performance[i]]]
         return(regressor(data$data[[data$performance[i]]]~., data=fs$features))
     })
-    if(stack) {
+    if(!is.null(combine)) {
         trainpredictions = matrix(nrow=nrow(fs$features), ncol=length(data$performance))
         for (i in 1:length(data$performance)) {
             trainpredictions[,i] = predict(models[[i]], fs$features)
@@ -60,11 +59,11 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             performancePredictions[,i] = predict(models[[i]], tsf$features)
         }
 
-        if(stack) {
+        if(!is.null(combine)) {
             preds = as.character(predict(combinedmodel, data.frame(expand(performancePredictions))))
             combinedpredictions = lapply(preds, function(l) { setNames(data.frame(table(l)), predNames) })
         } else {
-            if(deparse(combine) == ".Primitive(\"min\")") {
+            if(data$minimize) {
                 decreasing = F
             } else {
                 decreasing = T
