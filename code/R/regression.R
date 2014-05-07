@@ -24,8 +24,8 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
 
         if(!is.null(combine)) {
             trainBests = breakBestTies(data, i)
-            combinedmodel = combine(trainBests~., data=data.frame(expand(trainpredictions)))
-            preds = as.character(predict(combinedmodel, data.frame(expand(performancePredictions))))
+            combinedmodel = combine(trainBests~., data=cbind(trf$features, data.frame(expand(trainpredictions))))
+            preds = as.character(predict(combinedmodel, cbind(tsf$features, data.frame(expand(performancePredictions)))))
             combinedpredictions = lapply(preds, function(l) { setNames(data.frame(table(l)), predNames) })
         } else {
             if(data$minimize) {
@@ -49,7 +49,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         for (i in 1:length(data$performance)) {
             trainpredictions[,i] = predict(models[[i]], fs$features)
         }
-        combinedmodel = combine(totalBests~., data=data.frame(expand(trainpredictions)))
+        combinedmodel = combine(totalBests~., data=cbind(fs$features, data.frame(expand(trainpredictions))))
     }
 
     return(list(predictions=predictions, models=models, predictor=function(x) {
@@ -60,7 +60,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         }
 
         if(!is.null(combine)) {
-            preds = as.character(predict(combinedmodel, data.frame(expand(performancePredictions))))
+            preds = as.character(predict(combinedmodel, cbind(tsf$features, data.frame(expand(performancePredictions)))))
             combinedpredictions = lapply(preds, function(l) { setNames(data.frame(table(l)), predNames) })
         } else {
             if(data$minimize) {

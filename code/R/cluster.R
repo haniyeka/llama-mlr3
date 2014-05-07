@@ -62,14 +62,14 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
         }
         if(is.function(combinator)) {
             trainBests = breakBestTies(data, i)
-            combinedmodel = combinator(trainBests~., data=data.frame(trainpredictions))
+            combinedmodel = combinator(trainBests~., data=cbind(trf$features, data.frame(trainpredictions)))
             featureData = matrix(nrow=nrow(tsf$features), ncol=length(clusterer))
             for(k in 1:nrow(featureData)) {
                 for(j in 1:ncol(featureData)) {
                     featureData[k,j] = as.character(ensemblepredictions[[j]][[k]][1,1])
                 }
             }
-            preds = as.character(predict(combinedmodel, data.frame(featureData)))
+            preds = as.character(predict(combinedmodel, cbind(tsf$features, data.frame(featureData))))
             combinedpredictions = lapply(preds, function(l) { setNames(data.frame(table(l)), predNames) })
         } else {
             combinedpredictions = Reduce(function(x, y) {
@@ -104,7 +104,7 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
             trainpredictions[,j] = sapply(models[[j]](fs$features), function(x) { as.character(x[1,1]) })
         }
         totalBests = breakBestTies(data)
-        combinedmodel = combinator(totalBests~., data=data.frame(trainpredictions))
+        combinedmodel = combinator(totalBests~., data=cbind(fs$features, data.frame(trainpredictions)))
     }
 
     return(list(predictions=predictions, models=models, predictor=function(x) {
@@ -120,7 +120,7 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
                     featureData[k,j] = as.character(ensemblepredictions[[j]][[k]][1,1])
                 }
             }
-            preds = as.character(predict(combinedmodel, data.frame(featureData)))
+            preds = as.character(predict(combinedmodel, cbind(tsf$features, data.frame(featureData))))
             combinedpredictions = lapply(preds, function(l) { setNames(data.frame(table(l)), predNames) })
         } else {
             combinedpredictions = Reduce(function(x, y) {

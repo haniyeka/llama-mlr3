@@ -53,8 +53,10 @@ predictions independently. For each instance, the final prediction is determined
 by majority vote of the predictions of the individual models -- the class that
 occurs most often is chosen. If the list given as \code{clusterer} contains a
 member \code{.combine} that is a function, it is assumed to be a classifier with
-the same properties as classifiers given to \code{classify} and will be
-used to combine the ensemble predictions instead of majority voting.
+the same properties as classifiers given to \code{classify} and will be used to
+combine the ensemble predictions instead of majority voting. This classifier is
+passed the original features and the predictions of the classifiers in the
+ensemble.
 
 }
 \value{

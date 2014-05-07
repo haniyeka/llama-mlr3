@@ -44,7 +44,8 @@ by majority vote of the predictions of the individual models -- the class that
 occurs most often is chosen. If the list given as \code{classifier} contains a
 member \code{.combine} that is a function, it is assumed to be a classifier with
 the same properties as the other ones and will be used to combine the ensemble
-predictions instead of majority voting.
+predictions instead of majority voting. This classifier is passed the original
+features and the predictions of the classifiers in the ensemble.
 }
 \value{
  \item{predictions}{a list of lists of data frames with the predictions for each

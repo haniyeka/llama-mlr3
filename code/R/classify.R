@@ -31,8 +31,8 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
             ensemblepredictions[,j] = as.character(predict(model, tsf$features))
         }
         if(is.function(combinator)) {
-            combinedmodel = combinator(trainBests~., data=data.frame(trainpredictions))
-            preds = as.character(predict(combinedmodel, data.frame(ensemblepredictions)))
+            combinedmodel = combinator(trainBests~., data=cbind(trf$features, data.frame(trainpredictions)))
+            preds = as.character(predict(combinedmodel, cbind(tsf$features, data.frame(ensemblepredictions))))
             combinedpredictions = lapply(preds, function(l) { setNames(data.frame(table(l)), predNames) })
         } else {
             combinedpredictions = apply(ensemblepredictions, 1, function(l) { setNames(data.frame(as.table(sort(table(l), decreasing=T))), predNames) })
@@ -49,7 +49,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
         for(i in 1:length(classifier)) {
             trainpredictions[,i] = as.character(predict(models[[i]], fs$features))
         }
-        combinedmodel = combinator(totalBests~., data=data.frame(trainpredictions))
+        combinedmodel = combinator(totalBests~., data=cbind(fs$features, data.frame(trainpredictions)))
     }
 
     return(list(predictions=predictions, models=models, predictor=function(x) {
@@ -59,7 +59,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
             ensemblepredictions[,i] = as.character(predict(models[[i]], tsf$features))
         }
         if(is.function(combinator)) {
-            preds = as.character(predict(combinedmodel, data.frame(ensemblepredictions)))
+            preds = as.character(predict(combinedmodel, cbind(tsf$features, data.frame(ensemblepredictions))))
             combinedpredictions = lapply(preds, function(l) { setNames(data.frame(table(l)), predNames) })
         } else {
             combinedpredictions = apply(ensemblepredictions, 1, function(l) { setNames(data.frame(as.table(sort(table(l), decreasing=T))), predNames) })

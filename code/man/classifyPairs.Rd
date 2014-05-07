@@ -36,9 +36,10 @@ classifyPairs(classifier = NULL, data = NULL,
 \code{classifyPairs} takes the training and test sets in \code{data} and
 processes it using \code{pre} (if supplied). \code{classifier} is called to
 induce a classifier for each pair of algorithms to predict which one is better.
-The predictions for pairs of algorithms are aggregated to determine the best
-overall algorithm using \code{combinator} (if supplied). It \code{combinator} is
-not supplied, the best overall algorithm is determined by majority vote.
+If \code{combinator} is not supplied, the best overall algorithm is determined
+by majority vote. If it is supplied, it is assumed to be a classifier with the
+same properties as the other one. This classifier is passed the original
+features and the predictions for each pair of algorithms.
 
 Which algorithm is better of a pair is determined by comparing their performance
 scores. Whether a lower performance number is better or not is determined by
