@@ -33,7 +33,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
         if(is.object(combinator)) {
             combinedmodel = train(combinator, task=makeClassifTask(id="classify", target="target", data=cbind(trainBests, trf$features, lapply(trainpredictions, factor, levels=data$performance))))
             preds = predict(combinedmodel, newdata=cbind(tsf$features, lapply(ensemblepredictions, factor, levels=data$performance)))$data$response
-            combinedpredictions = lapply(preds, function(l) { setNames(data.frame(table(l)), predNames) })
+            combinedpredictions = lapply(preds, function(l) { setNames(data.frame(as.table(sort(table(l), decreasing=T))), predNames) })
         } else {
             combinedpredictions = apply(ensemblepredictions, 1, function(l) { setNames(data.frame(as.table(sort(table(l), decreasing=T))), predNames) })
         }
@@ -60,7 +60,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
         }
         if(is.object(combinator)) {
             preds = predict(combinedmodel, newdata=cbind(tsf$features, lapply(ensemblepredictions, factor, levels=data$performance)))$data$response
-            combinedpredictions = lapply(preds, function(l) { setNames(data.frame(table(l)), predNames) })
+            combinedpredictions = lapply(preds, function(l) { setNames(data.frame(as.table(sort(table(l), decreasing=T))), predNames) })
         } else {
             combinedpredictions = apply(ensemblepredictions, 1, function(l) { setNames(data.frame(as.table(sort(table(l), decreasing=T))), predNames) })
         }

@@ -7,14 +7,14 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
         stop("Need data with train/test split!")
     }
 
-    totalBests = breakBestTies(data)
+    totalBests = data.frame(target=factor(breakBestTies(data), levels=data$performance))
     combns = combn(data$performance, 2)
     predictions = parallelMap(function(i) {
         trf = pre(subset(data$train[[i]], T, data$features))
         tsf = pre(subset(data$test[[i]], T, data$features), trf$meta)
 
-        trainpredictions = matrix(nrow=nrow(trf$features), ncol=ncol(combns))
-        pairpredictions = matrix(nrow=nrow(tsf$features), ncol=ncol(combns))
+        trainpredictions = data.frame(row.names=1:nrow(trf$features))
+        pairpredictions = data.frame(row.names=1:nrow(tsf$features))
         for (j in 1:ncol(combns)) {
             if(data$minimize) {
                 cmp = function(x, y) {
@@ -25,19 +25,19 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
                     sapply(data$train[[i]][[x]] > data$train[[i]][[y]], function(z) { if(z) { x } else { y } })
                 }
             }
-            labels = factor(cmp(combns[1,j], combns[2,j]))
-            model = classifier(labels~., data=trf$features)
-            if(is.function(combinator)) { # only do this if we need it
-                trainpredictions[,j] = as.character(predict(model, trf$features))
+            labels = data.frame(target=factor(cmp(combns[1,j], combns[2,j]), levels=data$performance))
+            model = train(classifier, task=makeClassifTask(id="classifyPairs", target="target", data=cbind(labels, trf$features)))
+            if(is.object(combinator)) { # only do this if we need it
+                trainpredictions[,j] = predict(model, newdata=trf$features)$data$response
             }
-            pairpredictions[,j] = as.character(predict(model, tsf$features))
+            pairpredictions[,j] = predict(model, newdata=tsf$features)$data$response
         }
 
-        if(is.function(combinator)) {
-            trainBests = breakBestTies(data, i)
-            combinedmodel = combinator(trainBests~., data=cbind(trf$features, lapply(data.frame(trainpredictions), factor, levels=data$performance)))
-            preds = as.character(predict(combinedmodel, cbind(tsf$features, lapply(data.frame(pairpredictions), factor, levels=data$performance))))
-            combinedpredictions = lapply(preds, function(l) { setNames(data.frame(table(l)), predNames) })
+        if(is.object(combinator)) {
+            trainBests = data.frame(target=factor(breakBestTies(data, i), levels=data$performance))
+            combinedmodel = train(combinator, task=makeClassifTask(id="classifyPairs", target="target", data=cbind(trainBests, trf$features, lapply(data.frame(trainpredictions), factor, levels=data$performance))))
+            preds = predict(combinedmodel, newdata=cbind(tsf$features, lapply(data.frame(pairpredictions), factor, levels=data$performance)))$data$response
+            combinedpredictions = lapply(preds, function(l) { setNames(data.frame(as.table(sort(table(l), decreasing=T))), predNames) })
         } else {
             combinedpredictions = apply(pairpredictions, 1, function(l) { setNames(data.frame(as.table(sort(table(l), decreasing=T))), predNames) })
         }
@@ -55,26 +55,26 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
                 sapply(data$data[[x]] > data$data[[y]], function(z) { if(z) { x } else { y } })
             }
         }
-        labels = factor(cmp(combns[1,i], combns[2,i]))
-        return(classifier(labels~., data=fs$features))
+        labels = data.frame(target=factor(cmp(combns[1,i], combns[2,i]), levels=data$performance))
+        return(train(classifier, task=makeClassifTask(id="classifyPairs", target="target", data=cbind(labels, fs$features))))
     })
-    if(is.function(combinator)) {
-        trainpredictions = matrix(nrow=nrow(fs$features), ncol=ncol(combns))
+    if(is.object(combinator)) {
+        trainpredictions = data.frame(row.names=1:nrow(fs$features))
         for(i in 1:ncol(combns)) {
-            trainpredictions[,i] = as.character(predict(models[[i]], fs$features))
+            trainpredictions[,i] = predict(models[[i]], newdata=fs$features)$data$response
         }
-        combinedmodel = combinator(totalBests~., data=cbind(fs$features, lapply(data.frame(trainpredictions), factor, levels=data$performance)))
+        combinedmodel = train(combinator, task=makeClassifTask(id="classifyPairs", target="target", data=cbind(totalBests, fs$features, lapply(data.frame(trainpredictions), factor, levels=data$performance))))
     }
 
     return(list(predictions=predictions, models=models, predictor=function(x) {
         tsf = pre(subset(x, T, data$features), fs$meta)
-        pairpredictions = matrix(nrow=nrow(tsf$features), ncol=ncol(combns))
+        pairpredictions = data.frame(row.names=1:nrow(tsf$features))
         for(i in 1:ncol(combns)) {
-            pairpredictions[,i] = as.character(predict(models[[i]], tsf$features))
+            pairpredictions[,i] = predict(models[[i]], newdata=tsf$features)$data$response
         }
-        if(is.function(combinator)) {
-            preds = as.character(predict(combinedmodel, cbind(tsf$features, lapply(data.frame(pairpredictions), factor, levels=data$performance))))
-            combinedpredictions = lapply(preds, function(l) { setNames(data.frame(table(l)), predNames) })
+        if(is.object(combinator)) {
+            preds = predict(combinedmodel, newdata=cbind(tsf$features, lapply(data.frame(pairpredictions), factor, levels=data$performance)))$data$response
+            combinedpredictions = lapply(preds, function(l) { setNames(data.frame(as.table(sort(table(l), decreasing=T))), predNames) })
         } else {
             combinedpredictions = apply(pairpredictions, 1, function(l) { setNames(data.frame(as.table(sort(table(l), decreasing=T))), predNames) })
         }

@@ -1,6 +1,3 @@
-require(mlr)
-require(llama)
-require(testthat)
 makeRLearner.classif.test = function() {
     makeRLearnerClassif(cl = "classif.test", package="llama", par.set=makeParamSet(), numerics=T, factors=T)
 }

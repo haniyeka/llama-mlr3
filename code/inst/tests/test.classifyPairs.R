@@ -1,10 +1,20 @@
-testclassifier = setClass("testclassifier", representation(data="list"), contains="formula", where=globalenv())
-predict.testclassifier = function(object, y) { return(rep.int(get("labels", environment(formula(object)))[1], nrow(y))) } 
-setMethod("predict", signature(object="testclassifier"), predict.testclassifier, where=globalenv())
+makeRLearner.classif.test = function() {
+    makeRLearnerClassif(cl = "classif.test", package="llama", par.set=makeParamSet(), numerics=T, factors=T)
+}
+trainLearner.classif.test = function(.learner, .task, .subset, .weights, ...) { }
+predictLearner.classif.test = function(learner, model, newdata) {
+    return(rep.int(factor(model$factor.levels$target[1]), nrow(newdata)))
+}
+testclassifier = makeLearner("classif.test")
 
-othertestclassifier = setClass("othertestclassifier", representation(data="list"), contains="formula", where=globalenv())
-predict.othertestclassifier = function(object, y) { return(rep.int("a", nrow(y))) } 
-setMethod("predict", signature(object="othertestclassifier"), predict.othertestclassifier, where=globalenv())
+makeRLearner.classif.otest = function() {
+    makeRLearnerClassif(cl = "classif.otest", package="llama", par.set=makeParamSet(), numerics=T, factors=T)
+}
+trainLearner.classif.otest = function(.learner, .task, .subset, .weights, ...) { }
+predictLearner.classif.otest = function(learner, model, newdata) {
+    return(factor(rep.int("bar", nrow(newdata))))
+}
+othertestclassifier = makeLearner("classif.otest")
 
 test_that("classifyPairs classifies", {
     fold = data.frame(a=rep.int(0, 10), best=rep.int("foo", 10), foo=rep.int(0, 10), bar=rep.int(1, 10))
@@ -37,9 +47,10 @@ test_that("classifyPairs respects minimize", {
 })
 
 test_that("classifyPairs allows combination function", {
-    fold = data.frame(a=rep.int(0, 10), best=rep.int("foo", 10), foo=rep.int(0, 10), bar=rep.int(1, 10))
+    fold = data.frame(foo=c(rep.int(0, 5), rep.int(1, 5)), bar=c(rep.int(1, 5), rep.int(0, 5)), a=rep.int(1, 10), best=rep.int("foo", 10))
     d = list(data=rbind(fold, fold), train=list(fold), test=list(fold), features=c("a"), performance=c("foo", "bar"), minimize=T)
     res = classifyPairs(classifier=testclassifier, d, combinator=othertestclassifier)
-    expect_true(all(sapply(1:length(res$predictions), function(i) { sapply(res$predictions[[i]], function(x) { x == data.frame(algorithm="a", score=1) }) })))
-    expect_true(all(sapply(res$predictor(fold), function(x) { x == data.frame(algorithm="a", score=1) })))
+    expectedDf = data.frame(algorithm=c("bar", "foo"), score=c(1, 0))
+    expect_true(all(sapply(1:length(res$predictions), function(i) { sapply(res$predictions[[i]], function(x) { x == expectedDf }) })))
+    expect_true(all(sapply(res$predictor(fold), function(x) { x == expectedDf })))
 })
