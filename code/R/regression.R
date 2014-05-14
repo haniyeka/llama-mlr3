@@ -7,26 +7,26 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         stop("Need data with train/test split!")
     }
 
-    totalBests = breakBestTies(data)
+    totalBests = data.frame(target=factor(breakBestTies(data), levels=data$performance))
     predictions = parallelMap(function(i) {
         trf = pre(subset(data$train[[i]], T, data$features))
         tsf = pre(subset(data$test[[i]], T, data$features), trf$meta)
 
-        trainpredictions = matrix(nrow=nrow(trf$features), ncol=length(data$performance))
-        performancePredictions = matrix(nrow=nrow(tsf$features), ncol=length(data$performance))
+        trainpredictions = data.frame(row.names=1:nrow(trf$features))
+        performancePredictions = data.frame(row.names=1:nrow(tsf$features))
         for (j in 1:length(data$performance)) {
-            model = regressor(data$train[[i]][[data$performance[j]]]~., data=trf$features)
+            model = train(regressor, task=makeRegrTask(id="regression", target="target", data=cbind(data.frame(target=data$train[[i]][[data$performance[j]]]), trf$features)))
             if(!is.null(combine)) {
-                trainpredictions[,j] = predict(model, trf$features)
+                trainpredictions[,j] = predict(model, newdata=trf$features)$data$response
             }
-            performancePredictions[,j] = predict(model, tsf$features)
+            performancePredictions[,j] = predict(model, newdata=tsf$features)$data$response
         }
 
         if(!is.null(combine)) {
-            trainBests = breakBestTies(data, i)
-            combinedmodel = combine(trainBests~., data=cbind(trf$features, data.frame(expand(trainpredictions))))
-            preds = as.character(predict(combinedmodel, cbind(tsf$features, data.frame(expand(performancePredictions)))))
-            combinedpredictions = lapply(preds, function(l) { setNames(data.frame(table(l)), predNames) })
+            trainBests = data.frame(target=factor(breakBestTies(data, i), levels=data$performance))
+            combinedmodel = train(combine, task=makeClassifTask(id="regression", target="target", data=cbind(trainBests, trf$features, data.frame(expand(trainpredictions)))))
+            preds = predict(combinedmodel, newdata=cbind(tsf$features, data.frame(expand(performancePredictions))))$data$response
+            combinedpredictions = lapply(preds, function(l) { setNames(data.frame(as.table(sort(table(l), decreasing=T))), predNames) })
         } else {
             if(data$minimize) {
                 decreasing = F
@@ -41,27 +41,27 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
     fs = pre(subset(data$data, T, data$features))
     models = lapply(1:length(data$performance), function(i) {
         # evaluate the predictions to put them into the environment -- this is only so that the tests don't break
-        data$data[[data$performance[i]]]
-        return(regressor(data$data[[data$performance[i]]]~., data=fs$features))
+        #data$data[[data$performance[i]]]
+        return(train(regressor, task=makeRegrTask(id="regression", target="target", data=cbind(data.frame(target=data$data[[data$performance[i]]]), fs$features))))
     })
     if(!is.null(combine)) {
-        trainpredictions = matrix(nrow=nrow(fs$features), ncol=length(data$performance))
+        trainpredictions = data.frame(row.names=1:nrow(fs$features))
         for (i in 1:length(data$performance)) {
-            trainpredictions[,i] = predict(models[[i]], fs$features)
+            trainpredictions[,i] = predict(models[[i]], newdata=fs$features)$data$response
         }
-        combinedmodel = combine(totalBests~., data=cbind(fs$features, data.frame(expand(trainpredictions))))
+        combinedmodel = train(combine, task=makeClassifTask(id="regression", target="target", data=cbind(totalBests, fs$features, data.frame(expand(trainpredictions)))))
     }
 
     return(list(predictions=predictions, models=models, predictor=function(x) {
         tsf = pre(subset(x, T, data$features), fs$meta)
-        performancePredictions = matrix(nrow=nrow(tsf$features), ncol=length(data$performance))
+        performancePredictions = data.frame(row.names=1:nrow(tsf$features))
         for (i in 1:length(data$performance)) {
-            performancePredictions[,i] = predict(models[[i]], tsf$features)
+            performancePredictions[,i] = predict(models[[i]], newdata=tsf$features)$data$response
         }
 
         if(!is.null(combine)) {
-            preds = as.character(predict(combinedmodel, cbind(tsf$features, data.frame(expand(performancePredictions)))))
-            combinedpredictions = lapply(preds, function(l) { setNames(data.frame(table(l)), predNames) })
+            preds = predict(combinedmodel, newdata=cbind(tsf$features, data.frame(expand(performancePredictions))))$data$response
+            combinedpredictions = lapply(preds, function(l) { setNames(data.frame(as.table(sort(table(l), decreasing=T))), predNames) })
         } else {
             if(data$minimize) {
                 decreasing = F
