@@ -40,8 +40,6 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
 
     fs = pre(subset(data$data, T, data$features))
     models = lapply(1:length(data$performance), function(i) {
-        # evaluate the predictions to put them into the environment -- this is only so that the tests don't break
-        #data$data[[data$performance[i]]]
         return(train(regressor, task=makeRegrTask(id="regression", target="target", data=cbind(data.frame(target=data$data[[data$performance[i]]]), fs$features))))
     })
     if(!is.null(combine)) {

@@ -1,30 +1,3 @@
-makeRLearner.classif.test = function() {
-    makeRLearnerClassif(cl = "classif.test", package="llama", par.set=makeParamSet(), numerics=T, factors=T)
-}
-trainLearner.classif.test = function(.learner, .task, .subset, .weights, ...) { }
-predictLearner.classif.test = function(learner, model, newdata) {
-    return(factor(rep.int("b", nrow(newdata))))
-}
-testclassifier = makeLearner("classif.test")
-
-makeRLearner.classif.otest = function() {
-    makeRLearnerClassif(cl = "classif.otest", package="llama", par.set=makeParamSet(), numerics=T, factors=T)
-}
-trainLearner.classif.otest = function(.learner, .task, .subset, .weights, ...) { }
-predictLearner.classif.otest = function(learner, model, newdata) {
-    return(factor(rep.int("a", nrow(newdata))))
-}
-othertestclassifier = makeLearner("classif.otest")
-
-makeRLearner.classif.ftest = function() {
-    makeRLearnerClassif(cl = "classif.ftest", package="llama", par.set=makeParamSet(), numerics=T, factors=T)
-}
-trainLearner.classif.ftest = function(.learner, .task, .subset, .weights, ...) { }
-predictLearner.classif.ftest = function(learner, model, newdata) {
-    return(factor(c(rep.int("a", nrow(newdata)/2), rep.int("b", nrow(newdata)/2))))
-}
-foo = makeLearner("classif.ftest")
-
 test_that("classify classifies", {
     fold = data.frame(a=rep.int(0, 10), b=rep.int(1, 10), best=rep.int("b", 10))
     d = list(data=rbind(fold, fold), train=list(fold), test=list(fold), features=c("a"), minimize=T, performance=c("b"))
