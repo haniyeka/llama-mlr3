@@ -11,6 +11,7 @@ export(
     normalize,
     parscores,
     regression,
+    regressionPairs,
     singleBest,
     singleBestByCount,
     singleBestByPar,

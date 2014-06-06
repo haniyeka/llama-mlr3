@@ -65,7 +65,8 @@ features and the predictions of the classifiers in the ensemble.
 Lars Kotthoff
 }
 \seealso{
-\code{\link{classifyPairs}}, \code{\link{cluster}}, \code{\link{regression}}
+\code{\link{classifyPairs}}, \code{\link{cluster}}, \code{\link{regression}},
+\code{\link{regressionPairs}}
 }
 \references{
 Kotthoff, L., Miguel, I., Nightingale, P. (2010)

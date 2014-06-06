@@ -71,7 +71,8 @@ algorithm.
 Lars Kotthoff
 }
 \seealso{
-\code{\link{classify}}, \code{\link{cluster}}, \code{\link{regression}}
+\code{\link{classify}}, \code{\link{cluster}}, \code{\link{regression}},
+\code{\link{regressionPairs}}
 }
 \references{
 Xu, L., Hutter, F., Hoos, H. H., Leyton-Brown, K. (2011)

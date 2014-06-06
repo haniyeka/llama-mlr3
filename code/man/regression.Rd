@@ -74,7 +74,8 @@ pairwise differences (see examples).
 Lars Kotthoff
 }
 \seealso{
-\code{\link{classify}}, \code{\link{classifyPairs}}, \code{\link{cluster}}
+\code{\link{classify}}, \code{\link{classifyPairs}}, \code{\link{cluster}},
+\code{\link{regressionPairs}}
 }
 \references{
 Kotthoff, L. (2012)

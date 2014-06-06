@@ -83,7 +83,8 @@ ensemble.
 Lars Kotthoff
 }
 \seealso{
-\code{\link{classify}}, \code{\link{classifyPairs}}, \code{\link{regression}}
+\code{\link{classify}}, \code{\link{classifyPairs}}, \code{\link{regression}},
+\code{\link{regressionPairs}}
 }
 \examples{
 \dontrun{
