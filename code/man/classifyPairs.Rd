@@ -14,9 +14,7 @@ classifyPairs(classifier = NULL, data = NULL,
 }
 \arguments{
   \item{classifier}{
-  the classifier function to use. Must accept a formula of the values to predict
-  and a data frame with features. Return value should be a structure that can be
-  given to \code{predict} along with new data. See examples.
+  the mlr classifier to use. See examples.
 }
   \item{data}{
   the data to use with training and test sets. The structure returned by
@@ -82,17 +80,18 @@ Problems with Combinatorial Explosion}, 16--30.
 \examples{
 \dontrun{
 data(satsolvers)
-trainTest = cvFolds(satsolvers)
+folds = cvFolds(satsolvers)
 
-library(RWeka)
-res = classifyPairs(classifier=J48, data=trainTest)
+res = classifyPairs(classifier=makeLearner("classif.J48"), data=folds)
 # the total number of successes
-sum(successes(trainTest, res))
+sum(successes(folds, res))
 # predictions on the entire data set
 res$predictor(subset(satsolvers$data, TRUE, satsolvers$features))
 
 # combine predictions using J48 induced classifier instead of majority vote
-res = classifyPairs(classifier=J48, data=trainTest, combinator=J48)
+res = classifyPairs(classifier=makeLearner("classif.J48"),
+                    data=folds,
+                    combinator=makeLearner("classif.J48"))
 }
 }
 \keyword{ ~models }

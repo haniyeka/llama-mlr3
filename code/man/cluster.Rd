@@ -90,31 +90,31 @@ Lars Kotthoff
 library(RWeka)
 
 data(satsolvers)
-trainTest = cvFolds(satsolvers)
+folds = cvFolds(satsolvers)
 
-res = cluster(clusterer=XMeans, data=trainTest, pre=normalize)
+res = cluster(clusterer=XMeans, data=folds, pre=normalize)
 # the total number of successes
-sum(successes(trainTest, res))
+sum(successes(folds, res))
 # predictions on the entire data set
 res$predictor(subset(satsolvers$data, TRUE, satsolvers$features))
 
 # determine best by number of successes
-res = cluster(clusterer=XMeans, data=trainTest, bestBy="successes", pre=normalize)
-sum(successes(trainTest, res))
+res = cluster(clusterer=XMeans, data=folds, bestBy="successes", pre=normalize)
+sum(successes(folds, res))
 
 library(flexclust)
 res = cluster(clusterer=function(x) { kcca(x, length(satsolvers$performance)) },
-    data=trainTest, pre=normalize)
+    data=folds, pre=normalize)
 
 # ensemble clustering
 rese = cluster(clusterer=list(XMeans, make_Weka_clusterer("weka/clusterers/EM"),
     function(x) { kcca(x, length(satsolvers$performance)) }),
-    data=trainTest, pre=normalize)
+    data=folds, pre=normalize)
 
 # ensemble clustering with a classifier to combine predictions
 rese = cluster(clusterer=list(XMeans, make_Weka_clusterer("weka/clusterers/EM"),
     function(x) { kcca(x, length(satsolvers$performance)) }, .combine=J48),
-    data=trainTest, pre=normalize)
+    data=folds, pre=normalize)
 }
 }
 \keyword{ ~cluster }

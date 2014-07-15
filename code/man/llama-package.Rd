@@ -54,7 +54,7 @@ using \code{parallelStartSocket()}).
 \author{
 Lars Kotthoff
 
-contributions by Barry Hurley, Talal Rahwan
+contributions by Barry Hurley, Talal Rahwan, Bernd Bischl
 
 Maintainer: Lars Kotthoff <larsko@4c.ucc.ie>
 }
@@ -70,12 +70,10 @@ Algorithm Selection for Combinatorial Search Problems: A survey.
 \keyword{ package }
 \examples{
 \dontrun{
-library(RWeka)
-
 data(satsolvers)
 folds = cvFolds(satsolvers)
 
-model = classify(classifier=J48, data=folds)
+model = classify(classifier=makeLearner("classif.J48"), data=folds)
 # print the total number of successes
 print(sum(successes(folds, model)))
 # print the total misclassification penalty
@@ -94,7 +92,7 @@ library(FSelector)
 
 filtered = featureFilter(cfs, satsolvers)
 folds = cvFolds(filtered)
-model = regression(regressor=LinearRegression, data=folds)
+model = regression(regressor=makeLearner("regr.LinearRegression"), data=folds)
 # print the total number of successes
 print(sum(successes(folds, model)))
 }
