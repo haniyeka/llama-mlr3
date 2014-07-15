@@ -21,8 +21,8 @@ test_that("classify raises error without train/test split", {
 })
 
 test_that("classify takes list of classifiers", {
-    fold = data.frame(a=rep.int(0, 10), b=rep.int(1, 10), best=rep.int("b", 10))
-    d = list(data=rbind(fold, fold), train=list(fold), test=list(fold), features=c("a"), minimize=T, performance=c("b"))
+    fold = data.frame(a=rep.int(0, 10), b=rep.int(1, 10), c=rep.int(1, 10), best=c(rep.int("b", 5), rep.int("c", 5)))
+    d = list(data=rbind(fold, fold), train=list(fold), test=list(fold), features=c("a"), minimize=T, performance=c("b", "c"))
     res = classify(classifier=list(testclassifier, testclassifier, testclassifier), d)
     expect_true(all(sapply(1:length(res$predictions), function(i) { sapply(res$predictions[[i]], function(x) { x == data.frame(algorithm="b", score=3) }) })))
     expect_true(all(sapply(res$predictor(fold), function(x) { x == data.frame(algorithm="b", score=3) })))

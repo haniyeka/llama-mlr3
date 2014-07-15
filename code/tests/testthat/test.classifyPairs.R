@@ -21,7 +21,7 @@ test_that("classifyPairs raises error without train/test split", {
 })
 
 test_that("classifyPairs respects minimize", {
-    fold = data.frame(a=rep.int(0, 10), best=rep.int("bar", 10), foo=rep.int(0, 10), bar=rep.int(1, 10))
+    fold = data.frame(a=rep.int(0, 10), best=c(rep.int("foo", 5),  rep.int("bar", 5)), foo=rep.int(0, 10), bar=rep.int(1, 10))
     d = list(data=rbind(fold, fold), train=list(fold), test=list(fold), features=c("a"), performance=c("foo", "bar"), minimize=F)
     res = classifyPairs(classifier=idtestclassifier, d)
     expect_true(all(sapply(1:length(res$predictions), function(i) { sapply(res$predictions[[i]], function(x) { x == data.frame(algorithm="bar", score=1) }) })))
