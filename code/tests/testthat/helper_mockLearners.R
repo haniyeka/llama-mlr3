@@ -76,3 +76,17 @@ registerS3method("makeRLearner", "regr.test", makeRLearner.regr.test)
 registerS3method("trainLearner", "regr.test", trainLearner.regr.test)
 registerS3method("predictLearner", "regr.test", predictLearner.regr.test)
 testregressor = makeLearner("regr.test")
+
+makeRLearner.regr.footest = function() {
+    makeRLearnerRegr(cl = "regr.footest", package="llama", par.set=makeParamSet(), properties=c("numerics", "factors", "twoclass", "multiclass", "prob"))
+}
+trainLearner.regr.footest = function(.learner, .task, .subset, .weights, ...) {
+    .task
+}
+predictLearner.regr.footest = function(learner, model, newdata) {
+    return(rep.int(1, nrow(newdata)))
+}
+registerS3method("makeRLearner", "regr.footest", makeRLearner.regr.footest)
+registerS3method("trainLearner", "regr.footest", trainLearner.regr.footest)
+registerS3method("predictLearner", "regr.footest", predictLearner.regr.footest)
+footestregressor = makeLearner("regr.footest")
