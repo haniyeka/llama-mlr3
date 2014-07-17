@@ -14,11 +14,9 @@ cluster(clusterer = NULL, data = NULL,
 }
 \arguments{
   \item{clusterer}{
-  the clustering function to use. Must accept a data frame with features. Return
-  value should be a structure that can be given to \code{predict} along with new
-  data. See examples.
+  the mlr clustering function to use. See examples.
 
-  The argument can also be a list of such clusters.
+  The argument can also be a list of such functions.
 }
   \item{data}{
   the data to use with training and test sets. The structure returned by
@@ -87,34 +85,28 @@ Lars Kotthoff
 }
 \examples{
 \dontrun{
-library(RWeka)
-
 data(satsolvers)
 folds = cvFolds(satsolvers)
 
-res = cluster(clusterer=XMeans, data=folds, pre=normalize)
+res = cluster(clusterer=makeLearner("cluster.XMeans"), data=folds, pre=normalize)
 # the total number of successes
 sum(successes(folds, res))
 # predictions on the entire data set
 res$predictor(subset(satsolvers$data, TRUE, satsolvers$features))
 
 # determine best by number of successes
-res = cluster(clusterer=XMeans, data=folds, bestBy="successes", pre=normalize)
+res = cluster(clusterer=makeLearner("cluster.XMeans"), data=folds, bestBy="successes", pre=normalize)
 sum(successes(folds, res))
 
-library(flexclust)
-res = cluster(clusterer=function(x) { kcca(x, length(satsolvers$performance)) },
-    data=folds, pre=normalize)
-
-# ensemble clustering
-rese = cluster(clusterer=list(XMeans, make_Weka_clusterer("weka/clusterers/EM"),
-    function(x) { kcca(x, length(satsolvers$performance)) }),
-    data=folds, pre=normalize)
-
-# ensemble clustering with a classifier to combine predictions
-rese = cluster(clusterer=list(XMeans, make_Weka_clusterer("weka/clusterers/EM"),
-    function(x) { kcca(x, length(satsolvers$performance)) }, .combine=J48),
-    data=folds, pre=normalize)
-}
+## ensemble clustering
+#rese = cluster(clusterer=list(XMeans, make_Weka_clusterer("weka/clusterers/EM"),
+#    function(x) { kcca(x, length(satsolvers$performance)) }),
+#    data=folds, pre=normalize)
+#
+## ensemble clustering with a classifier to combine predictions
+#rese = cluster(clusterer=list(XMeans, make_Weka_clusterer("weka/clusterers/EM"),
+#    function(x) { kcca(x, length(satsolvers$performance)) }, .combine=J48),
+#    data=folds, pre=normalize)
+#}
 }
 \keyword{ ~cluster }

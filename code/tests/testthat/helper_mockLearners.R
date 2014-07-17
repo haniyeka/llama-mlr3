@@ -1,5 +1,5 @@
 makeRLearner.classif.test = function() {
-    makeRLearnerClassif(cl = "classif.test", package="llama", par.set=makeParamSet(), properties=c("numerics", "factors", "twoclass", "multiclass", "prob"))
+    makeRLearnerClassif(cl = "classif.test", package="llama", par.set=makeParamSet(), properties=c("numerics", "factors", "oneclass", "twoclass", "multiclass", "prob"))
 }
 trainLearner.classif.test = function(.learner, .task, .subset, .weights, ...) { }
 predictLearner.classif.test = function(learner, model, newdata) {
@@ -77,6 +77,7 @@ registerS3method("trainLearner", "regr.test", trainLearner.regr.test)
 registerS3method("predictLearner", "regr.test", predictLearner.regr.test)
 testregressor = makeLearner("regr.test")
 
+
 makeRLearner.regr.footest = function() {
     makeRLearnerRegr(cl = "regr.footest", package="llama", par.set=makeParamSet(), properties=c("numerics", "factors", "twoclass", "multiclass", "prob"))
 }
@@ -90,3 +91,18 @@ registerS3method("makeRLearner", "regr.footest", makeRLearner.regr.footest)
 registerS3method("trainLearner", "regr.footest", trainLearner.regr.footest)
 registerS3method("predictLearner", "regr.footest", predictLearner.regr.footest)
 footestregressor = makeLearner("regr.footest")
+
+
+makeRLearner.cluster.test = function() {
+    makeRLearnerCluster(cl = "cluster.test", package = "llama", par.set = makeParamSet(), properties = c("numerics"))
+}
+trainLearner.cluster.test = function(.learner, .task, .subset, .weights, ...) {
+    .task
+}
+predictLearner.cluster.test = function(learner, model, newdata) {
+    return(rep.int(1, nrow(newdata)))
+}
+registerS3method("makeRLearner", "cluster.test", makeRLearner.cluster.test)
+registerS3method("trainLearner", "cluster.test", trainLearner.cluster.test)
+registerS3method("predictLearner", "cluster.test", predictLearner.cluster.test)
+testclusterer = makeLearner("cluster.test")
