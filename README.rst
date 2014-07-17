@@ -9,7 +9,7 @@ create the most common types of algorithm selection models used in the
 literature.
 
 If you have any questions or feedback, please contact Lars Kotthoff
-<larsko@4c.ucc.ie>.
+<lars.kotthoff@insight-centre.org>.
 
 Quick start
 ===========
@@ -48,13 +48,13 @@ cross-validation.
 
 This will give you 10 folds for cross-validation. Now we're ready to train
 our first model. To do that, we'll need some machine learning algorithms --
-we're going to use a random forest here. Load the randomForest package
+LLAMA is integrated with `mlr <https://github.com/berndbischl/mlr>`_ and
+supports all its learning algorithms. We're going to use a random forest here
 and train a simple classification model that predicts the best algorithm.
 
 ::
 
-    require(randomForest)
-    model = classify(randomForest, folds)
+    model = classify(makeLearner("classif.randomForest"), folds)
 
 Great! Now let's see how well this model is doing and compare its performance to
 the virtual best solver (VBS) and the single best solver in terms of average
@@ -62,20 +62,20 @@ PAR10 score.
 
 ::
 
-    mean(parscores(folds, model))
     mean(parscores(data, vbs))
+    mean(parscores(folds, model))
     mean(parscores(data, singleBest))
 
 These are the numbers I get for the ``satsolvers`` data:
 
 :virtual best: 4645.169
-:model: 5584.216
+:model: 5569.949
 :single best: 5779.526
 
 While we are far off the virtual best, our classifier beats the single best
 algorithm! Not bad for a model trained in a single line of code.
 
-You can use any other classification algorithms instead of ``randomForest`` of
+You can use any other classification algorithms instead of a random forest of
 course. You can also train regression or cluster models, use different
 train/test splits or preprocess the data by selecting the most important
 features. More details in the on-line documentation and the manual.
