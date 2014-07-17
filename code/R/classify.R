@@ -25,12 +25,12 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
         trainBests = data.frame(target=factor(breakBestTies(data, i), levels=data$performance))
         for(j in 1:length(classifier)) {
             model = train(classifier[[j]], task=makeClassifTask(id="classify", target="target", data=cbind(trainBests, trf$features)))
-            if(is.object(combinator)) { # only do this if we need it
+            if(inherits(combinator, "Learner")) { # only do this if we need it
                 trainpredictions[,j] = predict(model, newdata=trf$features)$data$response
             }
             ensemblepredictions[,j] = predict(model, newdata=tsf$features)$data$response
         }
-        if(is.object(combinator)) {
+        if(inherits(combinator, "Learner")) {
             combinedmodel = train(combinator, task=makeClassifTask(id="classify", target="target", data=cbind(trainBests, trf$features, lapply(trainpredictions, factor, levels=data$performance))))
             preds = predict(combinedmodel, newdata=cbind(tsf$features, lapply(ensemblepredictions, factor, levels=data$performance)))$data$response
             combinedpredictions = lapply(preds, function(l) { setNames(data.frame(as.table(sort(table(l), decreasing=T))), predNames) })
@@ -44,7 +44,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
     models = lapply(1:length(classifier), function(i) {
         return(train(classifier[[i]], task=makeClassifTask(id="classify", target="target", data=cbind(totalBests, fs$features))))
     })
-    if(is.object(combinator)) {
+    if(inherits(combinator, "Learner")) {
         trainpredictions = data.frame(row.names=1:nrow(fs$features))
         for(i in 1:length(classifier)) {
             trainpredictions[,i] = predict(models[[i]], newdata=fs$features)$data$response
@@ -58,7 +58,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
         for(i in 1:length(classifier)) {
             ensemblepredictions[,i] = predict(models[[i]], newdata=tsf$features)$data$response
         }
-        if(is.object(combinator)) {
+        if(inherits(combinator, "Learner")) {
             preds = predict(combinedmodel, newdata=cbind(tsf$features, lapply(ensemblepredictions, factor, levels=data$performance)))$data$response
             combinedpredictions = lapply(preds, function(l) { setNames(data.frame(as.table(sort(table(l), decreasing=T))), predNames) })
         } else {

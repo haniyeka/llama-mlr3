@@ -40,7 +40,7 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
             model = train(clusterer[[j]], task=task)
             trainclusters = predict(model, newdata=trf$features)$data$response
             best = by(data$train[[i]], trainclusters, bestfun)
-            if(is.object(combinator)) { # only do this if we need it
+            if(inherits(combinator, "Learner")) { # only do this if we need it
                 trainpredictions[,j] = sapply(predict(model, newdata=trf$features)$data$response,
                 function(x) {
                     if(is.na(x)) {
@@ -61,7 +61,7 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
                 }
             }
         }
-        if(is.object(combinator)) {
+        if(inherits(combinator, "Learner")) {
             trainBests = data.frame(target=factor(breakBestTies(data, i), levels=data$performance))
             combinedmodel = train(combinator, task=makeClassifTask(id="cluster", target="target", data=cbind(trainBests, trf$features, data.frame(trainpredictions))))
             featureData = matrix(nrow=nrow(tsf$features), ncol=length(clusterer))
@@ -100,7 +100,7 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
             })
         })
     })
-    if(is.object(combinator)) {
+    if(inherits(combinator, "Learner")) {
         trainpredictions = matrix(nrow=nrow(fs$features), ncol=length(clusterer))
         for(j in 1:length(clusterer)) {
             trainpredictions[,j] = sapply(models[[j]](fs$features), function(x) { x[1,1] })
@@ -115,7 +115,7 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
         for(j in 1:length(clusterer)) {
             ensemblepredictions[[j]] = models[[j]](tsf$features)
         }
-        if(is.object(combinator)) {
+        if(inherits(combinator, "Learner")) {
             featureData = matrix(nrow=nrow(tsf$features), ncol=length(clusterer))
             for(k in 1:nrow(featureData)) {
                 for(j in 1:ncol(featureData)) {

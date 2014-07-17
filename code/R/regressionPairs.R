@@ -7,7 +7,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         stop("Need data with train/test split!")
     }
 
-    totalBests = breakBestTies(data)
+    totalBests = data.frame(target=factor(breakBestTies(data), levels=data$performance))
     combns = combn(data$performance, 2)
     predictions = parallelMap(function(i) {
         trf = pre(subset(data$train[[i]], T, data$features))
@@ -16,18 +16,18 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         trainpredictions = matrix(nrow=nrow(trf$features), ncol=ncol(combns))
         pairpredictions = matrix(nrow=nrow(tsf$features), ncol=ncol(combns))
         for (j in 1:ncol(combns)) {
-            values = data$train[[i]][[combns[1,j]]] - data$train[[i]][[combns[2,j]]]
-            model = regressor(values~., data=trf$features)
-            if(is.function(combine)) { # only do this if we need it
-                trainpredictions[,j] = predict(model, trf$features)
+            values = data.frame(target=data$train[[i]][[combns[1,j]]] - data$train[[i]][[combns[2,j]]])
+            model = train(regressor, task=makeRegrTask(id="regression", target="target", data=cbind(values, trf$features)))
+            if(!is.null(combine)) { # only do this if we need it
+                trainpredictions[,j] = predict(model, newdata=trf$features)$data$response
             }
-            pairpredictions[,j] = predict(model, tsf$features)
+            pairpredictions[,j] = predict(model, newdata=tsf$features)$data$response
         }
 
-        if(is.function(combine)) {
-            trainBests = breakBestTies(data, i)
-            combinedmodel = combine(trainBests~., data=cbind(trf$features, data.frame(trainpredictions)))
-            preds = as.character(predict(combinedmodel, cbind(tsf$features, data.frame(pairpredictions))))
+        if(!is.null(combine)) {
+            trainBests = data.frame(target=factor(breakBestTies(data, i), levels=data$performance))
+            combinedmodel = train(combine, task=makeClassifTask(id="regression", target="target", data=cbind(trainBests, trf$features, data.frame(trainpredictions))))
+            preds = predict(combinedmodel, newdata=cbind(tsf$features, data.frame(pairpredictions)))$data$response
             combinedpredictions = lapply(preds, function(l) { setNames(data.frame(table(l)), predNames) })
         } else {
             if(data$minimize) {
@@ -55,25 +55,25 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
 
     fs = pre(subset(data$data, T, data$features))
     models = lapply(1:ncol(combns), function(i) {
-        values = data$data[[combns[1,i]]] - data$data[[combns[2,i]]]
-        return(regressor(values~., data=fs$features))
+        values = data.frame(target=data$data[[combns[1,i]]] - data$data[[combns[2,i]]])
+        return(train(regressor, task=makeRegrTask(id="regression", target="target", data=cbind(values, fs$features))))
     })
-    if(is.function(combine)) {
+    if(!is.null(combine)) {
         trainpredictions = matrix(nrow=nrow(fs$features), ncol=ncol(combns))
         for(i in 1:ncol(combns)) {
-            trainpredictions[,i] = predict(models[[i]], fs$features)
+            trainpredictions[,i] = predict(models[[i]], newdata=fs$features)$data$response
         }
-        combinedmodel = combine(totalBests~., data=cbind(fs$features, data.frame(trainpredictions)))
+        combinedmodel = train(combine, task=makeClassifTask(id="regression", target="target", data=cbind(totalBests, fs$features, data.frame(trainpredictions))))
     }
 
     return(list(predictions=predictions, models=models, predictor=function(x) {
         tsf = pre(subset(x, T, data$features), fs$meta)
         pairpredictions = matrix(nrow=nrow(tsf$features), ncol=ncol(combns))
         for(i in 1:ncol(combns)) {
-            pairpredictions[,i] = predict(models[[i]], tsf$features)
+            pairpredictions[,i] = predict(models[[i]], newdata=tsf$features)$data$response
         }
-        if(is.function(combine)) {
-            preds = as.character(predict(combinedmodel, cbind(tsf$features, data.frame(pairpredictions))))
+        if(!is.null(combine)) {
+            preds = predict(combinedmodel, newdata=cbind(tsf$features, data.frame(pairpredictions)))$data$response
             combinedpredictions = lapply(preds, function(l) { setNames(data.frame(table(l)), predNames) })
         } else {
             if(data$minimize) {

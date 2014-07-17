@@ -27,13 +27,13 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
             }
             labels = data.frame(target=factor(cmp(combns[1,j], combns[2,j]), levels=data$performance))
             model = train(classifier, task=makeClassifTask(id="classifyPairs", target="target", data=cbind(labels, trf$features)))
-            if(is.object(combinator)) { # only do this if we need it
+            if(!is.null(combinator)) { # only do this if we need it
                 trainpredictions[,j] = predict(model, newdata=trf$features)$data$response
             }
             pairpredictions[,j] = predict(model, newdata=tsf$features)$data$response
         }
 
-        if(is.object(combinator)) {
+        if(!is.null(combinator)) {
             trainBests = data.frame(target=factor(breakBestTies(data, i), levels=data$performance))
             combinedmodel = train(combinator, task=makeClassifTask(id="classifyPairs", target="target", data=cbind(trainBests, trf$features, lapply(data.frame(trainpredictions), factor, levels=data$performance))))
             preds = predict(combinedmodel, newdata=cbind(tsf$features, lapply(data.frame(pairpredictions), factor, levels=data$performance)))$data$response
@@ -58,7 +58,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
         labels = data.frame(target=factor(cmp(combns[1,i], combns[2,i]), levels=data$performance))
         return(train(classifier, task=makeClassifTask(id="classifyPairs", target="target", data=cbind(labels, fs$features))))
     })
-    if(is.object(combinator)) {
+    if(!is.null(combinator)) {
         trainpredictions = data.frame(row.names=1:nrow(fs$features))
         for(i in 1:ncol(combns)) {
             trainpredictions[,i] = predict(models[[i]], newdata=fs$features)$data$response
@@ -72,7 +72,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
         for(i in 1:ncol(combns)) {
             pairpredictions[,i] = predict(models[[i]], newdata=tsf$features)$data$response
         }
-        if(is.object(combinator)) {
+        if(!is.null(combinator)) {
             preds = predict(combinedmodel, newdata=cbind(tsf$features, lapply(data.frame(pairpredictions), factor, levels=data$performance)))$data$response
             combinedpredictions = lapply(preds, function(l) { setNames(data.frame(as.table(sort(table(l), decreasing=T))), predNames) })
         } else {

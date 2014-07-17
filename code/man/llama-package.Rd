@@ -52,11 +52,11 @@ functions are not thread safe and have to be run in separate processes (e.g. by
 using \code{parallelStartSocket()}).
 }
 \author{
-Lars Kotthoff
+Lars Kotthoff, Bernd Bischl
 
-contributions by Barry Hurley, Talal Rahwan, Bernd Bischl
+contributions by Barry Hurley, Talal Rahwan
 
-Maintainer: Lars Kotthoff <larsko@4c.ucc.ie>
+Maintainer: Lars Kotthoff <lars.kotthoff@insight-centre.org>
 }
 \references{
 Kotthoff, L. (2013)

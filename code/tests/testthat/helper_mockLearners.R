@@ -12,7 +12,7 @@ testclassifier = makeLearner("classif.test")
 
 
 makeRLearner.classif.otest = function() {
-    makeRLearnerClassif(cl = "classif.otest", package="llama", par.set=makeParamSet(), properties=c("numerics", "factors", "twoclass", "multiclass", "prob"))
+    makeRLearnerClassif(cl = "classif.otest", package="llama", par.set=makeParamSet(), properties=c("numerics", "factors", "oneclass", "twoclass", "multiclass", "prob"))
 }
 trainLearner.classif.otest = function(.learner, .task, .subset, .weights, ...) { }
 predictLearner.classif.otest = function(learner, model, newdata) {
