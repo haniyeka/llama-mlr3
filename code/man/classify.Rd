@@ -13,9 +13,7 @@ classify(classifier = NULL, data = NULL,
 }
 \arguments{
   \item{classifier}{
-  the classifier function to use. Must accept a formula of the values to predict
-  and a data frame with features. Return value should be a structure that can be
-  given to \code{predict} along with new data. See examples.
+  the mlr classifier to use. See examples.
 
   The argument can also be a list of such classifiers.
 }
@@ -76,23 +74,28 @@ Ensemble Classification for Constraint Solver Configuration.
 \examples{
 \dontrun{
 data(satsolvers)
-trainTest = cvFolds(satsolvers)
+folds = cvFolds(satsolvers)
 
-library(RWeka)
-res = classify(classifier=J48, data=trainTest)
+res = classify(classifier=makeLearner("classif.J48"), data=folds)
 # the total number of successes
-sum(successes(trainTest, res))
+sum(successes(folds, res))
 # predictions on the entire data set
 res$predictor(subset(satsolvers$data, TRUE, satsolvers$features))
 
-library(e1071)
-res = classify(classifier=svm, data=trainTest)
+res = classify(classifier=makeLearner("classif.svm"), data=folds)
 
 # ensemble classification
-rese = classify(classifier=list(J48, IBk, svm), data=trainTest)
+rese = classify(classifier=list(makeLearner("classif.J48"),
+                                makeLearner("classif.IBk"),
+                                makeLearner("classif.svm")),
+                data=folds)
 
 # ensemble classification with a classifier to combine predictions
-rese = classify(classifier=list(J48, IBk, svm, .combine=J48), data=trainTest)
+rese = classify(classifier=list(makeLearner("classif.J48"),
+                                makeLearner("classif.IBk"),
+                                makeLearner("classif.svm"),
+                                .combine=makeLearner("classif.J48")),
+                data=folds)
 }
 }
 \keyword{ ~models }

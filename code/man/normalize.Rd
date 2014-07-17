@@ -40,9 +40,9 @@ Lars Kotthoff
 library(RWeka)
 
 data(satsolvers)
-trainTest = cvFolds(satsolvers)
+folds = cvFolds(satsolvers)
 
-cluster(clusterer=XMeans, data=trainTest, pre=normalize)
+cluster(clusterer=XMeans, data=folds, pre=normalize)
 }
 }
 \keyword{ ~models }
