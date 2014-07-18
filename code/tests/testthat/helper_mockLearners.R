@@ -1,5 +1,5 @@
 makeRLearner.classif.test = function() {
-    makeRLearnerClassif(cl = "classif.test", package="llama", par.set=makeParamSet(), properties=c("numerics", "factors", "oneclass", "twoclass", "multiclass", "prob"))
+    makeRLearnerClassif(cl = "classif.test", package="llama", par.set=makeParamSet(), properties=c("numerics", "factors", "oneclass", "twoclass", "multiclass", "prob", "weights"))
 }
 trainLearner.classif.test = function(.learner, .task, .subset, .weights, ...) { }
 predictLearner.classif.test = function(learner, model, newdata) {
@@ -51,7 +51,7 @@ idtestclassifier = makeLearner("classif.idtest")
 
 
 makeRLearner.classif.bartest = function() {
-    makeRLearnerClassif(cl = "classif.bartest", package="llama", par.set=makeParamSet(), properties=c("numerics", "factors", "twoclass", "multiclass", "prob"))
+    makeRLearnerClassif(cl = "classif.bartest", package="llama", par.set=makeParamSet(), properties=c("numerics", "factors", "twoclass", "multiclass", "weights"))
 }
 trainLearner.classif.bartest = function(.learner, .task, .subset, .weights, ...) { }
 predictLearner.classif.bartest = function(learner, model, newdata) {
@@ -64,7 +64,7 @@ bartestclassifier = makeLearner("classif.bartest")
 
 
 makeRLearner.regr.test = function() {
-    makeRLearnerRegr(cl = "regr.test", package="llama", par.set=makeParamSet(), properties=c("numerics", "factors", "twoclass", "multiclass", "prob"))
+    makeRLearnerRegr(cl = "regr.test", package="llama", par.set=makeParamSet(), properties=c("numerics", "factors", "twoclass", "multiclass", "weights"))
 }
 trainLearner.regr.test = function(.learner, .task, .subset, .weights, ...) {
     .task
