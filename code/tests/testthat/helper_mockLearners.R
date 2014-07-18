@@ -38,7 +38,7 @@ foo = makeLearner("classif.ftest")
 
 
 makeRLearner.classif.idtest = function() {
-    makeRLearnerClassif(cl = "classif.idtest", package="llama", par.set=makeParamSet(), properties=c("numerics", "factors", "twoclass", "multiclass", "prob"))
+    makeRLearnerClassif(cl = "classif.idtest", package="llama", par.set=makeParamSet(), properties=c("numerics", "factors", "twoclass", "multiclass", "weights"))
 }
 trainLearner.classif.idtest = function(.learner, .task, .subset, .weights, ...) { }
 predictLearner.classif.idtest = function(learner, model, newdata) {

@@ -19,7 +19,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         pairpredictions = matrix(nrow=nrow(tsf$features), ncol=ncol(combns))
         for (j in 1:ncol(combns)) {
             values = data.frame(target=data$train[[i]][[combns[1,j]]] - data$train[[i]][[combns[2,j]]])
-            task = makeRegrTask(id="regression", target="target", data=cbind(values, trf$features))
+            task = makeRegrTask(id="regression", target="target", data=cbind(values, trf$features), fixup.data="quiet")
             model = train(regressor, task = task)
             if(!is.null(combine)) { # only do this if we need it
                 trainpredictions[,j] = predict(model, newdata=trf$features)$data$response
@@ -30,9 +30,9 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         if(!is.null(combine)) {
             trainBests = data.frame(target=factor(breakBestTies(data, i), levels=data$performance))
             if(hasProperties(combine, "weights")) {
-                task = makeClassifTask(id="regression", target="target", weights=trw, data=cbind(trainBests, trf$features, data.frame(trainpredictions)))
+                task = makeClassifTask(id="regression", target="target", weights=trw, data=cbind(trainBests, trf$features, data.frame(trainpredictions)), fixup.data="quiet")
             } else {
-                task = makeClassifTask(id="regression", target="target", data=cbind(trainBests, trf$features, data.frame(trainpredictions)))
+                task = makeClassifTask(id="regression", target="target", data=cbind(trainBests, trf$features, data.frame(trainpredictions)), fixup.data="quiet")
             }
             combinedmodel = train(combine, task = task)
             preds = predict(combinedmodel, newdata=cbind(tsf$features, data.frame(pairpredictions)))$data$response
@@ -66,7 +66,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
     fw = abs(apply(fp, 1, max) - apply(fp, 1, min))
     models = lapply(1:ncol(combns), function(i) {
         values = data.frame(target=data$data[[combns[1,i]]] - data$data[[combns[2,i]]])
-        task = makeRegrTask(id="regression", target="target", data=cbind(values, fs$features))
+        task = makeRegrTask(id="regression", target="target", data=cbind(values, fs$features), fixup.data="quiet")
         return(train(regressor, task = task))
     })
     if(!is.null(combine)) {
@@ -75,9 +75,9 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             trainpredictions[,i] = predict(models[[i]], newdata=fs$features)$data$response
         }
         if(hasProperties(combine, "weights")) {
-            task = makeClassifTask(id="regression", target="target", weights=fw, data=cbind(totalBests, fs$features, data.frame(trainpredictions)))
+            task = makeClassifTask(id="regression", target="target", weights=fw, data=cbind(totalBests, fs$features, data.frame(trainpredictions)), fixup.data="quiet")
         } else {
-            task = makeClassifTask(id="regression", target="target", data=cbind(totalBests, fs$features, data.frame(trainpredictions)))
+            task = makeClassifTask(id="regression", target="target", data=cbind(totalBests, fs$features, data.frame(trainpredictions)), fixup.data="quiet")
         }
         combinedmodel = train(combine, task = task)
     }
