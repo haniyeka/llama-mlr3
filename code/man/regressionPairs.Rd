@@ -39,9 +39,10 @@ induce a regression model for each pair of algorithms to predict the performance
 difference between them. If \code{combine} is not supplied, the best overall
 algorithm is determined by summing the performance differences over all pairs
 for each algorithm and ranking them by this sum. The algorithm with the largest
-value is chosen. If it is supplied, it is assumed to be a classifier with the
-same properties as the classifiers given to \code{classify}. This classifier is
-passed the original features and the predictions for each pair of algorithms.
+value is chosen. If it is supplied, it is assumed to be an mlr classifier. This classifier is
+passed the original features and the predictions for each pair of algorithms. If
+the classifier supports weights, the performance difference between the best and
+the worst algorithm is passed as weight.
 
 The aggregated score for each algorithm quantifies how much better it is than
 the other algorithms, where bigger values are better. Positive numbers denote

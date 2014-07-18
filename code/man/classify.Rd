@@ -35,6 +35,10 @@ set(s).
 The evaluation across the training and test sets will be parallelized
 automatically if a suitable backend for parallel computation is loaded.
 
+If the given classifier supports case weights, the performance difference
+between the best and the worst algorithm is passed as a weight for each
+instance.
+
 If a list of classifiers is supplied in \code{classifier}, ensemble
 classification is performed. That is, the models are trained and used to make
 predictions independently. For each instance, the final prediction is determined

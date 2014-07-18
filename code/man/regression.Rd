@@ -48,10 +48,12 @@ automatically if a suitable backend for parallel computation is loaded.
 
 If \code{combine} is not null, it is assumed to be an mlr classifier and will be
 used to learn a model to predict the best algorithm given the original features
-and the performance predictions for the individual algorithms. Optionally,
-\code{expand} can be used to supply a function that will modify the predictions
-before giving them to the classifier, e.g. augment the performance predictions
-with the pairwise differences (see examples).
+and the performance predictions for the individual algorithms. If this
+classifier supports weights, they will be passed as the difference between the
+best and the worst algorithm. Optionally, \code{expand} can be used to supply a
+function that will modify the predictions before giving them to the classifier,
+e.g. augment the performance predictions with the pairwise differences (see
+examples).
 }
 \value{
  \item{predictions}{a list of lists of data frames with the predictions for each

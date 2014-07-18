@@ -46,6 +46,10 @@ what was specified when the LLAMA data frame was created.
 The evaluation across the training and test sets will be parallelized
 automatically if a suitable backend for parallel computation is loaded.
 
+If the given classifier supports case weights, the performance difference
+between the best and the worst algorithm is passed as a weight for each
+instance.
+
 Training this model can take a very long time. Given \code{n} algorithms,
 \code{choose(n, 2)} models are trained and evaluated. This is significantly
 slower than the other approaches that train a single model or one for each
