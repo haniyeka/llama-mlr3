@@ -96,7 +96,8 @@ sum(successes(folds, res))
 res$predictor(subset(satsolvers$data, TRUE, satsolvers$features))
 
 # determine best by number of successes
-res = cluster(clusterer=makeLearner("cluster.XMeans"), data=folds, bestBy="successes", pre=normalize)
+res = cluster(clusterer=makeLearner("cluster.XMeans"), data=folds,
+    bestBy="successes", pre=normalize)
 sum(successes(folds, res))
 
 # ensemble clustering
