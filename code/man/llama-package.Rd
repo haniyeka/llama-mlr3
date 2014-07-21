@@ -87,7 +87,7 @@ library(FSelector)
 
 filtered = featureFilter(cfs, satsolvers)
 folds = cvFolds(filtered)
-model = regression(regressor=makeLearner("regr.LinearRegression"), data=folds)
+model = regression(regressor=makeLearner("regr.lm"), data=folds)
 # print the total number of successes
 print(sum(successes(folds, model)))
 }
