@@ -83,15 +83,15 @@ Lars Kotthoff
 data(satsolvers)
 folds = cvFolds(satsolvers)
 
-library(RWeka)
-model = regressionPairs(regressor=LinearRegression, data=folds)
+model = regressionPairs(regressor=makeLearner("regr.lm"), data=folds)
 # the total number of successes
 sum(successes(folds, model))
 # predictions on the entire data set
 model$predictor(subset(satsolvers$data, TRUE, satsolvers$features))
 
 # combine predictions using J48 induced classifier
-model = regressionPairs(regressor=LinearRegression, data=folds, combine=J48)
+model = regressionPairs(regressor=makeLearner("regr.lm"), data=folds,
+    combine=makeLearner("classif.J48"))
 }
 }
 \keyword{ ~models }

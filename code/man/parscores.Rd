@@ -45,8 +45,6 @@ Lars Kotthoff
 }
 \examples{
 \dontrun{
-library(RWeka)
-
 data(satsolvers)
 folds = cvFolds(satsolvers)
 

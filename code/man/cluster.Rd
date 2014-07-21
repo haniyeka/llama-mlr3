@@ -99,15 +99,15 @@ res$predictor(subset(satsolvers$data, TRUE, satsolvers$features))
 res = cluster(clusterer=makeLearner("cluster.XMeans"), data=folds, bestBy="successes", pre=normalize)
 sum(successes(folds, res))
 
-## ensemble clustering
-#rese = cluster(clusterer=list(XMeans, make_Weka_clusterer("weka/clusterers/EM"),
-#    function(x) { kcca(x, length(satsolvers$performance)) }),
-#    data=folds, pre=normalize)
-#
-## ensemble clustering with a classifier to combine predictions
-#rese = cluster(clusterer=list(XMeans, make_Weka_clusterer("weka/clusterers/EM"),
-#    function(x) { kcca(x, length(satsolvers$performance)) }, .combine=J48),
-#    data=folds, pre=normalize)
-#}
+# ensemble clustering
+rese = cluster(clusterer=list(makeLearner("cluster.XMeans"),
+    makeLearner("cluster.SimpleKMeans"), makeLearner("cluster.EM")),
+    data=folds, pre=normalize)
+
+# ensemble clustering with a classifier to combine predictions
+rese = cluster(clusterer=list(makeLearner("cluster.XMeans"),
+    makeLearner("cluster.SimpleKMeans"), makeLearner("cluster.EM"),
+    .combine=J48), data=folds, pre=normalize)
+}
 }
 \keyword{ ~cluster }
