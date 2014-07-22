@@ -42,7 +42,7 @@ illustrate its usage on a set of example SAT problems.
 \vspace*{\stretch{1}}
 
 \begin{center}
-This document corresponds to LLAMA version 0.6.
+This document corresponds to LLAMA version 0.7.
 \end{center}
 
 \end{titlepage}
@@ -72,12 +72,10 @@ folds = cvFolds(data)
 \end{lstlisting}
 This will give you 10 folds for cross-validation. Now we're ready to train
 our first model. To do that, we'll need some machine learning algorithms --
-we're going to use a random forest classifier. Load the \texttt{randomForest}
-package and train a simple classification model that predicts the best
-algorithm.
+we're going to use a random forest classifier. Now train a simple classification
+model that predicts the best algorithm.
 \begin{lstlisting}
-require(randomForest)
-model = classify(randomForest, folds)
+model = classify(makeLeaner("classif.randomForest"), folds)
 \end{lstlisting}
 Great! Now let's see how well this model is doing and compare its performance to
 the virtual best solver (VBS) and the single best solver in terms of average
@@ -156,7 +154,7 @@ approach is to cluster the problem instances in the training set, determine the
 best algorithm for each cluster and assign new instances to the closest cluster.
 These and many more approaches have been used in the literature. LLAMA supports
 four fundamentally different approaches and a large number of variations of
-these involving meta-learning techniques.
+these involving ensembles and stacking.
 
 A lot more background information can be found
 in~\cite{kotthoff_algorithm_2014} (even more in the extended
@@ -290,6 +288,12 @@ makes it possible to use LLAMA to quickly evaluate a range of different
 techniques for algorithm selection on given data, such as presented
 in~\cite{kotthoff_evaluation_2012}. Being able to do so is crucial for achieving
 good performance in practice.
+
+LLAMA uses the \lstinline{mlr} package~\cite{mlr} as an interface to R's many
+machine learning method implementations. The advantage is that a wide range of
+implementations are supported with a common interface, making it easier for
+LLAMA to use them than the vanilla functions. Familiarity with \lstinline{mlr}
+is helpful, but not required to use LLAMA.
 
 LLAMA provides a number of high-level functions that can be used to create
 and evaluate algorithm selection models with just a few lines of code. It is
@@ -460,13 +464,11 @@ Now that we have both training and test data, we can train an algorithm
 selection model. To start with, we will train a simple classification model
 that, given the features of an instance, predicts the algorithm to use. This
 approach is used for example in~\cite{gent_learning_2010}. We train a model
-using the C4.5 decision tree learner~\cite{quinlan_c4.5_1993}, \lstinline{J48}
-in Weka. For this, we load the \lstinline{RWeka} package and call
-\lstinline{classify()} with the name of the machine learning algorithm and the
-data folds created above.
+using the C4.5 decision tree learner~\cite{quinlan_c4.5_1993}.
+For this, we call \lstinline{classify()} with the name of the machine learning
+algorithm and the data folds created above.
 \begin{lstlisting}
-require(RWeka)
-model = classify(J48, folds)
+model = classify(makeLearner("classif.J48"), folds)
 \end{lstlisting}
 
 The call to \lstinline{classify} trains and tests models on each
@@ -494,7 +496,7 @@ solved = sum(successes(folds, model))
 On the example data, we get 5833.845 for the mean PAR10 score and 2043 solved
 instances\footnote{Note that these numbers will be slightly different when you
 run the same code because the data partitioning functions are stochastic. This
-also applies to all other performance numbers of models reported here}. The
+also applies to all other performance numbers of models reported here.}. The
 \lstinline{parscores} and \lstinline{successes} evaluation
 functions, along with their cousin \lstinline{misclassificationPenalties}, take
 the data for which the predictions were made as their first argument and the
@@ -589,10 +591,9 @@ is chosen.
 
 LLAMA supports this kind of performance model as well. All we have to do is call
 a different function and pass in a machine learning algorithm that is able to
-learn models to predict numeric quantities as an argument. We use RWeka's
-\lstinline{LinearRegression} as an example.
+learn models to predict numeric quantities as an argument.
 \begin{lstlisting}
-model = regression(LinearRegression, folds)
+model = regression(makeLearner("regr.lm"), folds)
 \end{lstlisting}
 You will notice that running this command takes longer than for the
 classification example. This is because instead of a single classification
@@ -600,8 +601,8 @@ model, we now need to train one regression model for each algorithm in the
 portfolio (if you're using the example SAT data, 19 different models).
 
 The structure returned by the call is the same as for classification and PAR10
-scores and similar are calculated in the same way. We get 5612.517 as mean PAR10
-score and 2058 solved instances on the example data -- an improvement on our
+scores and similar are calculated in the same way. We get 5715.529 as mean PAR10
+score and 2051 solved instances on the example data -- an improvement on our
 earlier classification model and better than the single best algorithm. LLAMA
 offers a unified interface for all its model-building functions that makes it
 easy to quickly try different approaches. The difference is that the prediction
@@ -609,26 +610,26 @@ data frames now contain a row for each algorithm in the portfolio and the score
 denotes the predicted performance value.
 \begin{lstlisting}
 model|$\$$|predictions[[1]][[1]]
-        algorithm      score
-1            rsat -1734.6641
-2         glucose -1327.6773
-3           sat4j -1262.2917
-4     glueminisat -1136.2431
-5       lingeling -1127.2537
-6      cirminisat -1118.5151
-7             mxc -1117.9649
-8            riss -1110.4187
-9           clasp -1109.5472
-10  cryptominisat -1099.9322
-11        picosat -1098.3433
-12       qutersat -1084.3868
-13 minisat_noelim -1062.0363
-14       precosat -1054.9554
-15        minisat -1020.3952
-16    MPhaseSAT64 -1019.1631
-17       march_rw  -968.3648
-18          kcnfs  -517.6598
-19      contrasat  -199.6371
+         algorithm       score
+V3         glucose -1466.69433
+V12           riss -1346.56839
+V6           clasp -1282.94105
+V15       qutersat -1260.05076
+V8        precosat -1247.51199
+V2   cryptominisat -1215.78077
+V11            mxc -1132.84599
+V13          sat4j -1125.51040
+V14    glueminisat -1119.74842
+V5       lingeling -1091.14724
+V7         picosat -1077.87968
+V4  minisat_noelim -1033.60871
+V10       march_rw -1031.15524
+V18     cirminisat -1007.40678
+V1         minisat -1001.13231
+V16      contrasat  -837.74060
+V17    MPhaseSAT64  -806.80840
+V19           rsat  -623.30907
+V9           kcnfs    30.10679
 \end{lstlisting}
 Apart from the fact that the regression model is predicting negative runtimes,
 it appears to work quite well. Negative runtimes do not matter here, as we only
@@ -654,7 +655,7 @@ be used to rank all of the portfolio algorithms. This approach is also
 implemented in LLAMA. The function is called \lstinline{classifyPairs} and
 conforms to the usual interface.
 \begin{lstlisting}
-model = classifyPairs(J48, folds)
+model = classifyPairs(makeLeaner("classif.J48"), folds)
 \end{lstlisting}
 Running this command on the example SAT data will take quite a long time, as a
 model for each pair of algorithms needs to be trained. This approach offers
@@ -687,15 +688,19 @@ model|$\$$|predictions[[1]][[1]]
 18          sat4j     1
 \end{lstlisting}
 
+The model-building function \lstinline{regressionPairs} follows the same idea,
+but uses regression models to predict the performance difference between pairs
+of algorithms instead of simply whether one is faster than the other.
+
 \medskip
 
 A different approach to algorithm selection that is used for example in
 ISAC~\cite{kadioglu_isac_2010} is to cluster the training problems and assign
 the best algorithm to each cluster based on the algorithm performances on the
 instances in the cluster. Again the only change is to call a different function,
-this time using RWeka's \lstinline{XMeans} clustering algorithm.
+this time the \lstinline{XMeans} clustering algorithm.
 \begin{lstlisting}
-model = cluster(XMeans, folds)
+model = cluster(makeLearner("cluster.XMeans"), folds)
 \end{lstlisting}
 The return value corresponds to the usual format. We get a mean PAR10 score of
 5736.518 and 2050 solved instances. The prediction data frames contain all
@@ -781,8 +786,8 @@ models.
 \begin{lstlisting}
 newfolds = cvFolds(newdata)
 
-model = classify(J48, folds)
-newmodel = classify(J48, newfolds)
+model = classify(makeLearner("classif.J48"), folds)
+newmodel = classify(makeLearner("classif.J48"), newfolds)
 \end{lstlisting}
 The model without feature filtering achieves a mean PAR10 score of 5833.845 with
 2043 instances solved, while the model with feature filtering manages a slight
@@ -814,7 +819,7 @@ feature value normalisation. This function scales the feature values such that
 the range for all features is -1 to 1. It is specified through the
 \lstinline{pre} argument.
 \begin{lstlisting}
-model = cluster(XMeans, folds, pre=normalize)
+model = cluster(makeLearner("cluster.XMeans"), folds, pre=normalize)
 \end{lstlisting}
 We are using the cluster model builder here, as clustering is an application
 that intrinsically relies on distance measures and is likely to be most affected
@@ -849,16 +854,16 @@ to the regression model learner, the imputation function does not check the
 plausibility of the results -- it is possible that the predicted runtimes are
 less than the time-out!
 \begin{lstlisting}
-imputed = imputeCensored(data, LinearRegression)
+imputed = imputeCensored(data, makeLearner("regr.lm"))
 imputedFolds = cvFolds(imputed)
-model = regression(LinearRegression, imputedFolds)
+model = regression(makeLearner("regr.lm"), imputedFolds)
 \end{lstlisting}
 The performance of the new model with imputed performance values is much better
 in terms of average PAR10 and number of solved instances, but this is to be
 expected -- all instances in the data are ``solvable'' after imputation, so no
 penalties will be imposed. However, we can compare the mean misclassification
 penalty for the old and new models. Without performance imputation, it is
-88.47226 and with 45.45123 -- a clear improvement.
+98.2668 and with 44.85309 -- a clear improvement.
 
 %\subsection{Portfolio analysis}
 %
@@ -899,16 +904,15 @@ penalty for the old and new models. Without performance imputation, it is
 %best performance in practice, the combination of portfolio and algorithm
 %selection model has to be evaluated.
 
-\subsection{Meta-learning techniques -- ensembles and stacking}
+\subsection{Ensembles and stacking}
 
-One of the main strengths of LLAMA is that meta-learning techniques can be
+One of the main strengths of LLAMA is that ensembles and stacking can be
 applied to all of the model building functions easily. The idea behind
-meta-learning is similar to that of algorithm portfolios -- instead of relying
-on a single machine learning algorithm and the model it learns to deliver good
-predictions, we use several that (hopefully) complement each other.
+these techniques is similar to that of algorithm portfolios -- instead of
+relying on a single machine learning algorithm and the model it learns to
+deliver good predictions, we use several that (hopefully) complement each other.
 
-The two meta-learning concepts implemented in LLAMA are
-ensembles~\cite{dietterich_ensemble_2000} and
+The two implemented concepts are ensembles~\cite{dietterich_ensemble_2000} and
 stacking~\cite{wolpert_stacked_1992}. In ensemble learning, multiple machine
 learning algorithms are run on the same data, learning multiple independent
 models. The predictions of each model are then combined to determine the overall
@@ -925,8 +929,15 @@ becomes a list of classification algorithms instead of a single one. To use
 stacking, that list should have a member named \lstinline{.combine}.
 \begin{lstlisting}
 require(e1071)
-ensembleModel = classify(list(J48, svm, IBk), folds)
-stackedEnsembleModel = classify(list(J48, svm, IBk, .combine=J48), folds)
+ensembleModel = classify(list(makeLearner("classif.J48"),
+        makeLearner("classif.ksvm"),
+        makeLearner("classif.knn")),
+    folds)
+stackedEnsembleModel = classify(list(makeLearner("classif.J48"),
+        makeLearner("classif.ksvm"),
+        makeLearner("classif.knn"),
+        .combine=makeLearner("classif.J48")),
+    folds)
 \end{lstlisting}
 We are using the \lstinline{svm} classifier from the e1071 package in addition
 to classifiers from RWeka here. The mean PAR10 scores for the ensemble and
@@ -952,7 +963,8 @@ predictions, the best algorithm. To achieve this, a classification algorithm is
 given as the \lstinline{combine} argument.
 set to true.
 \begin{lstlisting}
-stackedModel = regression(LinearRegression, folds, combine=OneR)
+stackedModel = regression(makeLearner("regr.lm"), folds,
+    combine=makeLearner("classif.OneR"))
 \end{lstlisting}
 On the example data, this stacked model achieves a mean PAR10 score of 6103.86
 and 2026 solved instances. The performance is worse than for the non-stacked
@@ -967,7 +979,8 @@ function that, given the performance predictions, can augment the inputs to the
 classifier. In this case, we want to add the pairwise absolute differences
 between the predicted performances of algorithms.
 \begin{lstlisting}
-stackedModel = regression(LinearRegression, folds, combine=OneR,
+stackedModel = regression(makeLeaner("regr.lm"), folds,
+    combine=makeLeaner("classif.OneR"),
     expand=function(x) {
         cbind(x, combn(c(1:ncol(x)), 2, function(y) {
             abs(x[,y[1]] - x[,y[2]])
@@ -980,14 +993,15 @@ arbitrary R functions to process data. The mean PAR10 score achieved by this
 model is 5823.698 and the number of solved instances 2044. An improvement over
 the stacked model without expansion.
 
-For the \lstinline{classifyPairs} model builder, LLAMA supports meta-learning in
-the same way as for \lstinline{regression}. Stacking can be used to provide a
-classification algorithm in the \lstinline{combinator} argument that learns to
-predict the best algorithm, given the votes by the classifiers for pairs of algorithms.
+For the \lstinline{classifyPairs} model builder, LLAMA supports ensembles and
+stacking in the same way as for \lstinline{regression}. Stacking can be used to
+provide a classification algorithm in the \lstinline{combinator} argument that
+learns to predict the best algorithm, given the votes by the classifiers for
+pairs of algorithms.
 
-The \lstinline{cluster} model builder supports meta-learning techniques in the
-same way as \lstinline{classify}. More details and examples can be found in the
-on-line documentation for each of the model builders.
+The \lstinline{cluster} model builder supports these techniques in the same way
+as \lstinline{classify}. More details and examples can be found in the on-line
+documentation for each of the model builders.
 
 \subsection{Parallel execution}\label{sec:parallel}
 
@@ -1081,7 +1095,8 @@ performanceData = read.csv("performance.csv")
 featureData = read.csv("features.csv")
 featureNames = names(featureData)[-1]
 satisfiable = read.csv("satisfiable.csv")
-satisfiableModel = J48(satisfiable|$\$$|satisfiable~., data=subset(featureData, T, featureNames))
+satisfiableTask = makeClassifTask("satisfiable", target="satisfiable", data=cbind(satisfiable, subset(featureData, T, featureNames)))
+satisfiableModel = train(makeLearner("classif.J48"), task=satisfiableTask)
 satisfiableData = input(featureData, subset(performanceData, satisfiable|$\$$|satisfiable))
 unsatisfiableData = input(featureData, subset(performanceData, !satisfiable|$\$$|satisfiable))
 \end{lstlisting}
@@ -1111,7 +1126,8 @@ and evaluation of the algorithm selection model.
 featureTimes = read.csv("featureTimes.csv")
 reducedFeatureData = read.csv("reducedFeatures.csv")
 reducedFeatureNames = names(reducedFeatureData)[-1]
-featureTimeModel = LinearRegression(featureTimes|$\$$|time~., data=subset(reducedFeatureData, T, reducedFeatureNames))
+featureTimeTask = makeRegrTask("featureTime", target="time", data=cbind(featureTimes, subset(reducedFeatureData, T, reducedFeatureNames)))
+featureTimeModel = train(makeLearner("regr.lm"), task=featureTimeTask)
 featureTimeLimit = 5
 data = subset(subset(read.csv("features.csv"), featureTimes|$\$$|time < featureTimeLimit), read.csv("performance.csv"))
 \end{lstlisting}
@@ -1136,16 +1152,18 @@ presolver = "minisat"
 featureTimeLimit = 5
 
 toSolve = (performanceData[presolver] > presolveLimit)&(featureTimes|$\$$|time < featureTimeLimit)
-featureTimeModel = LinearRegression(featureTimes|$\$$|time~., data=subset(reducedFeatureData, T, reducedFeatureNames))
-satisfiableModel = J48(satisfiable|$\$$|satisfiable~., data=subset(featureData, toSolve, featureNames))
+featureTimeTask = makeRegrTask("featureTime", target="time", data=cbind(featureTimes, subset(reducedFeatureData, T, reducedFeatureNames)))
+featureTimeModel = train(makeLearner("regr.lm"), task=featureTimeTask)
+satisfiableTask = makeClassifTask("satisfiable", target="satisfiable", data=cbind(satisfiable, subset(featureData, T, featureNames)))
+satisfiableModel = train(makeLearner("classif.J48"), task=satisfiableTask)
 
 satisfiableData = input(featureData, subset(performanceData, satisfiable|$\$$|satisfiable&toSolve))
 unsatisfiableData = input(featureData, subset(performanceData, (!satisfiable|$\$$|satisfiable)&toSolve))
 
 satisfiableFolds = cvFolds(satisfiableData)
 unsatisfiableFolds = cvFolds(unsatisfiableData)
-satisfiableModel = classifyPairs(J48, satisfiableFolds)
-unsatisfiableModel = classifyPairs(J48, unsatisfiableFolds)
+satisfiableModel = classifyPairs(makeLearner("classif.randomForest"), satisfiableFolds)
+unsatisfiableModel = classifyPairs(makeLearner("classif.randomForest"), unsatisfiableFolds)
 \end{lstlisting}
 Let's walk through it step by step. First, we read all the relevant data, as in
 the individual steps above. Then we set our time limits and the presolver. The
@@ -1182,12 +1200,12 @@ function myPortfolioSolver(instance) {
     result = runSolver(instance, presolver, timeout=presolveTimeout)
     if(!isSolved(result)) {
         simpleFeatures = getSimpleFeatures(instance)
-        featureTime = predict(featureTimeMode, simpleFeatures)
+        featureTime = predict(featureTimeMode, newdata=simpleFeatures)|$\$$|data|$\$$|response
         if((featureTime > featureTimeLimit) {
             return(runSolver(instance, backupsolver))
         } else {
             features = getFeatures(instance)
-            satisfiable = predict(satisfiableModel, features)
+            satisfiable = predict(satisfiableModel, newdata=features)|$\$$|data|$\$$|response
             if(satisfiable) {
                 solver = satisfiableModel|$\$$|predictor(features)
             } else {
@@ -1279,6 +1297,8 @@ legend("top", legend=c(1, length(satsolvers|$\$$|performance)), fill=c("white", 
 \end{center}
 \end{figure}
 
+% TODO: scatter plots
+
 \medskip
 
 The same kind of visual analysis can be applied to the features. This is
@@ -1336,7 +1356,7 @@ heatmap of the PAR10 scores of a classification model on all instances. We are
 using the log of the PAR10 scores to get more shades of grey.
 \begin{lstlisting}
 folds = cvFolds(satsolvers)
-model = classify(J48, folds)
+model = classify(makeLearner("classif.J48"), folds)
 scores = parscores(folds, model)
 par(mar=c(1,1,1,10))
 image(log10(t(as.matrix(scores))), axes=F, col=cols)
@@ -1359,18 +1379,20 @@ performance of other models. The following code can be used to generate such a
 plot (Figure~\ref{fig:comparison}).
 \begin{lstlisting}
 folds = cvFolds(satsolvers)
-model1 = classify(J48, folds)
-model2 = regression(LinearRegression, folds)
-model3 = classifyPairs(J48, folds)
-model4 = cluster(XMeans, folds)
+model1 = classify(makeLearner("classif.J48"), folds)
+model2 = regression(makeLearner("regr.lm"), folds)
+model3 = classifyPairs(makeLearner("classif.J48"), folds)
+model4 = regressionPairs(makeLearner("regr.lm"), folds)
+model5 = cluster(makeLearner("cluster.XMeans"), folds)
 scores1 = parscores(folds, model1)
 scores2 = parscores(folds, model2)
 scores3 = parscores(folds, model3)
 scores4 = parscores(folds, model4)
+scores5 = parscores(folds, model5)
 par(mar=c(10,1,1,1))
-names = c(paste("classify", "J48", mean(scores1), sep="\n"), paste("regression", "LinearRegression", mean(scores2), sep="\n"), paste("classifyPairs", "J48", mean(scores3), sep="\n"), paste("cluster", "XMeans", mean(scores4), sep="\n"))
-scores = c(scores1, scores2, scores3, scores4)
-image(log(t(matrix(scores, ncol=4))), axes=F, col=cols)
+names = c(paste("classify", "J48", mean(scores1), sep="\n"), paste("regression", "lm", mean(scores2), sep="\n"), paste("classifyPairs", "J48", mean(scores3), sep="\n"), paste("regressionPairs", "lm", mean(scores4), sep="\n"), paste("cluster", "XMeans", mean(scores5), sep="\n"))
+scores = c(scores1, scores2, scores3, scores4, scores5)
+image(log10(t(matrix(scores, ncol=5))), axes=F, col=cols)
 axis(1, labels=names, at=seq(0, 1, 1/(length(names)-1)), las=1, tick=F, line=1)
 legend("bottom", legend=quantile(scores), fill=gray(seq(1, 0, length.out=5)), bty="n", inset=-0.4, xpd=NA)
 \end{lstlisting}
@@ -1383,7 +1405,7 @@ the single and pairwise classification models.
 \begin{figure}[htb]
 \begin{center}
 \includegraphics[width=.9\textwidth]{comparison}
-\caption{PAR10 scores for four different models. The number in each label shows
+\caption{PAR10 scores for five different models. The number in each label shows
 the mean PAR10 score across all instances.}
 \label{fig:comparison}
 \end{center}
@@ -1449,9 +1471,10 @@ a few bugs and are reasonably confident that it will useful to other people.
 
 \subsection*{Acknowledgements}
 
-This work is supported by EU FP7 ICT-FET grant 284715 (ICON). The drawing of a
-Llama is courtesy of \url{http://www.bluebison.net/}. We wish to thank all the
-people who contributed to LLAMA.
+This work was supported by EU FP7 ICT-FET grant 284715 (ICON) and an IRC ``New
+Foundations'' grant. The drawing of a Llama is courtesy of
+\url{http://www.bluebison.net/}. We wish to thank all the people who contributed
+to LLAMA.
 
 \bibliography{\jobname}
 \bibliographystyle{plain}

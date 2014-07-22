@@ -5,8 +5,7 @@ data = satsolvers
 
 folds = cvFolds(satsolvers)
 
-require(RWeka)
-model = classify(J48, folds)
+model = classify(makeLearner("classif.J48"), folds)
 mean(parscores(folds, model))
 sum(successes(folds, model))
 
@@ -21,7 +20,7 @@ sum(successes(data, singleBest))
 
 #####
 
-model = regression(LinearRegression, folds)
+model = regression(makeLearner("regr.lm"), folds)
 mean(parscores(folds, model))
 sum(successes(folds, model))
 
@@ -29,7 +28,7 @@ model$predictions[[1]][[1]]
 
 #####
 
-model = classifyPairs(J48, folds)
+model = classifyPairs(makeLearner("classif.J48"), folds)
 mean(parscores(folds, model))
 sum(successes(folds, model))
 
@@ -37,7 +36,7 @@ model$predictions[[1]][[1]]
 
 #####
 
-model = cluster(XMeans, folds)
+model = cluster(makeLearner("cluster.XMeans"), folds)
 mean(parscores(folds, model))
 sum(successes(folds, model))
 
@@ -49,8 +48,8 @@ require(FSelector)
 newdata = featureFilter(cfs, data)
 
 newfolds = cvFolds(newdata)
-model = classify(J48, folds)
-newmodel = classify(J48, newfolds)
+model = classify(makeLearner("classif.J48"), folds)
+newmodel = classify(makeLearner("classif.J48"), newfolds)
 mean(parscores(folds, model))
 sum(successes(folds, model))
 mean(parscores(newfolds, newmodel))
@@ -58,16 +57,16 @@ sum(successes(newfolds, newmodel))
 
 #####
 
-model = cluster(XMeans, folds, pre=normalize)
+model = cluster(makeLearner("cluster.XMeans"), folds, pre=normalize)
 mean(parscores(folds, model))
 sum(successes(folds, model))
 
 #####
 
-imputed = imputeCensored(data, LinearRegression)
+imputed = imputeCensored(data, makeLearner("regr.lm"))
 imputedFolds = cvFolds(imputed)
-oldmodel = regression(LinearRegression, folds)
-model = regression(LinearRegression, imputedFolds)
+oldmodel = regression(makeLearner("regr.lm"), folds)
+model = regression(makeLearner("regr.lm"), imputedFolds)
 mean(misclassificationPenalties(folds, oldmodel))
 mean(misclassificationPenalties(imputedFolds, model))
 
@@ -77,9 +76,8 @@ sort(contributions(satsolvers))
 
 #####
 
-require(e1071)
-ensembleModel = classify(list(J48, svm, IBk), folds)
-stackedEnsembleModel = classify(list(J48, svm, IBk, .combine=J48), folds)
+ensembleModel = classify(list(makeLearner("classif.J48"), makeLearner("classif.ksvm"), makeLearner("classif.knn")), folds)
+stackedEnsembleModel = classify(list(makeLearner("classif.J48"), makeLearner("classif.ksvm"), makeLearner("classif.knn"), .combine=makeLearner("classif.J48")), folds)
 mean(parscores(folds, ensembleModel))
 sum(successes(folds, ensembleModel))
 mean(parscores(folds, stackedEnsembleModel))
@@ -89,8 +87,8 @@ ensembleModel$predictions[[1]][[1]]
 
 #####
 
-model = regression(LinearRegression, folds)
-stackedModel = regression(LinearRegression, folds, combine=OneR)
+model = regression(makeLearner("regr.lm"), folds)
+stackedModel = regression(makeLearner("regr.lm"), folds, combine=makeLearner("classif.OneR"))
 mean(parscores(folds, model))
 sum(successes(folds, model))
 mean(parscores(folds, stackedModel))
@@ -98,7 +96,7 @@ sum(successes(folds, stackedModel))
 
 #####
 
-stackedModel = regression(LinearRegression, folds, combine=OneR,
+stackedModel = regression(makeLearner("regr.lm"), folds, combine=makeLearner("classif.OneR"),
     expand=function(x) {
         cbind(x, combn(c(1:ncol(x)), 2, function(y) {
             abs(x[,y[1]] - x[,y[2]])
@@ -151,7 +149,7 @@ dev.off()
 
 pdf("classification.pdf")
 par(mar=c(7,1,3,1))
-model = classify(J48, folds)
+model = classify(makeLearner("classif.J48"), folds)
 scores = parscores(folds, model)
 par(mar=c(1,1,1,10))
 image(log10(t(as.matrix(scores))), axes=F, col=cols)
@@ -160,18 +158,20 @@ dev.off()
 
 pdf("comparison.pdf")
 par(mar=c(7,1,3,1))
-model1 = classify(J48, folds)
-model2 = regression(LinearRegression, folds)
-model3 = classifyPairs(J48, folds)
-model4 = cluster(XMeans, folds)
+model1 = classify(makeLearner("classif.J48"), folds)
+model2 = regression(makeLearner("regr.lm"), folds)
+model3 = classifyPairs(makeLearner("classif.J48"), folds)
+model4 = regressionPairs(makeLearner("regr.lm"), folds)
+model5 = cluster(makeLearner("cluster.XMeans"), folds)
 scores1 = parscores(folds, model1)
 scores2 = parscores(folds, model2)
 scores3 = parscores(folds, model3)
 scores4 = parscores(folds, model4)
+scores5 = parscores(folds, model5)
 par(mar=c(10,1,1,1))
-names = c(paste("classify", "J48", mean(scores1), sep="\n"), paste("regression", "LinearRegression", mean(scores2), sep="\n"), paste("classifyPairs", "J48", mean(scores3), sep="\n"), paste("cluster", "XMeans", mean(scores4), sep="\n"))
-scores = c(scores1, scores2, scores3, scores4)
-image(log10(t(matrix(scores, ncol=4))), axes=F, col=cols)
+names = c(paste("classify", "J48", mean(scores1), sep="\n"), paste("regression", "lm", mean(scores2), sep="\n"), paste("classifyPairs", "J48", mean(scores3), sep="\n"), paste("regressionPairs", "lm", mean(scores4), sep="\n"), paste("cluster", "XMeans", mean(scores5), sep="\n"))
+scores = c(scores1, scores2, scores3, scores4, scores5)
+image(log10(t(matrix(scores, ncol=5))), axes=F, col=cols)
 axis(1, labels=names, at=seq(0, 1, 1/(length(names)-1)), las=1, tick=F, line=1)
 legend("bottom", legend=quantile(scores), fill=gray(seq(1, 0, length.out=5)), bty="n", inset=-0.4, xpd=NA)
 dev.off()
