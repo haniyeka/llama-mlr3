@@ -471,6 +471,9 @@ algorithm and the data folds created above.
 model = classify(makeLearner("classif.J48"), folds)
 \end{lstlisting}
 
+For the other available machine learning models, please consult the
+\lstinline{mlr} documentation~\cite{mlr}.
+
 The call to \lstinline{classify} trains and tests models on each
 cross-validation fold. That is, for $n$ folds it trains $n$ models using $n-1$
 partitions for training and the remaining partition for testing. The predictions
