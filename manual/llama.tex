@@ -42,7 +42,7 @@ illustrate its usage on a set of example SAT problems.
 \vspace*{\stretch{1}}
 
 \begin{center}
-This document corresponds to LLAMA version 0.7.
+This document corresponds to LLAMA version 0.7.1.
 \end{center}
 
 \end{titlepage}
@@ -868,44 +868,42 @@ penalties will be imposed. However, we can compare the mean misclassification
 penalty for the old and new models. Without performance imputation, it is
 98.2668 and with 44.85309 -- a clear improvement.
 
-%\subsection{Portfolio analysis}
-%
-%LLAMA provides the \lstinline{contributions} function to analyse the
-%contributions a single algorithm makes to a portfolio using techniques from game
-%theory~\cite{rahwan_game_2013}. Running this on the example data distributed
-%with the package gives the following result:
-%
-%\begin{lstlisting}
-%sort(contributions(satsolvers))
-%         clasp  cryptominisat       qutersat 
-%   -42499.1089     -8854.7117       740.2909 
-%       glucose            mxc       march_rw 
-%     4678.7110     28069.9128     33521.0780 
-%   MPhaseSAT64       precosat        picosat 
-%    44008.3382     54136.9820     64197.8563 
-%   glueminisat      lingeling      contrasat 
-%    67935.5264     76489.3100     78365.7487 
-%         sat4j           riss     cirminisat 
-%    82804.3613     88360.4072     89550.5715 
-%       minisat minisat_noelim           rsat 
-%    99151.8748    108837.5158    180762.3266 
-%         kcnfs 
-%   238407.9801 
-%\end{lstlisting}
-%
-%The negative numbers designate solvers that do not contribute anything to the
-%portfolio, but causes its performance to decrease. The solver \lstinline{kncfs} makes
-%the largest contribution, even though its performance on its own is not
-%particularly good. One of the best overall solvers, \lstinline{clasp}, actually
-%decreases the performance of the portfolio.
-%
-%This analysis can be used to determine which algorithms should be included and
-%which ones should be omitted from a portfolio. Note that it is entirely separate
-%from learning a model to make the predictions necessary to choose a solver from
-%the portfolio for a particular problem instance. As such, the theoretical best
-%portfolio might not be the best portfolio to learn models for. To achieve the
-%best performance in practice, the combination of portfolio and algorithm
-%selection model has to be evaluated.
+\subsection{Portfolio analysis}
+
+LLAMA provides the \lstinline{contributions} function to analyse the
+contributions a single algorithm makes to a portfolio using techniques from game
+theory~\cite{rahwan_game_2013}. Running this on the example data distributed
+with the package gives the following result:
+
+\begin{lstlisting}
+sort(contributions(satsolvers))
+         kcnfs           rsat minisat_noelim 
+  -238407.9801   -180762.3266   -108837.5158 
+       minisat     cirminisat           riss 
+   -99151.8748    -89550.5715    -88360.4072 
+         sat4j      contrasat      lingeling 
+   -82804.3613    -78365.7487    -76489.3100 
+   glueminisat        picosat       precosat 
+   -67935.5264    -64197.8563    -54136.9820 
+   MPhaseSAT64       march_rw            mxc 
+   -44008.3382    -33521.0780    -28069.9128 
+       glucose       qutersat  cryptominisat 
+    -4678.7110      -740.2909      8854.7117 
+         clasp 
+    42499.1089 
+\end{lstlisting}
+
+The negative numbers designate solvers that do not contribute anything to the
+portfolio, but causes its performance to decrease. The solver \lstinline{clasp} makes
+the largest contribution.
+
+This analysis can be used to determine which algorithms should be included and
+which ones should be omitted from a portfolio. Note that it is entirely separate
+from learning a model to make the predictions necessary to choose a solver from
+the portfolio for a particular problem instance -- the analysis is done for the
+virtual best portfolio. As such, the theoretical best portfolio might not be the
+best portfolio to learn models for. To achieve the best performance in practice,
+the combination of portfolio and algorithm selection model has to be evaluated.
 
 \subsection{Ensembles and stacking}
 
