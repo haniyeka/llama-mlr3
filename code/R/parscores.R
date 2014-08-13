@@ -12,7 +12,7 @@ function(data=NULL, model=NULL, factor=10, timeout=NULL) {
         if(length(data$test) > 0) {
             predictions = lapply(data$test, function(x) {
                 data$data = x
-                model(data)$predictions
+                model(data)
             })
         } else {
             predictions = model(data)

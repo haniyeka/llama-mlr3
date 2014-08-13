@@ -105,7 +105,7 @@ test_that("parscores works for test splits", {
         d=rep.int(F, 5), e=rep.int(T, 5))
     d = list(data=rbind(fold, fold), test=list(fold), performance=c("a", "b"), success=c("d", "e"))
     model = function(data) {
-        list(predictions=lapply(1:nrow(data$data), function(i) { data.frame(algorithm="a", score=1) }))
+        lapply(1:nrow(data$data), function(i) { data.frame(algorithm="a", score=1) })
     }
 
     expect_equal(sum(parscores(d, model)), 50)
