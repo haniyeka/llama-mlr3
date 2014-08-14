@@ -32,6 +32,13 @@ the model. If after that the performance value is above the timeout value,
 \code{FALSE} is assumed. If whether an algorithm was successful is not
 determined by performance and feature costs, don't pass costs when creating the
 LLAMA data frame.
+
+\code{data} may contain a train/test partition or not. This makes a difference
+when computing the successes for the single best algorithm. If no train/test
+split is present, the single best algorithm is determined on the entire data. If
+it is present, the single best algorithm is determined on each test partition.
+That is, the single best is local to the partition and may vary across
+partitions.
 }
 \value{
 A list of the success values.
