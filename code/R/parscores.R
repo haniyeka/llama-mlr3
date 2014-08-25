@@ -38,7 +38,8 @@ function(data=NULL, model=NULL, factor=10, timeout=NULL) {
                 costs = 0
             } else {
                 if(is.null(data$costGroups)) {
-                    costs = sum(subset(data$test[[i]][j,], T, data$features))
+                    # take only costs for features used in the model
+                    costs = sum(subset(data$test[[i]][j,], T, intersect(data$cost, sapply(data$features, function(x) { paste(x, "cost", sep="_") }))))
                 } else {
                     # figure out which feature groups are being used
                     usedGroups = subset(data$cost, sapply(data$cost, function(x) { length(intersect(data$costGroups[[x]], data$features)) > 0 }))
