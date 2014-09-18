@@ -41,8 +41,13 @@ function(features, performances, successes=NULL, costs=NULL, minimize=T) {
                 nosuccs = sapply(snames[which(x[snames] == FALSE)], function(x) { unlist(strsplit(x, "_"))[1] })
                 tosel = setdiff(pnames, nosuccs)
             }
-            perfs = x[tosel]
-            factor(tosel[which(perfs == optfun(perfs))])
+            if(length(tosel) == 0) {
+                # nothing was able to solve this instance
+                NA
+            } else {
+                perfs = x[tosel]
+                factor(tosel[which(perfs == optfun(perfs))])
+            }
         })
     # simplify...
     names(combined$best) = NULL
