@@ -87,3 +87,14 @@ test_that("successes works for test splits", {
 
     expect_equal(sum(successes(d, model)), 5)
 })
+
+test_that("successes works with NA predictions", {
+    fold = data.frame(a=rep.int(1, 5), b=rep.int(0, 5),
+        d=rep.int(F, 5), e=rep.int(T, 5))
+    d = list(data=rbind(fold, fold), test=list(fold, fold), performance=c("a", "b"), success=c("d", "e"))
+    nas = rep.int(list(data.frame(algorithm=NA, score=0)), 5)
+    as = rep.int(list(data.frame(algorithm="b", score=1)), 5)
+    model = list(predictions=list(nas, as))
+
+    expect_equal(sum(successes(d, model), na.rm=T), 5)
+})

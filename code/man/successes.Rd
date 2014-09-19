@@ -36,6 +36,9 @@ above the timeout value, \code{FALSE} is assumed. If whether an algorithm was
 successful is not determined by performance and feature costs, don't pass costs
 when creating the LLAMA data frame.
 
+If the model returns \code{NA} (e.g. because no algorithm solved the instance),
+\code{NA} is returned as success.
+
 \code{data} may contain a train/test partition or not. This makes a difference
 when computing the successes for the single best algorithm. If no train/test
 split is present, the single best algorithm is determined on the entire data. If

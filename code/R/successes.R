@@ -47,11 +47,15 @@ function(data=NULL, model=NULL, timeout=NULL, addCosts=TRUE) {
                 }
             }
             chosen = which(data$performance == predictions[[i]][[j]]$algorithm[1])
-            value = as.numeric(perfs[chosen]) + costs
-            if(!as.logical(successes[chosen]) || value > timeout) {
-                FALSE
+            if(length(chosen) == 0) {
+                NA
             } else {
-                TRUE
+                value = as.numeric(perfs[chosen]) + costs
+                if(!as.logical(successes[chosen]) || value > timeout) {
+                    FALSE
+                } else {
+                    TRUE
+                }
             }
         })
     })))

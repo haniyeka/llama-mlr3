@@ -26,6 +26,9 @@ denotes the penalty for choosing a suboptimal algorithm, e.g. the additional
 time required to solve a problem or reduction in solution quality incurred. The
 misclassification penalty of the virtual best is always zero.
 
+If the model returns \code{NA} (e.g. because no algorithm solved the instance),
+\code{NA} is returned as misclassification penalty.
+
 \code{data} may contain a train/test partition or not. This makes a difference
 when computing the misclassification penalties for the single best algorithm.
 If no train/test split is present, the single best algorithm is determined on

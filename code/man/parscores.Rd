@@ -37,6 +37,9 @@ algorithm. The used features are determined by examining the the \code{features}
 member of \code{data}, not the model. If after that the performance value is
 above the timeout value, the timeout value multiplied by the factor is assumed.
 
+If the model returns \code{NA} (e.g. because no algorithm solved the instance),
+\code{NA} is returned as PAR score.
+
 \code{data} may contain a train/test partition or not. This makes a difference
 when computing the PAR scores for the single best algorithm. If no train/test
 split is present, the single best algorithm is determined on the entire data. If
