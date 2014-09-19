@@ -64,8 +64,8 @@ PAR10 score.
 ::
 
     mean(parscores(data, vbs))
-    mean(parscores(folds, model))
-    mean(parscores(data, singleBest))
+    mean(parscores(folds, model, addCosts = FALSE))
+    mean(parscores(data, singleBest, addCosts = FALSE))
 
 These are the numbers I get for the ``satsolvers`` data:
 

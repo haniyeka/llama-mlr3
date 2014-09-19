@@ -42,7 +42,7 @@ illustrate its usage on a set of example SAT problems.
 \vspace*{\stretch{1}}
 
 \begin{center}
-This document corresponds to LLAMA version 0.7.1.
+This document corresponds to LLAMA version 0.7.2.
 \end{center}
 
 \end{titlepage}
@@ -83,8 +83,8 @@ the virtual best solver (VBS) and the single best solver in terms of average
 PAR10 score.
 \begin{lstlisting}
 mean(parscores(folds, model))
-mean(parscores(data, vbs))
-mean(parscores(data, singleBest))
+mean(parscores(data, vbs, addCosts = FALSE))
+mean(parscores(data, singleBest, addCosts = FALSE))
 \end{lstlisting}
 You can use any other classification algorithms instead of
 \lstinline{randomForest} of course. You can also train regression or cluster
