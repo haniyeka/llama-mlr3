@@ -8,7 +8,7 @@ Calculates the penalized average runtime score which is commonly used for
 evaluating satisfiability solvers on a set of problems.
 }
 \usage{
-parscores(data, model, factor = 10, timeout)
+parscores(data, model, factor = 10, timeout, addCosts = TRUE)
 }
 \arguments{
   \item{data}{the data used to induce the model. The same as given to
@@ -23,16 +23,19 @@ parscores(data, model, factor = 10, timeout)
   \item{timeout}{the timeout value to be multiplied by the penalization factor.
       If not specified, the maximum performance value of all algorithms on the
       entire data is used.}
+  \item{addCosts}{whether to add feature costs. This should always be true (the
+      default) except for comparison algorithms (i.e. single best and virtual
+      best).}
 }
 \details{
 Returns the penalized average runtime performances of the respective chosen
 algorithm on each problem instance.
 
-If feature costs have been given, the cost of the used features or feature
-groups is added to the performance of the chosen algorithm. The used features
-are determined by examining the the \code{features} member of \code{data}, not
-the model. If after that the performance value is above the timeout value, the
-timeout value multiplied by the factor is assumed.
+If feature costs have been given and \code{addCosts} is \code{TRUE}, the cost of
+the used features or feature groups is added to the performance of the chosen
+algorithm. The used features are determined by examining the the \code{features}
+member of \code{data}, not the model. If after that the performance value is
+above the timeout value, the timeout value multiplied by the factor is assumed.
 
 \code{data} may contain a train/test partition or not. This makes a difference
 when computing the PAR scores for the single best algorithm. If no train/test

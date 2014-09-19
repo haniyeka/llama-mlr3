@@ -68,6 +68,10 @@ test_that("parscores takes feature costs into account", {
     expect_equal(sum(parscores(d, modela, timeout=1.5)), 150)
     expect_equal(sum(parscores(d, modela, timeout=5)), 30)
     expect_equal(sum(parscores(d, modelb, timeout=2.5)), 20)
+
+    expect_equal(sum(parscores(d, modela, timeout=0.5, addCosts=F)), 50)
+    expect_equal(sum(parscores(d, modela, timeout=5, addCosts=F)), 10)
+    expect_equal(sum(parscores(d, modelb, timeout=2.5, addCosts=F)), 0)
 })
 
 test_that("parscores does not cost unused features", {

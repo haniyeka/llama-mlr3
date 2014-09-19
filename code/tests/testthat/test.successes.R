@@ -42,6 +42,10 @@ test_that("sucesses takes feature costs into account", {
     expect_equal(sum(successes(d, modela, timeout=1.5)), 0)
     expect_equal(sum(successes(d, modela, timeout=5)), 10)
     expect_equal(sum(successes(d, modelb, timeout=2.5)), 10)
+
+    expect_equal(sum(successes(d, modela, timeout=1.5, addCosts=F)), 10)
+    expect_equal(sum(successes(d, modela, timeout=5, addCosts=F)), 10)
+    expect_equal(sum(successes(d, modelb, timeout=2.5, addCosts=F)), 10)
 })
 
 test_that("sucesses does not cost unused features", {

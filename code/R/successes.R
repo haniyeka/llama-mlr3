@@ -1,5 +1,5 @@
 successes <-
-function(data=NULL, model=NULL, timeout=NULL) {
+function(data=NULL, model=NULL, timeout=NULL, addCosts=TRUE) {
     if(is.null(data) || is.null(model)) {
         stop("Need both data and model to calculate successes!")
     }
@@ -34,7 +34,7 @@ function(data=NULL, model=NULL, timeout=NULL) {
         sapply(1:nrow(data$test[[i]]), function(j) {
             perfs = subset(data$test[[i]][j,], T, data$performance)
             successes = subset(data$test[[i]][j,], T, data$success)
-            if(is.null(data$cost)) {
+            if(!addCosts || is.null(data$cost)) {
                 costs = 0
             } else {
                 if(is.null(data$costGroups)) {
