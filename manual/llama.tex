@@ -55,13 +55,14 @@ started. Here we go. In your R shell, type
 install.packages("llama")
 require(llama)
 \end{lstlisting}
-to install and load LLAMA. We're going to assume that you have two input CSV
-files for your data -- one with features and one with times. The rows designate
-problem instances and the columns feature and solver names. Both files have an
-``ID'' column that allows to link them. Load them into the data structure
-required by LLAMA as follows.
+to install and load LLAMA. We're going to assume that you have three input CSV
+files for your data -- features, times, and whether the run was a success. The
+rows designate problem instances and the columns feature and solver names. All
+files have an 'ID' column that allows to link them. Load them into the data
+structure required by LLAMA as follows.
 \begin{lstlisting}
-data = input(read.csv("features.csv"), read.csv("times.csv"))
+data = input(read.csv("features.csv"), read.csv("times.csv"),
+    read.csv("successes.csv"))
 \end{lstlisting}
 You can also use the SAT solver data that comes with LLAMA by running
 \lstinline{data(satsolvers)} followed by \lstinline{data = satsolvers}. Now
@@ -75,7 +76,7 @@ our first model. To do that, we'll need some machine learning algorithms --
 we're going to use a random forest classifier. Now train a simple classification
 model that predicts the best algorithm.
 \begin{lstlisting}
-model = classify(makeLeaner("classif.randomForest"), folds)
+model = classify(makeLearner("classif.randomForest"), folds)
 \end{lstlisting}
 Great! Now let's see how well this model is doing and compare its performance to
 the virtual best solver (VBS) and the single best solver in terms of average

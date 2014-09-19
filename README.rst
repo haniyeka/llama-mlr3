@@ -22,15 +22,16 @@ started. Here we go. In your R shell, type
     install.packages("llama")
     require(llama)
 
-to install and load LLAMA. We're going to assume that you have two input CSV
-files for your data -- one with features and one with times. The rows designate
-problem instances and the columns feature and solver names. Both files have an
-'ID' column that allows to link them. Load them into the data structure
-required by LLAMA as follows.
+to install and load LLAMA. We're going to assume that you have three input CSV
+files for your data -- features, times, and whether the run was a success. The
+rows designate problem instances and the columns feature and solver names. All
+files have an 'ID' column that allows to link them. Load them into the data
+structure required by LLAMA as follows.
 
 ::
 
-    data = input(read.csv("features.csv"), read.csv("times.csv"))
+    data = input(read.csv("features.csv"), read.csv("times.csv"),
+        read.csv("successes.csv")
 
 You can also use the SAT solver data that comes with LLAMA by running
 
