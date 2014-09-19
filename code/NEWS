@@ -1,6 +1,8 @@
 llama_0.7.2:
 - take success (if present) into account when determining best algorithm
 - fix bugs wrt cost calculations
+- fix stupid bug that caused the incorrect best algorithm to be determined in
+  some cases
 - some addtional small bug fixes
 
 llama_0.7.1:
