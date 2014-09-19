@@ -45,7 +45,7 @@ function(features, performances, successes=NULL, costs=NULL, minimize=T) {
                 # nothing was able to solve this instance
                 NA
             } else {
-                perfs = x[tosel]
+                perfs = as.numeric(x[tosel])
                 factor(tosel[which(perfs == optfun(perfs))])
             }
         })

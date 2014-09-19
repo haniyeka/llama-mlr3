@@ -75,6 +75,17 @@ test_that("input takes success into account when determining best", {
     expect_equal(data$data$best, c(NA, factor("c"), NA, NA, NA))
 })
 
+test_that("best is determined correctly", {
+    features = data.frame(benchmark=c("qwh_30_332_0_2053695854357871005.pls", "qwh_30_332_10_2945194472877206461.pls", "qwh_30_332_11_7795859673851708282.pls"),
+        feat1=c(0,0,0))
+    times = data.frame(benchmark=c("qwh_30_332_0_2053695854357871005.pls", "qwh_30_332_10_2945194472877206461.pls", "qwh_30_332_11_7795859673851708282.pls"),
+        direct.direct=c(59.7379, 80.4268, 465.3020), direct.ladder_direct=c(31.6882, 40.2449, 226.6520), direct.pairwise_and_ladder_direct=c(34.7447, 80.9897, 156.7410),
+        direct.support=c(78.6420, 27.6008, 1304.6100))
+
+    data = input(features, times)
+    expect_equal(as.character(data$data$best), c("direct.ladder_direct", "direct.support", "direct.pairwise_and_ladder_direct"))
+})
+
 test_that("input orders successes by performances", {
     a = data.frame(a=c(1:5), b=rep.int(1, 5))
     b = data.frame(a=c(1:5), c=rep.int(1, 5), d=rep.int(2, 5))
