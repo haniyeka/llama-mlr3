@@ -105,6 +105,6 @@ ress = regression(regressor=makeLearner("regr.ksvm"),
                   combine=makeLearner("classif.J48"),
                   expand=function(x) { cbind(x, combn(c(1:ncol(x)), 2,
                          function(y) { abs(x[,y[1]] - x[,y[2]]) })) })
-}
 #}
+}
 \keyword{ ~regression }

@@ -79,7 +79,7 @@ Lars Kotthoff
 \code{\link{regression}}
 }
 \examples{
-\dontrun{
+#\dontrun{
 data(satsolvers)
 folds = cvFolds(satsolvers)
 
@@ -92,6 +92,6 @@ model$predictor(subset(satsolvers$data, TRUE, satsolvers$features))
 # combine predictions using J48 induced classifier
 model = regressionPairs(regressor=makeLearner("regr.lm"), data=folds,
     combine=makeLearner("classif.J48"))
-}
+#}
 }
 \keyword{ ~models }
