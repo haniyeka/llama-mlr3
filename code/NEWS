@@ -1,5 +1,7 @@
 llama_0.7.2:
-- take success (if present) into account when determining best algorithm
+- take success (if present) into account when determining best algorithm: if
+  nothing was successful on an instance, set to NA -- this means that vbs may
+  return NA as well
 - fix bugs wrt cost calculations
 - fix stupid bug that caused the incorrect best algorithm to be determined in
   some cases

@@ -22,16 +22,15 @@ started. Here we go. In your R shell, type
     install.packages("llama")
     require(llama)
 
-to install and load LLAMA. We're going to assume that you have three input CSV
-files for your data -- features, times, and whether the run was a success. The
-rows designate problem instances and the columns feature and solver names. All
-files have an 'ID' column that allows to link them. Load them into the data
-structure required by LLAMA as follows.
+to install and load LLAMA. We're going to assume that you have two input CSV
+files for your data -- features and times. The rows designate problem instances
+and the columns feature and solver names. All files have an 'ID' column that
+allows to link them. Load them into the data structure required by LLAMA as
+follows.
 
 ::
 
-    data = input(read.csv("features.csv"), read.csv("times.csv"),
-        read.csv("successes.csv")
+    data = input(read.csv("features.csv"), read.csv("times.csv"))
 
 You can also use the SAT solver data that comes with LLAMA by running
 
@@ -59,22 +58,22 @@ and train a simple classification model that predicts the best algorithm.
 
 Great! Now let's see how well this model is doing and compare its performance to
 the virtual best solver (VBS) and the single best solver in terms of average
-PAR10 score.
+misclassification penalty.
 
 ::
 
-    mean(parscores(data, vbs))
-    mean(parscores(folds, model, addCosts = FALSE))
-    mean(parscores(data, singleBest, addCosts = FALSE))
+    mean(misclassificationPenalties(data, vbs))
+    mean(misclassificationPenalties(folds, model))
+    mean(misclassificationPenalties(data, singleBest))
 
 These are the numbers I get for the ``satsolvers`` data:
 
-:virtual best: 4645.169
-:model: 5569.949
-:single best: 5779.526
+:virtual best: 0
+:model: 74.73368
+:single best: 122.3186
 
-While we are far off the virtual best, our classifier beats the single best
-algorithm! Not bad for a model trained in a single line of code.
+While we are quite far off the virtual best, our classifier beats the single
+best algorithm! Not bad for a model trained in a single line of code.
 
 You can use any other classification algorithms instead of a random forest of
 course. You can also train regression or cluster models, use different

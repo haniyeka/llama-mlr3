@@ -5,9 +5,10 @@ data = satsolvers
 
 folds = cvFolds(satsolvers)
 
-model = classify(makeLearner("classif.J48"), folds)
-mean(parscores(folds, model))
-sum(successes(folds, model))
+model = classify(makeLearner("classif.randomForest"), folds)
+mean(misclassificationPenalties(data, vbs))
+mean(misclassificationPenalties(folds, model))
+mean(misclassificationPenalties(data, singleBest))
 
 model$predictions[[1]][[1]]
 

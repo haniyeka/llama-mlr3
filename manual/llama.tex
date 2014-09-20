@@ -55,14 +55,13 @@ started. Here we go. In your R shell, type
 install.packages("llama")
 require(llama)
 \end{lstlisting}
-to install and load LLAMA. We're going to assume that you have three input CSV
-files for your data -- features, times, and whether the run was a success. The
-rows designate problem instances and the columns feature and solver names. All
-files have an 'ID' column that allows to link them. Load them into the data
-structure required by LLAMA as follows.
+to install and load LLAMA. We're going to assume that you have two input CSV
+files for your data -- features and times. The rows designate problem instances
+and the columns feature and solver names. All files have an 'ID' column that
+allows to link them. Load them into the data structure required by LLAMA as
+follows.
 \begin{lstlisting}
-data = input(read.csv("features.csv"), read.csv("times.csv"),
-    read.csv("successes.csv"))
+data = input(read.csv("features.csv"), read.csv("times.csv"))
 \end{lstlisting}
 You can also use the SAT solver data that comes with LLAMA by running
 \lstinline{data(satsolvers)} followed by \lstinline{data = satsolvers}. Now
@@ -80,12 +79,21 @@ model = classify(makeLearner("classif.randomForest"), folds)
 \end{lstlisting}
 Great! Now let's see how well this model is doing and compare its performance to
 the virtual best solver (VBS) and the single best solver in terms of average
-PAR10 score.
+misclassification penalty.
 \begin{lstlisting}
-mean(parscores(folds, model))
-mean(parscores(data, vbs, addCosts = FALSE))
-mean(parscores(data, singleBest, addCosts = FALSE))
+mean(misclassificationPenalties(folds, model))
+mean(misclassificationPenalties(data, vbs))
+mean(misclassificationPenalties(data, singleBest))
 \end{lstlisting}
+These are the numbers I get for the \lstinline{satsolvers} data:
+\begin{description}
+\item[virtual best] 0
+\item[model] 74.73368
+\item[single best] 122.3186
+\end{description}
+While we are quite far off the virtual best, our classifier beats the single
+best algorithm! Not bad for a model trained in a single line of code.
+
 You can use any other classification algorithms instead of
 \lstinline{randomForest} of course. You can also train regression or cluster
 models, use different train/test splits or preprocess the data by selecting the
@@ -160,7 +168,7 @@ these involving ensembles and stacking.
 A lot more background information can be found
 in~\cite{kotthoff_algorithm_2014} (even more in the extended
 version~\cite{kotthoff_algorithm_2012}) and the overview table of the relevant
-literature at \url{http://4c.ucc.ie/~larsko/assurvey/}.
+literature at \url{http://larskotthoff.github.io/assurvey/}.
 
 \medskip
 
@@ -659,7 +667,7 @@ be used to rank all of the portfolio algorithms. This approach is also
 implemented in LLAMA. The function is called \lstinline{classifyPairs} and
 conforms to the usual interface.
 \begin{lstlisting}
-model = classifyPairs(makeLeaner("classif.J48"), folds)
+model = classifyPairs(makeLearner("classif.J48"), folds)
 \end{lstlisting}
 Running this command on the example SAT data will take quite a long time, as a
 model for each pair of algorithms needs to be trained. This approach offers
@@ -981,8 +989,8 @@ function that, given the performance predictions, can augment the inputs to the
 classifier. In this case, we want to add the pairwise absolute differences
 between the predicted performances of algorithms.
 \begin{lstlisting}
-stackedModel = regression(makeLeaner("regr.lm"), folds,
-    combine=makeLeaner("classif.OneR"),
+stackedModel = regression(makeLearner("regr.lm"), folds,
+    combine=makeLearner("classif.OneR"),
     expand=function(x) {
         cbind(x, combn(c(1:ncol(x)), 2, function(y) {
             abs(x[,y[1]] - x[,y[2]])
