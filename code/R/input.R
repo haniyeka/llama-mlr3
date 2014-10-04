@@ -38,15 +38,15 @@ function(features, performances, successes=NULL, costs=NULL, minimize=T) {
         function(x) {
             tosel = pnames
             if(!is.null(successes)) {
-                nosuccs = sapply(snames[which(x[snames] == FALSE)], function(x) { unlist(strsplit(x, "_"))[1] })
+                nosuccs = sapply(snames[which(as.logical(x[snames]) == FALSE)], function(y) { unlist(strsplit(y, "_"))[1] })
                 tosel = setdiff(pnames, nosuccs)
             }
             if(length(tosel) == 0) {
                 # nothing was able to solve this instance
-                NA
+                return(NA)
             } else {
                 perfs = as.numeric(x[tosel])
-                factor(tosel[which(perfs == optfun(perfs))])
+                return(tosel[which(perfs == optfun(perfs))])
             }
         })
     # simplify...

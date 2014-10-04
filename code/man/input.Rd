@@ -64,7 +64,8 @@ specifying this small amount of time may confuse some of the algorithm selection
 model learners.
 }
 \value{
-\item{data}{the combined data (features, performance, successes).}
+\item{data}{the combined data (features, performance, successes) and the best
+algorithm.}
 \item{features}{a list of names denoting problem features.}
 \item{performance}{a list of names denoting algorithm performances.}
 \item{success}{a list of names denoting algorithm successes.}
