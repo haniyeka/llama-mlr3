@@ -32,7 +32,10 @@ function(data=NULL, factor=10) {
         stop("Need successes to compute PAR scores.")
     }
 
-    best = names(sort(sapply(data$performance, function(x) { sum(parscores(data, list(predictions=replicate(length(data$data$best), setNames(data.frame(table(x)), predNames), simplify=F)), factor=factor)) })))[1]
+    best = names(sort(sapply(data$performance, function(x) {
+        prs = replicate(length(data$data$best), setNames(data.frame(table(x)), predNames), simplify=F)
+        sum(parscores(data, list(predictions=prs), factor=factor))
+    })))[1]
     preds = rep.int(best, length(data$data$best))
     return(lapply(preds, function(l) { setNames(data.frame(table(l)), predNames) }))
 }

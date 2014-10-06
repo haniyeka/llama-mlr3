@@ -23,6 +23,9 @@ function(data=NULL, model=NULL, factor=10, timeout=NULL, addCosts=TRUE) {
     }
     if(length(data$test) == 0) {
         data$test = list(data$data)
+    }
+    # XXX: this is hacky and should be done properly
+    if(is.data.frame(predictions[[1]])) {
         predictions = list(predictions)
     }
 

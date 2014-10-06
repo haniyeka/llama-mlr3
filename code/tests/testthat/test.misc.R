@@ -114,6 +114,18 @@ test_that("single best by par works with best list", {
     })))
 })
 
+test_that("single best by par works with train/test split", {
+    fold = data.frame(a=rep.int(1, 10), b=rep.int(0, 10),
+        d=rep.int(F, 10), e=rep.int(T, 10))
+    fold$best = bestlistlong
+    d = list(data=rbind(fold, fold), test=list(fold), train=list(fold), performance=c("a", "b"), success=c("d", "e"))
+
+    preds = singleBestByPar(d)
+    expect_true(all(sapply(1:length(preds), function(i) {
+        preds[[i]] == data.frame(algorithm="b", score=1)
+    })))
+})
+
 test_that("single best by par raises error without data", {
     expect_error(singleBestByPar(), "Need data to determine single best!")
 })
