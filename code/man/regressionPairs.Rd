@@ -11,7 +11,8 @@ algorithm.
 }
 \usage{
 regressionPairs(regressor = NULL, data = NULL,
-    pre = function(x, y=NULL) { list(features=x) }, combine = NULL)
+    pre = function(x, y=NULL) { list(features=x) }, combine = NULL,
+    save.models = NA)
 }
 \arguments{
   \item{regressor}{
@@ -30,6 +31,10 @@ regressionPairs(regressor = NULL, data = NULL,
   \item{combine}{
   the function used to combine the predictions of the individual regression
   models for stacking. Default \code{NULL}. See details.
+}
+  \item{save.models}{
+  Whether to serialize and save the models trained during evaluation of the
+  model. If not NA, will be used as a prefix for the file name.
 }
 }
 \details{

@@ -9,7 +9,8 @@ features of the problem.
 }
 \usage{
 classify(classifier = NULL, data = NULL,
-    pre = function(x, y=NULL) { list(features=x) })
+    pre = function(x, y=NULL) { list(features=x) },
+    save.models = NA)
 }
 \arguments{
   \item{classifier}{
@@ -24,6 +25,10 @@ classify(classifier = NULL, data = NULL,
   \item{pre}{
   a function to preprocess the data. Currently only \code{normalize}.
   Optional. Does nothing by default.
+}
+  \item{save.models}{
+  Whether to serialize and save the models trained during evaluation of the
+  model. If not NA, will be used as a prefix for the file name.
 }
 }
 \details{

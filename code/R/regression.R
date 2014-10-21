@@ -1,5 +1,5 @@
 regression <-
-function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }, combine=NULL, expand=identity) {
+function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }, combine=NULL, expand=identity, save.models=NA) {
     if(is.null(regressor)) {
         stop("No regressor given!")
     }
@@ -19,6 +19,9 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         for (j in 1:length(data$performance)) {
             task = makeRegrTask(id="regression", target="target", data=cbind(data.frame(target=data$train[[i]][[data$performance[j]]]), trf$features))
             model = train(regressor, task = task)
+            if(!is.na(save.models)) {
+                saveRDS(list(model=model, train.data=task, test.data=tsf$features), file = paste(save.models, regressor$id, data$performance[[j]], i, "rds", sep="."))
+            }
             if(!is.null(combine)) {
                 trainpredictions[,j] = predict(model, newdata=trf$features)$data$response
             }
@@ -33,6 +36,9 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
                 task = makeClassifTask(id="regression", target="target", data=cbind(trainBests, trf$features, data.frame(expand(trainpredictions))))
             }
             combinedmodel = train(combine, task = task)
+            if(!is.na(save.models)) {
+                saveRDS(list(model=combinedmodel, train.data=task, test.data=cbind(tsf$features, data.frame(expand(performancePredictions)))), file = paste(save.models, combine$id, "combined", i, "rds", sep="."))
+            }
             preds = predict(combinedmodel, newdata=cbind(tsf$features, data.frame(expand(performancePredictions))))$data$response
             combinedpredictions = lapply(preds, function(l) { setNames(data.frame(as.table(sort(table(l), decreasing=T))), predNames) })
         } else {

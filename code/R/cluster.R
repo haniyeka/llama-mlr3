@@ -1,5 +1,5 @@
 cluster <-
-function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL) { list(features=x) }) {
+function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL) { list(features=x) }, save.models=NA) {
     if(is.null(clusterer)) {
         stop("No clusterer given!")
     }
@@ -38,6 +38,9 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
         for(j in 1:length(clusterer)) {
             task = makeClusterTask(id="clustering", data=trf$features)
             model = train(clusterer[[j]], task=task)
+            if(!is.na(save.models)) {
+                saveRDS(list(model=model, train.data=task, test.data=tsf$features), file = paste(save.models, clusterer[[j]]$id, i, "rds", sep="."))
+            }
             trainclusters = predict(model, newdata=trf$features)$data$response
             best = by(data$train[[i]], trainclusters, bestfun)
             if(inherits(combinator, "Learner")) { # only do this if we need it
@@ -63,7 +66,11 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
         }
         if(inherits(combinator, "Learner")) {
             trainBests = data.frame(target=factor(breakBestTies(data, i), levels=data$performance))
-            combinedmodel = train(combinator, task=makeClassifTask(id="cluster", target="target", data=cbind(trainBests, trf$features, data.frame(trainpredictions))))
+            task = makeClassifTask(id="cluster", target="target", data=cbind(trainBests, trf$features, data.frame(trainpredictions)))
+            combinedmodel = train(combinator, task=task)
+            if(!is.na(save.models)) {
+                saveRDS(list(model=combinedmodel, train.data=task, test.data=cbind(tsf$features, data.frame(featureData))), file = paste(save.models, combinator$id, "combined", i, "rds", sep="."))
+            }
             featureData = matrix(nrow=nrow(tsf$features), ncol=length(clusterer))
             for(k in 1:nrow(featureData)) {
                 for(j in 1:ncol(featureData)) {

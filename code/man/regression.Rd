@@ -10,7 +10,7 @@ features of the problem.
 \usage{
 regression(regressor = NULL, data = NULL,
     pre = function(x, y=NULL) { list(features=x) },
-    combine = NULL, expand = identity)
+    combine = NULL, expand = identity, save.models = NA)
 }
 \arguments{
   \item{regressor}{
@@ -33,6 +33,10 @@ regression(regressor = NULL, data = NULL,
   algorithms, rows problem instances) and transforms it into a matrix with the
   same number of rows. Only meaningful if \code{combine} is not null. Default is
   the identity function, which will leave the matrix unchanged. See examples.
+}
+  \item{save.models}{
+  Whether to serialize and save the models trained during evaluation of the
+  model. If not NA, will be used as a prefix for the file name.
 }
 }
 \details{

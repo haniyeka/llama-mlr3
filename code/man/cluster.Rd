@@ -10,7 +10,8 @@ of the problem.
 \usage{
 cluster(clusterer = NULL, data = NULL,
     bestBy = "performance",
-    pre = function(x, y=NULL) { list(features=x) })
+    pre = function(x, y=NULL) { list(features=x) },
+    save.models = NA)
 }
 \arguments{
   \item{clusterer}{
@@ -29,6 +30,10 @@ cluster(clusterer = NULL, data = NULL,
   \item{pre}{
   a function to preprocess the data. Currently only \code{normalize}.
   Optional. Does nothing by default.
+}
+  \item{save.models}{
+  Whether to serialize and save the models trained during evaluation of the
+  model. If not NA, will be used as a prefix for the file name.
 }
 }
 \details{

@@ -1,3 +1,7 @@
+llama_0.7.3:
+- models computed during cross-validation can be saved by passing save.models to
+  the model builders
+
 llama_0.7.2:
 - take success (if present) into account when determining best algorithm: if
   nothing was successful on an instance, set to NA -- this means that vbs may

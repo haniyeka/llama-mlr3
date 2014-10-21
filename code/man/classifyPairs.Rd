@@ -10,7 +10,8 @@ determine the best overall algorithm.
 }
 \usage{
 classifyPairs(classifier = NULL, data = NULL,
-    pre = function(x, y=NULL) { list(features=x) }, combinator = NULL)
+    pre = function(x, y=NULL) { list(features=x) }, combinator = NULL,
+    save.models = NA)
 }
 \arguments{
   \item{classifier}{
@@ -28,6 +29,10 @@ classifyPairs(classifier = NULL, data = NULL,
   The classifier function to predict the overall best algorithm given the
   predictions for pairs of algorithms. Optional. By default, the overall best
   algorithm is determined by majority vote.
+}
+  \item{save.models}{
+  Whether to serialize and save the models trained during evaluation of the
+  model. If not NA, will be used as a prefix for the file name.
 }
 }
 \details{

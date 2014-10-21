@@ -1,5 +1,5 @@
 regressionPairs <-
-function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }, combine=NULL) {
+function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }, combine=NULL, save.models=NA) {
     if(is.null(regressor)) {
         stop("No regressor given!")
     }
@@ -21,6 +21,9 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             values = data.frame(target=data$train[[i]][[combns[1,j]]] - data$train[[i]][[combns[2,j]]])
             task = makeRegrTask(id="regression", target="target", data=cbind(values, trf$features), fixup.data="quiet")
             model = train(regressor, task = task)
+            if(!is.na(save.models)) {
+                saveRDS(list(model=model, train.data=task, test.data=tsf$features), file = paste(save.models, regressor$id, combns[1,j], combns[2,j], i, "rds", sep="."))
+            }
             if(!is.null(combine)) { # only do this if we need it
                 trainpredictions[,j] = predict(model, newdata=trf$features)$data$response
             }
@@ -35,6 +38,9 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
                 task = makeClassifTask(id="regression", target="target", data=cbind(trainBests, trf$features, data.frame(trainpredictions)), fixup.data="quiet")
             }
             combinedmodel = train(combine, task = task)
+            if(!is.na(save.models)) {
+                saveRDS(list(model=combinedmodel, train.data=task, test.data=cbind(tsf$features, data.frame(pairpredictions))), file = paste(save.models, combine$id, "combined", i, "rds", sep="."))
+            }
             preds = predict(combinedmodel, newdata=cbind(tsf$features, data.frame(pairpredictions)))$data$response
             combinedpredictions = lapply(preds, function(l) { setNames(data.frame(table(l)), predNames) })
         } else {
