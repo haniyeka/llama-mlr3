@@ -1,5 +1,5 @@
 misclassificationPenalties <-
-function(data=NULL, model=NULL) {
+function(data=NULL, model=NULL, addCosts=NULL) {
     if(is.null(data) || is.null(model)) {
         stop("Need both data and model to calculate misclassification penalties!")
     }

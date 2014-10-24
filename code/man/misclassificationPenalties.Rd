@@ -8,7 +8,7 @@ Calculates the penalty incurred because of making incorrect decisions, i.e.
 choosing suboptimal algorithms.
 }
 \usage{
-misclassificationPenalties(data, model)
+misclassificationPenalties(data, model, addCosts)
 }
 \arguments{
   \item{data}{the data used to induce the model. The same as given to
@@ -18,6 +18,8 @@ misclassificationPenalties(data, model)
       returned by one of the model-building functions or a function that returns
       predictions such as \code{vbs} or the predictor function of a trained
       model.}
+  \item{addCosts}{does nothing. Only here for compatibility with the other
+      evaluation functions.}
 }
 \details{
 Compares the performance of the respective chosen algorithm to the performance
