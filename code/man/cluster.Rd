@@ -33,7 +33,7 @@ cluster(clusterer = NULL, data = NULL,
 }
   \item{save.models}{
   Whether to serialize and save the models trained during evaluation of the
-  model. If not NA, will be used as a prefix for the file name.
+  model. If not \code{NA}, will be used as a prefix for the file name.
 }
 }
 \details{
@@ -61,6 +61,14 @@ combine the ensemble predictions instead of majority voting. This classifier is
 passed the original features and the predictions of the classifiers in the
 ensemble.
 
+If \code{save.models} is not \code{NA}, the models trained during evaluation are
+serialized into files. Each file contains a list with members \code{model} (the
+mlr model), \code{train.data} (the mlr task with the training data), and
+\code{test.data} (the data frame with the test data used to make predictions).
+The file name starts with \code{save.models}, followed by the ID of the machine
+learning model, followed by "combined" if the model combines predictions of
+other models, followed by the number of the fold. Each model for each fold is
+saved in a different file.
 }
 \value{
  \item{predictions}{a list of lists of data frames with the predictions for each
