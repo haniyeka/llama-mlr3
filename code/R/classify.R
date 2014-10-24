@@ -17,7 +17,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
 
     predictions = parallelMap(function(i) {
         trf = pre(data$train[[i]][data$features])
-        tsf = pre(data$test[[i]][data$features]), trf$meta)
+        tsf = pre(data$test[[i]][data$features], trf$meta)
         trp = data$train[[i]][data$performance]
         trw = abs(apply(trp, 1, max) - apply(trp, 1, min))
 

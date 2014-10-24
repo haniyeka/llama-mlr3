@@ -20,20 +20,21 @@ function(data=NULL, estimator=makeLearner("regr.lm"), epsilon=0.1, maxit=1000) {
             stop(paste("Cannot impute for ", p, ", no non-censored values!"), sep="")
         }
         if(!all(data$data[[s]])) {
-            haveind = (1:nrow(data$data))[data$data[[s]]]
-            wantind = (1:nrow(data$data))[!data$data[[s]]]
-            task = makeRegrTask(id="imputation", target="target", data=cbind(data.frame(target=data$data[haveind,][[p]]), data$data[haveind,data$features]))
+            splits = split(1:nrow(data$data), data$data[[s]])
+            haveind = splits$`TRUE`
+            wantind = splits$`FALSE`
+            task = makeRegrTask(id="imputation", target="target", data=cbind(data.frame(target=data$data[haveind,p]), data$data[haveind,][data$features]))
             model = train(estimator, task=task)
-            data$data[wantind,][[p]] = predict(model, newdata=data$data[wantind,data$features])$data$response
+            data$data[wantind,p] = predict(model, newdata=data$data[wantind,][data$features])$data$response
 
             diff = Inf
             it = 1
             while(diff > epsilon) {
                 task = makeRegrTask(id="imputation", target="target", data=cbind(data.frame(target=data$data[[p]]), data$data[data$features]))
                 model = train(estimator, task=task)
-                preds = predict(model, newdata=data$data[wantind,data$features])$data$response
-                diff = max(abs(preds - data$data[wantind,][[p]]))
-                data$data[wantind,][[p]] = preds
+                preds = predict(model, newdata=data$data[wantind,][data$features])$data$response
+                diff = max(abs(preds - data$data[wantind,p]))
+                data$data[wantind,p] = preds
                 it = it + 1
                 if(it > maxit) {
                     warning(paste("Did not reach convergence within ", maxit, " iterations for ", p, ".", sep=""))
