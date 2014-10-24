@@ -96,5 +96,7 @@ test_that("successes works with NA predictions", {
     as = rep.int(list(data.frame(algorithm="b", score=1)), 5)
     model = list(predictions=list(nas, as))
 
-    expect_equal(sum(successes(d, model), na.rm=T), 5)
+    succs = successes(d, model)
+    expect_equal(length(succs), 10)
+    expect_equal(sum(succs, na.rm=T), 5)
 })

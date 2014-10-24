@@ -123,5 +123,7 @@ test_that("parscores works with NA predictions", {
     as = rep.int(list(data.frame(algorithm="a", score=1)), 5)
     model = list(predictions=list(nas, as))
 
-    expect_equal(sum(parscores(d, model), na.rm=T), 50)
+    pars = parscores(d, model)
+    expect_equal(length(pars), 10)
+    expect_equal(sum(pars, na.rm=T), 50)
 })

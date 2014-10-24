@@ -51,5 +51,7 @@ test_that("misclassificationPenalties works with NA predictions", {
     as = rep.int(list(data.frame(algorithm="a", score=1)), 5)
     model = list(predictions=list(nas, as))
 
-    expect_equal(sum(misclassificationPenalties(d, model), na.rm=T), 5)
+    mcps = misclassificationPenalties(d, model)
+    expect_equal(length(mcps), 10)
+    expect_equal(sum(mcps, na.rm=T), 5)
 })

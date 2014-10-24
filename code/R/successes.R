@@ -28,34 +28,40 @@ function(data=NULL, model=NULL, timeout=NULL, addCosts=TRUE) {
 
     if(is.null(timeout)) {
         # if timeout value wasn't given, assume maximum from data set
-        timeout = max(subset(data$data, T, data$performance))
+        timeout = max(data$data[data$performance])
     }
+
+    if(addCosts || !is.null(data$costs)) {
+        if(is.null(data$costGroups)) {
+            usedFeatures = intersect(data$cost, sapply(data$features, function(x) { paste(x, "cost", sep="_") }))
+        } else {
+            usedGroups = subset(data$cost, sapply(data$cost, function(x) { length(intersect(data$costGroups[[x]], data$features)) > 0 }))
+        }
+    }
+
     return(unlist(lapply(1:length(data$test), function(i) {
-        sapply(1:nrow(data$test[[i]]), function(j) {
-            perfs = subset(data$test[[i]][j,], T, data$performance)
-            successes = subset(data$test[[i]][j,], T, data$success)
-            if(!addCosts || is.null(data$cost)) {
-                costs = 0
+        perfs = data$test[[i]][data$performance]
+        successes = data$test[[i]][data$success]
+        chosen = sapply(predictions[[i]], function(x) { which(as.character(x$algorithm[1]) == data$performance) })
+        if(!addCosts || is.null(data$cost)) {
+            costs = rep.int(0, nrow(data$test[[i]]))
+        } else {
+            if(is.null(data$costGroups)) {
+                costs = apply(data$test[[i]][usedFeatures], 1, sum)
             } else {
-                if(is.null(data$costGroups)) {
-                    # take only costs for features used in the model
-                    costs = sum(subset(data$test[[i]][j,], T, intersect(data$cost, sapply(data$features, function(x) { paste(x, "cost", sep="_") }))))
-                } else {
-                    # figure out which feature groups are being used
-                    usedGroups = subset(data$cost, sapply(data$cost, function(x) { length(intersect(data$costGroups[[x]], data$features)) > 0 }))
-                    costs = sum(subset(data$test[[i]][j,], T, usedGroups))
-                }
+                costs = apply(data$test[[i]][usedGroups], 1, sum)
             }
-            chosen = which(data$performance == predictions[[i]][[j]]$algorithm[1])
-            if(length(chosen) == 0) {
-                NA
-            } else {
-                value = as.numeric(perfs[chosen]) + costs
-                if(!as.logical(successes[chosen]) || value > timeout) {
+        }
+        sapply(1:nrow(data$test[[i]]), function(j) {
+            if(is.numeric(chosen[j])) {
+                value = as.numeric(perfs[j,chosen[j]]) + costs[j]
+                if(!as.logical(successes[j,chosen[j]]) || value > timeout) {
                     FALSE
                 } else {
                     TRUE
                 }
+            } else {
+                NA
             }
         })
     })))

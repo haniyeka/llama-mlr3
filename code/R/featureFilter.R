@@ -8,6 +8,6 @@ function(filter=NULL, data=NULL) {
     }
     data$original_features = data$features
     b = breakBestTies(data)
-    data$features = filter(b~., subset(data$data, T, data$features))
+    data$features = filter(b~., data$data[data$features])
     return(data)
 }

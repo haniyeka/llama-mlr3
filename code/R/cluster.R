@@ -30,8 +30,8 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
 
     i = 1 # prevent warning when checking package
     predictions = parallelMap(function(i) {
-        trf = pre(subset(data$train[[i]], T, data$features))
-        tsf = pre(subset(data$test[[i]], T, data$features), trf$meta)
+        trf = pre(data$train[[i]][data$features])
+        tsf = pre(data$test[[i]][data$features], trf$meta)
 
         trainpredictions = matrix(nrow=nrow(trf$features), ncol=length(clusterer))
         ensemblepredictions = list()
@@ -89,7 +89,7 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
         return(list(combinedpredictions))
     }, 1:length(data$train), simplify=T)
 
-    fs = pre(subset(data$data, T, data$features))
+    fs = pre(data$data[data$features])
     models = lapply(1:length(clusterer), function(i) {
         task = makeClusterTask(id="clustering", data=fs$features)
         model = train(clusterer[[i]], task=task)
@@ -117,7 +117,7 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
     }
 
     return(list(predictions=predictions, models=models, predictor=function(x) {
-        tsf = pre(subset(x, T, data$features), fs$meta)
+        tsf = pre(x[data$features], fs$meta)
         ensemblepredictions = list()
         for(j in 1:length(clusterer)) {
             ensemblepredictions[[j]] = models[[j]](tsf$features)

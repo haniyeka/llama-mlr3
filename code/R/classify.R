@@ -16,9 +16,9 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
     totalBests = data.frame(target=factor(breakBestTies(data), levels=data$performance))
 
     predictions = parallelMap(function(i) {
-        trf = pre(subset(data$train[[i]], T, data$features))
-        tsf = pre(subset(data$test[[i]], T, data$features), trf$meta)
-        trp = subset(data$train[[i]], T, data$performance)
+        trf = pre(data$train[[i]][data$features])
+        tsf = pre(data$test[[i]][data$features]), trf$meta)
+        trp = data$train[[i]][data$performance]
         trw = abs(apply(trp, 1, max) - apply(trp, 1, min))
 
         trainpredictions = data.frame(row.names=1:nrow(trf$features))
@@ -58,8 +58,8 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
         return(list(combinedpredictions))
     }, 1:length(data$train), simplify=T)
 
-    fs = pre(subset(data$data, T, data$features))
-    fp = subset(data$data, T, data$performance)
+    fs = pre(data$data[data$features])
+    fp = data$data[data$performance]
     fw = abs(apply(fp, 1, max) - apply(fp, 1, min))
     models = lapply(1:length(classifier), function(i) {
         if(hasProperties(classifier[[i]], "weights")) {
@@ -83,7 +83,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
     }
 
     return(list(predictions=predictions, models=models, predictor=function(x) {
-        tsf = pre(subset(x, T, data$features), fs$meta)
+        tsf = pre(x[data$features], fs$meta)
         ensemblepredictions = data.frame(row.names=1:nrow(tsf$features))
         for(i in 1:length(classifier)) {
             ensemblepredictions[,i] = predict(models[[i]], newdata=tsf$features)$data$response

@@ -10,7 +10,7 @@ function(features, performances, successes=NULL, costs=NULL, minimize=T) {
     }
     pnames = setdiff(names(performances), common)
 
-    ids = factor(do.call(paste0, subset(features, T, common)))
+    ids = factor(do.call(paste0, features[common]))
     if(length(ids) != length(levels(ids))) {
         stop("Common columns do not provide unique IDs!")
     }

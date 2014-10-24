@@ -27,14 +27,15 @@ function(data=NULL, model=NULL) {
     optfun = if(data$minimize) { min } else { max }
 
     return(unlist(lapply(1:length(data$test), function(i) {
+        perfs = data$test[[i]][data$performance]
+        opts = apply(perfs, 1, optfun)
+        chosen = sapply(predictions[[i]], function(x) { as.character(x$algorithm[1]) })
         sapply(1:nrow(data$test[[i]]), function(j) {
-                perfs = subset(data$test[[i]][j,], T, data$performance)
-                chosen = which(data$performance == predictions[[i]][[j]]$algorithm[1])
-                if(length(chosen) == 0) {
-                    NA
-                } else {
-                    as.numeric(abs(perfs[chosen] - optfun(perfs)))
-                }
-            })
-        })))
+            if(is.na(chosen[j])) {
+                NA
+            } else {
+                as.numeric(abs(perfs[j,chosen[j]] - opts[j]))
+            }
+        })
+    })))
 }

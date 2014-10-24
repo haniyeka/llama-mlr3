@@ -10,9 +10,9 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
     totalBests = data.frame(target=factor(breakBestTies(data), levels=data$performance))
     combns = combn(data$performance, 2)
     predictions = parallelMap(function(i) {
-        trf = pre(subset(data$train[[i]], T, data$features))
-        tsf = pre(subset(data$test[[i]], T, data$features), trf$meta)
-        trp = subset(data$train[[i]], T, data$performance)
+        trf = pre(data$train[[i]][data$features])
+        tsf = pre(data$test[[i]][data$features], trf$meta)
+        trp = data$train[[i]][data$performance]
         trw = abs(apply(trp, 1, max) - apply(trp, 1, min))
 
         trainpredictions = matrix(nrow=nrow(trf$features), ncol=ncol(combns))
@@ -67,8 +67,8 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         return(list(combinedpredictions))
     }, 1:length(data$train), simplify=T)
 
-    fs = pre(subset(data$data, T, data$features))
-    fp = subset(data$data, T, data$performance)
+    fs = pre(data$data[data$features])
+    fp = data$data[data$performance]
     fw = abs(apply(fp, 1, max) - apply(fp, 1, min))
     models = lapply(1:ncol(combns), function(i) {
         values = data.frame(target=data$data[[combns[1,i]]] - data$data[[combns[2,i]]])
@@ -89,7 +89,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
     }
 
     return(list(predictions=predictions, models=models, predictor=function(x) {
-        tsf = pre(subset(x, T, data$features), fs$meta)
+        tsf = pre(x[data$features], fs$meta)
         pairpredictions = matrix(nrow=nrow(tsf$features), ncol=ncol(combns))
         for(i in 1:ncol(combns)) {
             pairpredictions[,i] = predict(models[[i]], newdata=tsf$features)$data$response

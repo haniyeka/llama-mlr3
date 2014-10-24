@@ -60,7 +60,7 @@ function(data=NULL) {
         stop("Need data to determine single best!")
     }
 
-    best = names(sort(sapply(data$performance, function(x) { sum(subset(data$data, select=x)) }), decreasing=!data$minimize))[1]
+    best = names(sort(sapply(data$performance, function(x) { sum(data$data[x]) }), decreasing=!data$minimize))[1]
     preds = rep.int(best, length(data$data$best))
     return(lapply(preds, function(l) { setNames(data.frame(table(l)), predNames) }))
 }
@@ -72,9 +72,9 @@ function(data=NULL, fold=NULL) {
     }
 
     if(is.null(fold)) {
-        perfs = subset(data$data, select=data$performance)
+        perfs = data$data[data$performance]
     } else {
-        perfs = subset(data$train[[fold]], select=data$performance)
+        perfs = data$train[[fold]][data$performance]
     }
     order = names(sort(sapply(perfs, sum), decreasing=!data$minimize))
     optfun = if(data$minimize) { which.min } else { which.max }
