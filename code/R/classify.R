@@ -82,7 +82,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
         combinedmodel = train(combinator, task = task)
     }
 
-    return(list(predictions=predictions, models=models, predictor=function(x) {
+    predictor = function(x) {
         tsf = pre(x[data$features], fs$meta)
         ensemblepredictions = data.frame(row.names=1:nrow(tsf$features))
         for(i in 1:length(classifier)) {
@@ -95,5 +95,13 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
             combinedpredictions = apply(ensemblepredictions, 1, function(l) { setNames(data.frame(as.table(sort(table(l), decreasing=T))), predNames) })
         }
         return(combinedpredictions)
-    }))
+    }
+    class(predictor) = "llama.model"
+    attr(predictor, "hasPredictions") = FALSE
+
+    retval = list(predictions=predictions, models=models, predictor=predictor)
+    class(retval) = "llama.model"
+    attr(retval, "hasPredictions") = TRUE
+
+    return(retval)
 }

@@ -4,6 +4,7 @@ bestlistlong = list("a", "a", "b", c("a", "b"), "a", "a", c("a", "b"), "a", "a",
 
 test_that("virtual best returns the vbs", {
     d = list(data=list(best=bests))
+    class(d) = "llama.data"
 
     preds = vbs(d)
     expect_true(all(sapply(1:length(preds), function(i) {
@@ -13,6 +14,7 @@ test_that("virtual best returns the vbs", {
 
 test_that("virtual best works with best list", {
     d = list(data=list(best=bestlist))
+    class(d) = "llama.data"
 
     preds = vbs(d)
     expect_true(all(sapply(1:length(preds), function(i) {
@@ -32,6 +34,7 @@ test_that("single best raises error without data", {
 
 test_that("virtual best works with NAs", {
     d = list(data=list(best=c(NA)))
+    class(d) = "llama.data"
 
     preds = vbs(d)
     expect_equal(length(preds), 1)
@@ -41,7 +44,9 @@ test_that("virtual best works with NAs", {
 test_that("single best returns the single best", {
     fold = data.frame(a=rep.int(1, 10), b=rep.int(0, 10), best=rep.int("a", 10))
     d = list(data=fold, performance=c("a", "b"), minimize=T)
+    class(d) = "llama.data"
     e = list(data=fold, performance=c("a", "b"), minimize=F)
+    class(e) = "llama.data"
 
     preds = singleBest(d)
     expect_true(all(sapply(1:length(preds), function(i) {
@@ -57,7 +62,9 @@ test_that("single best works with best list", {
     fold = data.frame(a=rep.int(1, 10), b=rep.int(0, 10))
     fold$best = bestlistlong
     d = list(data=fold, performance=c("a", "b"), minimize=T)
+    class(d) = "llama.data"
     e = list(data=fold, performance=c("a", "b"), minimize=F)
+    class(e) = "llama.data"
 
     preds = singleBest(d)
     expect_true(all(sapply(1:length(preds), function(i) {
@@ -73,6 +80,7 @@ test_that("single best by count returns the single best", {
     d = list(data=data.frame(a=c(1,2,3), b=c(2,2,3)),
              performance=c("a", "b"), minimize=T)
     d$data$best = rep.int("a", 3)
+    class(d) = "llama.data"
 
     preds = singleBestByCount(d)
     expect_true(all(sapply(1:length(preds), function(i) {
@@ -84,6 +92,7 @@ test_that("single best by count works with best list", {
     d = list(data=data.frame(a=c(1,2,3), b=c(2,2,3)),
              performance=c("a", "b"), minimize=T)
     d$data$best = bestlist
+    class(d) = "llama.data"
 
     preds = singleBestByCount(d)
     expect_true(all(sapply(1:length(preds), function(i) {
@@ -95,6 +104,7 @@ test_that("single best by par returns the single best", {
     fold = data.frame(a=rep.int(1, 10), b=rep.int(0, 10),
         d=rep.int(F, 10), e=rep.int(T, 10), best=rep.int("a", 10))
     d = list(data=fold, performance=c("a", "b"), success=c("d", "e"))
+    class(d) = "llama.data"
 
     preds = singleBestByPar(d)
     expect_true(all(sapply(1:length(preds), function(i) {
@@ -107,6 +117,7 @@ test_that("single best by par works with best list", {
         d=rep.int(F, 10), e=rep.int(T, 10))
     fold$best = bestlistlong
     d = list(data=fold, performance=c("a", "b"), success=c("d", "e"))
+    class(d) = "llama.data"
 
     preds = singleBestByPar(d)
     expect_true(all(sapply(1:length(preds), function(i) {
@@ -119,6 +130,7 @@ test_that("single best by par works with train/test split", {
         d=rep.int(F, 10), e=rep.int(T, 10))
     fold$best = bestlistlong
     d = list(data=rbind(fold, fold), test=list(fold), train=list(fold), performance=c("a", "b"), success=c("d", "e"))
+    class(d) = "llama.data"
 
     preds = singleBestByPar(d)
     expect_true(all(sapply(1:length(preds), function(i) {
@@ -134,6 +146,7 @@ test_that("single best by successes returns the single best", {
     fold = data.frame(a=rep.int(1, 10), b=rep.int(0, 10),
         d=rep.int(F, 10), e=rep.int(T, 10), best=rep.int("a", 10))
     d = list(data=fold, performance=c("a", "b"), success=c("d", "e"))
+    class(d) = "llama.data"
 
     preds = singleBestBySuccesses(d)
     expect_true(all(sapply(1:length(preds), function(i) {
@@ -146,6 +159,7 @@ test_that("single best by successes works with best list", {
         d=rep.int(F, 10), e=rep.int(T, 10))
     fold$best = bestlistlong
     d = list(data=fold, performance=c("a", "b"), success=c("d", "e"))
+    class(d) = "llama.data"
 
     preds = singleBestBySuccesses(d)
     expect_true(all(sapply(1:length(preds), function(i) {
@@ -160,6 +174,7 @@ test_that("single best by successes raises error without data", {
 test_that("break best ties recomputes bests without ties", {
     d = list(data=data.frame(a=c(1,2,3), b=c(2,2,2.5)),
              performance=c("a", "b"), minimize=T)
+    class(d) = "llama.data"
 
     expect_equal(breakBestTies(d), factor(c("a", "a", "b")))
 })
@@ -167,6 +182,7 @@ test_that("break best ties recomputes bests without ties", {
 test_that("break best ties accepts fold argument", {
     fold = data=data.frame(a=c(1,2,3), b=c(2,2,2.5))
     d = list(data=rbind(fold, fold), performance=c("a", "b"), minimize=T, train=list(fold))
+    class(d) = "llama.data"
 
     expect_equal(breakBestTies(d), factor(c("a", "a", "b", "a", "a", "b")))
     expect_equal(breakBestTies(d, 1), factor(c("a", "a", "b")))

@@ -116,7 +116,7 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
         combinedmodel = train(combinator, task=makeClassifTask(id="cluster", target="target", data=cbind(totalBests, fs$features, data.frame(trainpredictions))))
     }
 
-    return(list(predictions=predictions, models=models, predictor=function(x) {
+    predictor = function(x) {
         tsf = pre(x[data$features], fs$meta)
         ensemblepredictions = list()
         for(j in 1:length(clusterer)) {
@@ -139,5 +139,13 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
             }, ensemblepredictions)
         }
         return(combinedpredictions)
-    }))
+    }
+    class(predictor) = "llama.model"
+    attr(predictor, "hasPredictions") = FALSE
+
+    retval = list(predictions=predictions, models=models, predictor=predictor)
+    class(retval) = "llama.model"
+    attr(retval, "hasPredictions") = TRUE
+
+    return(retval)
 }

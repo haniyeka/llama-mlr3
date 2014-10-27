@@ -95,5 +95,6 @@ function(features, performances, successes=NULL, costs=NULL, minimize=T) {
         retval$data = combined
     }
 
+    class(retval) = "llama.data"
     return(retval)
 }

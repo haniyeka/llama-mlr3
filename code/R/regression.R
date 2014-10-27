@@ -72,7 +72,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         combinedmodel = train(combine, task = task)
     }
 
-    return(list(predictions=predictions, models=models, predictor=function(x) {
+    predictor = function(x) {
         tsf = pre(x[data$features], fs$meta)
         performancePredictions = data.frame(row.names=1:nrow(tsf$features))
         for (i in 1:length(data$performance)) {
@@ -91,5 +91,13 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             combinedpredictions = apply(performancePredictions, 1, function(x) { setNames(data.frame(data$performance[sort.list(x, decreasing=decreasing)], sort(x, decreasing=decreasing)), predNames) })
         }
         return(combinedpredictions)
-    }))
+    }
+    class(predictor) = "llama.model"
+    attr(predictor, "hasPredictions") = FALSE
+
+    retval = list(predictions=predictions, models=models, predictor=predictor)
+    class(retval) = "llama.model"
+    attr(retval, "hasPredictions") = TRUE
+
+    return(retval)
 }

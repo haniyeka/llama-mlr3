@@ -4,8 +4,9 @@ function(data=NULL, model=NULL, addCosts=NULL) {
         stop("Need both data and model to calculate misclassification penalties!")
     }
 
-    if(is.function(model)) {
-        # vbs or a model predictor
+    if(attr(model, "hasPredictions")) {
+        predictions = model$predictions
+    } else {
         if(length(data$test) > 0) {
             predictions = lapply(data$test, function(x) {
                 data$data = x
@@ -14,9 +15,6 @@ function(data=NULL, model=NULL, addCosts=NULL) {
         } else {
             predictions = model(data)
         }
-    } else {
-        # it's a model
-        predictions = model$predictions
     }
 
     if(length(data$test) == 0) {

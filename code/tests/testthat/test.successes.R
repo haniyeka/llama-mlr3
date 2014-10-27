@@ -5,7 +5,11 @@ test_that("successes returns successes", {
     as = rep.int(list(data.frame(algorithm="a", score=1)), 5)
     bs = rep.int(list(data.frame(algorithm="b", score=1)), 5)
     modela = list(predictions=list(as, as))
+    class(modela) = "llama.model"
+    attr(modela, "hasPredictions") = TRUE
     modelb = list(predictions=list(bs, bs))
+    class(modelb) = "llama.model"
+    attr(modelb, "hasPredictions") = TRUE
 
     expect_equal(sum(successes(d, modela)), 0)
     expect_equal(sum(successes(d, modelb)), 10)
@@ -16,6 +20,8 @@ test_that("successes raises error if no successes are given", {
     d = list(test=list(fold, fold), performance=c("a", "b"))
     as = rep.int(list(data.frame(algorithm="a", score=1)), 5)
     modela = list(predictions=list(as, as))
+    class(modela) = "llama.model"
+    attr(modela, "hasPredictions") = TRUE
     expect_error(successes(d, modela), "Need successes to calculate successes!")
 })
 
@@ -24,7 +30,11 @@ test_that("successes works without test split", {
         d=rep.int(F, 10), e=rep.int(T, 10))
     d = list(data=fold, performance=c("a", "b"), success=c("d", "e"))
     modela = list(predictions=rep.int(list(data.frame(algorithm="a", score=1)), 10))
+    class(modela) = "llama.model"
+    attr(modela, "hasPredictions") = TRUE
     modelb = list(predictions=rep.int(list(data.frame(algorithm="b", score=1)), 10))
+    class(modelb) = "llama.model"
+    attr(modelb, "hasPredictions") = TRUE
 
     expect_equal(sum(successes(d, modela)), 0)
     expect_equal(sum(successes(d, modelb)), 10)
@@ -37,7 +47,11 @@ test_that("sucesses takes feature costs into account", {
     as = rep.int(list(data.frame(algorithm="a", score=1)), 5)
     bs = rep.int(list(data.frame(algorithm="b", score=1)), 5)
     modela = list(predictions=list(as, as))
+    class(modela) = "llama.model"
+    attr(modela, "hasPredictions") = TRUE
     modelb = list(predictions=list(bs, bs))
+    class(modelb) = "llama.model"
+    attr(modelb, "hasPredictions") = TRUE
 
     expect_equal(sum(successes(d, modela, timeout=1.5)), 0)
     expect_equal(sum(successes(d, modela, timeout=5)), 10)
@@ -54,6 +68,8 @@ test_that("sucesses does not cost unused features", {
     d = list(data=rbind(fold, fold), test=list(fold, fold), performance=c("a", "b"), success=c("d", "e"), cost=c("c_cost", "f_cost"), features=c("c"))
     as = rep.int(list(data.frame(algorithm="a", score=1)), 5)
     modela = list(predictions=list(as, as))
+    class(modela) = "llama.model"
+    attr(modela, "hasPredictions") = TRUE
 
     expect_equal(sum(successes(d, modela, timeout=1.5)), 0)
     expect_equal(sum(successes(d, modela, timeout=3.5)), 10)
@@ -69,6 +85,8 @@ test_that("successes takes feature cost groups into account", {
 
     as = rep.int(list(data.frame(algorithm="a", score=1)), 5)
     modela = list(predictions=list(as, as))
+    class(modela) = "llama.model"
+    attr(modela, "hasPredictions") = TRUE
 
     expect_equal(sum(successes(d, modela, timeout=1.5)), 0)
     expect_equal(sum(successes(d, modela, timeout=5)), 10)
@@ -84,6 +102,8 @@ test_that("successes works for test splits", {
     model = function(data) {
         lapply(1:nrow(data$data), function(i) { data.frame(algorithm="b", score=1) })
     }
+    class(model) = "llama.model"
+    attr(model, "hasPredictions") = FALSE
 
     expect_equal(sum(successes(d, model)), 5)
 })
@@ -95,6 +115,8 @@ test_that("successes works with NA predictions", {
     nas = rep.int(list(data.frame(algorithm=NA, score=0)), 5)
     as = rep.int(list(data.frame(algorithm="b", score=1)), 5)
     model = list(predictions=list(nas, as))
+    class(model) = "llama.model"
+    attr(model, "hasPredictions") = TRUE
 
     succs = successes(d, model)
     expect_equal(length(succs), 10)

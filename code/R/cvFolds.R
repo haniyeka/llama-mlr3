@@ -17,7 +17,10 @@ function(data, nfolds=10, stratify=T) {
         stop(paste("Requested ", nfolds, " folds, but cannot produce this many.", sep=""))
     }
     parts = split(data$data, tmp$fold)
-    return(c(data,
+
+    newdata = c(data,
             list(train = lapply(1:nfolds, function(x) { return(unsplit(parts[-x], tmp$fold[tmp$fold!=x])) }),
-                 test = lapply(1:nfolds, function(x) { return(parts[[x]]) }))))
+                 test = lapply(1:nfolds, function(x) { return(parts[[x]]) })))
+    class(newdata) = "llama.data"
+    return(newdata)
 }

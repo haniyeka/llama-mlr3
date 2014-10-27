@@ -1,5 +1,6 @@
 test_that("trainTest splits", {
     d = list(data=data.frame(a=rep.int(0, 10), best=rep.int(0, 10)))
+    class(d) = "llama.data"
 
     dtt = trainTest(d)
     expect_equal(length(dtt$train), 1)
@@ -11,6 +12,7 @@ test_that("trainTest splits", {
 test_that("trainTest splits with best list", {
     d = list(data=data.frame(a=rep.int(0, 10)))
     d$data$best = list(0, 0, 0, c(0, 1), 0, 0, 0, 0, 0, 0)
+    class(d) = "llama.data"
 
     dtt = trainTest(d)
     expect_equal(length(dtt$train), 1)
@@ -21,6 +23,7 @@ test_that("trainTest splits with best list", {
 
 test_that("trainTest allows to specify split ratio", {
     d = list(data=data.frame(a=rep.int(0, 10), best=rep.int(0, 10)))
+    class(d) = "llama.data"
 
     dtt = trainTest(d, trainpart=0.1)
     expect_equal(length(dtt$train), 1)
@@ -31,6 +34,7 @@ test_that("trainTest allows to specify split ratio", {
 
 test_that("trainTest allows to not stratify", {
     d = list(data=data.frame(a=rep.int(0, 10), best=rep.int(0, 10)))
+    class(d) = "llama.data"
 
     dtt = trainTest(d, stratify=F)
     expect_equal(length(dtt$train), 1)
@@ -41,6 +45,7 @@ test_that("trainTest allows to not stratify", {
 
 test_that("trainTest stratifies", {
     d = list(data=data.frame(a=rep.int(0, 10), best=c(rep.int(0, 5), rep.int(1, 5))))
+    class(d) = "llama.data"
 
     dtt = trainTest(d)
     expect_equal(length(dtt$train), 1)
@@ -57,6 +62,7 @@ test_that("trainTest stratifies", {
 # this one randomly fails...
 #test_that("trainTest allows stratification to be turned off", {
 #    d = list(data=data.frame(a=rep.int(0, 10), best=c(rep.int(0, 5), rep.int(1, 5))))
+#    class(d) = "llama.data"
 #
 #    dtt = trainTest(d, stratify=F)
 #    expect_equal(length(dtt$train), 1)

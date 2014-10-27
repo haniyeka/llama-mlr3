@@ -10,5 +10,8 @@ function(data, trainpart=0.6, stratify=T) {
     })
     data$data$stratifier = NULL
     parts = split(data$data, tmp$train)
-    return(c(data, list(train = list(parts[[1]]), test = list(parts[[2]]))))
+
+    newdata = c(data, list(train = list(parts[[1]]), test = list(parts[[2]])))
+    class(newdata) = "llama.data"
+    return(newdata)
 }
