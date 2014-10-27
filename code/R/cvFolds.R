@@ -22,5 +22,6 @@ function(data, nfolds=10, stratify=T) {
             list(train = lapply(1:nfolds, function(x) { return(unsplit(parts[-x], tmp$fold[tmp$fold!=x])) }),
                  test = lapply(1:nfolds, function(x) { return(parts[[x]]) })))
     class(newdata) = "llama.data"
+    attr(newdata, "hasSplits") = TRUE
     return(newdata)
 }

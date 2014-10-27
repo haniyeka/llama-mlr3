@@ -1,9 +1,11 @@
 regressionPairs <-
 function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }, combine=NULL, save.models=NA) {
-    if(is.null(regressor)) {
-        stop("No regressor given!")
+    if(!testClass(regressor, "Learner")) {
+        stop("Need regressor!")
     }
-    if(is.null(data) || length(data$train) == 0 || length(data$test) == 0) {
+    assertClass(data, "llama.data")
+    hs = attr(data, "hasSplits")
+    if(is.null(hs) || hs != TRUE) {
         stop("Need data with train/test split!")
     }
 

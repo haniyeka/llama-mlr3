@@ -7,9 +7,8 @@ function(data=NULL, model=NULL, timeout=NULL, addCosts=TRUE) {
         stop("Need successes to calculate successes!")
     }
 
-    if(attr(model, "hasPredictions")) {
-        predictions = model$predictions
-    } else {
+    hp = attr(model, "hasPredictions")
+    if(is.null(hp) || hp != TRUE) {
         if(length(data$test) > 0) {
             predictions = lapply(data$test, function(x) {
                 data$data = x
@@ -18,6 +17,8 @@ function(data=NULL, model=NULL, timeout=NULL, addCosts=TRUE) {
         } else {
             predictions = model(data)
         }
+    } else {
+        predictions = model$predictions
     }
     if(length(data$test) == 0) {
         data$test = list(data$data)

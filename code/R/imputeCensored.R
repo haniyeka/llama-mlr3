@@ -1,8 +1,9 @@
 imputeCensored <-
 function(data=NULL, estimator=makeLearner("regr.lm"), epsilon=0.1, maxit=1000) {
-    if(is.null(data)) {
-        stop("No data given!")
+    if(!testClass(estimator, "Learner")) {
+        stop("Need regressor to impute values!")
     }
+    assertClass(data, "llama.data")
     if(is.null(data$success)) {
         stop("Need successes to impute censored values!")
     }

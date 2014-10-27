@@ -1,9 +1,11 @@
 classifyPairs <-
 function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }, combinator=NULL, save.models=NA) {
-    if(is.null(classifier)) {
-        stop("No classifier given!")
+    if(!testClass(classifier, "Learner")) {
+        stop("Need classifier!")
     }
-    if(is.null(data) || length(data$train) == 0 || length(data$test) == 0) {
+    assertClass(data, "llama.data")
+    hs = attr(data, "hasSplits")
+    if(is.null(hs) || hs != TRUE) {
         stop("Need data with train/test split!")
     }
 

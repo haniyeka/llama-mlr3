@@ -2,6 +2,7 @@ test_that("classify classifies", {
     fold = data.frame(a=rep.int(0, 10), b=c(rep.int(1, 5), rep.int(0, 5)), c=c(rep.int(0, 5), rep.int(1, 5)), best=c(rep.int("c", 5), rep.int("b", 5)))
     d = list(data=rbind(fold, fold), train=list(fold), test=list(fold), features=c("a"), minimize=T, performance=c("b", "c"))
     class(d) = "llama.data"
+    attr(d, "hasSplits") = TRUE
     res = classify(classifier=testclassifier, d)
     expect_true(all(sapply(1:length(res$predictions), function(i) { sapply(res$predictions[[i]], function(x) { x == data.frame(algorithm="b", score=1) }) })))
 })
@@ -10,22 +11,31 @@ test_that("classify returns predictor", {
     fold = data.frame(a=rep.int(0, 10), b=c(rep.int(1, 5), rep.int(0, 5)), c=c(rep.int(0, 5), rep.int(1, 5)), best=c(rep.int("c", 5), rep.int("b", 5)))
     d = list(data=rbind(fold, fold), train=list(fold), test=list(fold), features=c("a"), minimize=T, performance=c("b", "c"))
     class(d) = "llama.data"
+    attr(d, "hasSplits") = TRUE
     res = classify(classifier=testclassifier, d)
     expect_true(all(sapply(res$predictor(fold), function(x) { x == data.frame(algorithm="b", score=1) })))
 })
 
 test_that("classify raises error without classifier", {
-    expect_error(classify(), "No classifier given!")
+    expect_error(classify())
+})
+
+test_that("classify raises error without data", {
+    expect_error(classify(testclassifier))
 })
 
 test_that("classify raises error without train/test split", {
-    expect_error(classify(function() { return(NULL) }), "Need data with train/test split!")
+    fold = data.frame(a=rep.int(0, 10), b=c(rep.int(1, 5), rep.int(0, 5)), c=c(rep.int(0, 5), rep.int(1, 5)), best=c(rep.int("c", 5), rep.int("b", 5)))
+    d = list(data=rbind(fold, fold), features=c("a"), minimize=T, performance=c("b", "c"))
+    class(d) = "llama.data"
+    expect_error(classify(testclassifier, d), "Need data with train/test split!")
 })
 
 test_that("classify takes list of classifiers", {
     fold = data.frame(a=rep.int(0, 10), b=c(rep.int(1, 5), rep.int(0, 5)), c=c(rep.int(0, 5), rep.int(1, 5)), best=c(rep.int("c", 5), rep.int("b", 5)))
     d = list(data=rbind(fold, fold), train=list(fold), test=list(fold), features=c("a"), minimize=T, performance=c("b", "c"))
     class(d) = "llama.data"
+    attr(d, "hasSplits") = TRUE
     res = classify(classifier=list(testclassifier, testclassifier, testclassifier), d)
     expect_true(all(sapply(1:length(res$predictions), function(i) { sapply(res$predictions[[i]], function(x) { x == data.frame(algorithm="b", score=3) }) })))
     expect_true(all(sapply(res$predictor(fold), function(x) { x == data.frame(algorithm="b", score=3) })))
@@ -35,6 +45,7 @@ test_that("classify takes list of classifiers and combination function", {
     fold = data.frame(a=c(rep.int(0, 5), rep.int(1, 5)), b=c(rep.int(1, 5), rep.int(0, 5)), c=rep.int(1, 10), best=rep.int("b", 10))
     d = list(data=rbind(fold, fold), train=list(fold), test=list(fold), features=c("c"), minimize=T, performance=c("a", "b"))
     class(d) = "llama.data"
+    attr(d, "hasSplits") = TRUE
     res = classify(classifier=list(foo, foo, foo, .combine=othertestclassifier), d)
     expectedDf = data.frame(algorithm=c("a", "b"), score=c(1, 0))
     expect_true(all(sapply(1:length(res$predictions), function(i) { sapply(res$predictions[[i]], function(x) { x == expectedDf }) })))
@@ -45,6 +56,7 @@ test_that("classify ensemble does majority voting by default", {
     fold = data.frame(a=c(rep.int(0, 5), rep.int(1, 5)), b=c(rep.int(1, 5), rep.int(0, 5)), c=rep.int(1, 10), best=rep.int("b", 10))
     d = list(data=rbind(fold, fold), train=list(fold), test=list(fold), features=c("c"), minimize=T, performance=c("a", "b"))
     class(d) = "llama.data"
+    attr(d, "hasSplits") = TRUE
     res = classify(classifier=list(testclassifier, othertestclassifier, othertestclassifier), d)
     expectedDf = data.frame(algorithm=c("a", "b"), score=c(2, 1))
     expect_true(all(sapply(1:length(res$predictions), function(i) { sapply(res$predictions[[i]], function(x) { x == expectedDf }) })))

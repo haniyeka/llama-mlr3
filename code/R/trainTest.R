@@ -13,5 +13,6 @@ function(data, trainpart=0.6, stratify=T) {
 
     newdata = c(data, list(train = list(parts[[1]]), test = list(parts[[2]])))
     class(newdata) = "llama.data"
+    attr(newdata, "hasSplits") = TRUE
     return(newdata)
 }

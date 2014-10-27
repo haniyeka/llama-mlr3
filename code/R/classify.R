@@ -1,12 +1,14 @@
 classify <-
 function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }, save.models=NA) {
-    if(is.null(classifier)) {
-        stop("No classifier given!")
+    if(!testClass(classifier, "Learner") && !testList(classifier, types="Learner")) {
+        stop("Need classifier or list of classifiers!")
     }
-    if(is.null(data) || length(data$train) == 0 || length(data$test) == 0) {
+    assertClass(data, "llama.data")
+    hs = attr(data, "hasSplits")
+    if(is.null(hs) || hs != TRUE) {
         stop("Need data with train/test split!")
     }
-    if(is.object(classifier)) { classifier = list(classifier) }
+    if(testClass(classifier, "Learner")) { classifier = list(classifier) }
     combinator = "majority"
     if(!is.null(classifier$.combine)) {
         combinator = classifier$.combine

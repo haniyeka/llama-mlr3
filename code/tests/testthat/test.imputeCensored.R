@@ -1,3 +1,7 @@
+test_that("imputeCensored raises error without data", {
+    expect_error(imputeCensored())
+})
+
 test_that("imputeCensored leaves successes alone", {
     data = data.frame(a=rep.int(0, 10), best=rep.int("b", 10), foo=rep.int(0, 10), bar=rep.int(T, 10))
     d = list(data=data, features=c("a"), performance=c("foo"), success=c("bar"))

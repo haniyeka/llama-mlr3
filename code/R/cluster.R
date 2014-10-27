@@ -1,12 +1,14 @@
 cluster <-
 function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL) { list(features=x) }, save.models=NA) {
-    if(is.null(clusterer)) {
-        stop("No clusterer given!")
+    if(!testClass(clusterer, "Learner") && !testList(clusterer, types="Learner")) {
+        stop("Need clusterer or list of clusterers!")
     }
-    if(is.null(data) || length(data$train) == 0 || length(data$test) == 0) {
+    assertClass(data, "llama.data")
+    hs = attr(data, "hasSplits")
+    if(is.null(hs) || hs != TRUE) {
         stop("Need data with train/test split!")
     }
-    if(is.object(clusterer)) { clusterer = list(clusterer) }
+    if(testClass(clusterer, "Learner")) { clusterer = list(clusterer) }
     combinator = "majority"
     if(!is.null(clusterer$.combine)) {
         combinator = clusterer$.combine
