@@ -2,7 +2,7 @@ llama_0.7.3:
 - models computed during cross-validation can be saved by passing save.models to
   the model builders
 - various performance improvements, especially in the score computing functions
-- introduce plotting functions: perfScatterPlot
+- introduce functions for result analysis: perfScatterPlot, predTable
 
 llama_0.7.2:
 - take success (if present) into account when determining best algorithm: if

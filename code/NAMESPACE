@@ -11,6 +11,7 @@ export(
     normalize,
     parscores,
     perfScatterPlot,
+    predTable,
     regression,
     regressionPairs,
     singleBest,

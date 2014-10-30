@@ -187,3 +187,28 @@ test_that("break best ties accepts fold argument", {
     expect_equal(breakBestTies(d), factor(c("a", "a", "b", "a", "a", "b")))
     expect_equal(breakBestTies(d, 1), factor(c("a", "a", "b")))
 })
+
+test_that("predTable tabulates", {
+    d = list(data=list(best=bestlist))
+    class(d) = "llama.data"
+    preds = vbs(d)
+
+    tab1 = predTable(preds)
+    expect_equal(as.vector(tab1), c(2, 1))
+    expect_equal(names(tab1), c("a", "b"))
+
+    tab2 = predTable(preds, FALSE)
+    expect_equal(as.vector(tab2), c(2, 2))
+    expect_equal(names(tab2), c("a", "b"))
+
+    as = rep.int(list(data.frame(algorithm="a", score = 1)), 6)
+    bs = rep.int(list(data.frame(algorithm="b", score = 1)), 4)
+    preds = list(as, bs)
+    tab3 = predTable(preds)
+    expect_equal(as.vector(tab3), c(6, 4))
+    expect_equal(names(tab3), c("a", "b"))
+
+    tab4 = predTable(preds, FALSE)
+    expect_equal(as.vector(tab4), c(6, 4))
+    expect_equal(names(tab4), c("a", "b"))
+})

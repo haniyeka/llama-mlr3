@@ -100,3 +100,21 @@ function(data=NULL, fold=NULL) {
     names(best) = NULL
     return(best)
 }
+
+predTable <-
+function(predictions=NULL, bestOnly=TRUE) {
+    if(is.null(predictions)) {
+        stop("Need predictions to tabulate!")
+    }
+    # FIXME
+    if(!is.data.frame(predictions[[1]])) {
+        predictions = unlist(predictions, recursive = FALSE)
+    }
+    if(bestOnly) {
+        preds = lapply(predictions, function(x) { x[1,] })
+    } else {
+        preds = predictions
+    }
+    tab = table(do.call(rbind, preds)$algorithm)
+    sort(tab, decreasing = TRUE)
+}

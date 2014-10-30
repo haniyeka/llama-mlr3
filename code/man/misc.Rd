@@ -8,7 +8,7 @@
 Convenience functions
 }
 \description{
-Convenience functions for computing predictions based on input data.
+Convenience functions for computing and working with predictions.
 }
 \usage{
 vbs(data = NULL)
@@ -16,6 +16,7 @@ singleBest(data = NULL)
 singleBestByCount(data = NULL)
 singleBestByPar(data = NULL, factor = 10)
 singleBestBySuccesses(data = NULL)
+predTable(predictions = NULL, bestOnly = TRUE)
 }
 \arguments{
   \item{data}{
@@ -23,6 +24,13 @@ singleBestBySuccesses(data = NULL)
   }
   \item{factor}{
   the penalization factor to use for non-successful choices. Default 10.
+  }
+  \item{predictions}{
+  the list of predictions.
+  }
+  \item{bestOnly}{
+  whether to tabulate only the respective best algorithm for each instance.
+  Default \code{TRUE}.
   }
 }
 \details{
@@ -40,12 +48,21 @@ algorithm is the best matters for this, not the difference to other algorithms.
 returns the algorithm with the lowest overall PAR score.
 \code{singleBestBySuccesses} counts the number of successes over the data set
 and returns the algorithm with the highest overall number of successes.
+
+\code{predTable} tabulates the predicted algorithms in the same way that
+\code{table} does. If \code{bestOnly} is \code{FALSE}, all algorithms are
+considered -- for example for regression models, predictions are made for all
+algorithms, so the table will simply show the number of instances for each
+algorithm. Set \code{bestOnly} to \code{TRUE} to tabulate only the best
+algorithm for each instance.
 }
 \value{
 A list of predictions, that is, data frames with columns \code{algorithm} and
 \code{score}. The data frames are sorted such that the most preferred algorithm
 is first. The score is 1 if the respective algorithm is chosen for the instance,
 0 otherwise.
+
+For \code{predTable}, a table.
 }
 \author{
 Lars Kotthoff
