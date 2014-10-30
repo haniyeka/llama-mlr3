@@ -120,5 +120,6 @@ test_that("successes works with NA predictions", {
 
     succs = successes(d, model)
     expect_equal(length(succs), 10)
-    expect_equal(sum(succs, na.rm=T), 5)
+    expect_equal(length(succs[succs == FALSE]), 5)
+    expect_equal(sum(succs), 5)
 })

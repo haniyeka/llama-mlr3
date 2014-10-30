@@ -30,7 +30,7 @@ function(data=NULL, model=NULL, addCosts=NULL) {
         chosen = sapply(predictions[[i]], function(x) { as.character(x$algorithm[1]) })
         sapply(1:nrow(data$test[[i]]), function(j) {
             if(is.na(chosen[j])) {
-                NA
+                0
             } else {
                 as.numeric(abs(perfs[j,chosen[j]] - opts[j]))
             }

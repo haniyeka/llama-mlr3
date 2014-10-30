@@ -62,7 +62,7 @@ function(data=NULL, model=NULL, factor=10, timeout=NULL, addCosts=TRUE) {
                 }
                 score
             } else {
-                NA
+                timeout * factor
             }
         })
     })))

@@ -144,16 +144,16 @@ test_that("parscores works for test splits", {
 })
 
 test_that("parscores works with NA predictions", {
-    fold = data.frame(a=rep.int(1, 5), b=rep.int(0, 5),
+    fold = data.frame(a=rep.int(1, 5), b=rep.int(0.5, 5),
         d=rep.int(F, 5), e=rep.int(T, 5))
     d = list(data=rbind(fold, fold), test=list(fold, fold), performance=c("a", "b"), success=c("d", "e"))
     nas = rep.int(list(data.frame(algorithm=NA, score=0)), 5)
-    as = rep.int(list(data.frame(algorithm="a", score=1)), 5)
+    as = rep.int(list(data.frame(algorithm="b", score=1)), 5)
     model = list(predictions=list(nas, as))
     class(model) = "llama.model"
     attr(model, "hasPredictions") = TRUE
 
     pars = parscores(d, model)
     expect_equal(length(pars), 10)
-    expect_equal(sum(pars, na.rm=T), 50)
+    expect_equal(sum(pars), 52.5)
 })

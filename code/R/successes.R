@@ -60,7 +60,8 @@ function(data=NULL, model=NULL, timeout=NULL, addCosts=TRUE) {
                     TRUE
                 }
             } else {
-                NA
+                # prediction was NA, so we assume worst possible
+                FALSE
             }
         })
     })))

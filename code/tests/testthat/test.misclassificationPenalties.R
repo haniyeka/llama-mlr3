@@ -69,5 +69,6 @@ test_that("misclassificationPenalties works with NA predictions", {
 
     mcps = misclassificationPenalties(d, model)
     expect_equal(length(mcps), 10)
-    expect_equal(sum(mcps, na.rm=T), 5)
+    expect_equal(length(mcps[mcps == 0]), 5)
+    expect_equal(sum(mcps), 5)
 })
