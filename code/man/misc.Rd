@@ -4,6 +4,7 @@
 \alias{singleBestByCount}
 \alias{singleBestByPar}
 \alias{singleBestBySuccesses}
+\alias{predTable}
 \title{
 Convenience functions
 }
