@@ -85,5 +85,8 @@ print(sum(parscores(satsolvers, singleBestByPar,
 print(sum(successes(satsolvers, singleBestBySuccesses,
     addCosts = FALSE)))
 }
+
+# print a table of the best solvers per instance
+print(predTable(vbs(satsolvers)))
 }
 \keyword{ ~models }
