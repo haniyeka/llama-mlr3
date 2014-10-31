@@ -7,7 +7,8 @@ Plot convenience functions to visualise selectors
 Functions to plot the performance of selectors and compare them to others.
 }
 \usage{
-perfScatterPlot(metric, modelx, modely, datax, datay=datax, addCostsx=TRUE, addCostsy=TRUE, ...)
+perfScatterPlot(metric, modelx, modely, datax, datay=datax,
+    addCostsx=TRUE, addCostsy=TRUE, ...)
 }
 \arguments{
   \item{metric}{the metric used to evaluate the model. Can be one of
