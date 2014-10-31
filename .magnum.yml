@@ -11,3 +11,5 @@ install:
   - ./travis-tool.sh github_package hadley/assertthat
   - ./travis-tool.sh install_deps
   - java -cp /usr/local/lib/R/site-library/RWekajars/java/weka.jar weka.core.WekaPackageManager -install-package XMeans
+script:
+  - ./travis-tool.sh run_tests
