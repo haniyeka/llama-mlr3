@@ -1,5 +1,5 @@
 before_install:
-  - curl -sOL http://raw.github.com/craigcitro/r-travis/master/scripts/travis-tool.sh
+  - curl -sOL http://raw.github.com/larskotthoff/r-travis/master/scripts/travis-tool.sh
   - chmod 755 ./travis-tool.sh
   - sudo apt-get -y install software-properties-common python-software-properties
   - ./travis-tool.sh bootstrap
