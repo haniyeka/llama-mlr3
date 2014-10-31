@@ -23,8 +23,8 @@ perfScatterPlot(metric, modelx, modely, datax, datay=datax,
       function of a trained model.}
   \item{datax}{the data used to evaluate \code{modelx}. Will be passed to the
       \code{metric} function.}
-  \item{datay}{the data used to evaluate \code{modely}. Can be omitted if the same as for
-      \code{modelx}. Will be passed to the \code{metric} function.}
+  \item{datay}{the data used to evaluate \code{modely}. Can be omitted if the
+      same as for \code{modelx}. Will be passed to the \code{metric} function.}
   \item{addCostsx}{whether to add feature costs for \code{modelx}. This should
       always be true (the default) except for comparison algorithms (i.e. single
       best and virtual best).}
