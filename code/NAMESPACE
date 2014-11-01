@@ -22,7 +22,6 @@ export(
     trainTest,
     vbs
 )
-importFrom(plyr, ddply)
 importFrom(rJava, J, .jpackage, .jarray)
 importFrom(parallelMap, parallelMap)
 import(ggplot2)
