@@ -5,8 +5,8 @@ test_that("cvFolds splits", {
     dfs = cvFolds(d)
     expect_equal(length(dfs$train), 10)
     expect_equal(length(dfs$test), 10)
-    expect_true(all(sapply(dfs$train, nrow) == 9))
-    expect_true(all(sapply(dfs$test, nrow) == 1))
+    expect_true(all(sapply(dfs$train, length) == 9))
+    expect_true(all(sapply(dfs$test, length) == 1))
 })
 
 test_that("cvFolds complains when there's not enough data", {
@@ -24,8 +24,8 @@ test_that("cvFolds splits with best list", {
     dfs = cvFolds(d, nfolds=2)
     expect_equal(length(dfs$train), 2)
     expect_equal(length(dfs$test), 2)
-    expect_true(all(sapply(dfs$train, nrow) == 5))
-    expect_true(all(sapply(dfs$test, nrow) == 5))
+    expect_true(all(sapply(dfs$train, length) == 5))
+    expect_true(all(sapply(dfs$test, length) == 5))
 })
 
 test_that("cvFolds allows to specify number of folds", {
@@ -35,8 +35,8 @@ test_that("cvFolds allows to specify number of folds", {
     dfs = cvFolds(d, nfolds=2)
     expect_equal(length(dfs$train), 2)
     expect_equal(length(dfs$test), 2)
-    expect_true(all(sapply(dfs$train, nrow) == 5))
-    expect_true(all(sapply(dfs$test, nrow) == 5))
+    expect_true(all(sapply(dfs$train, length) == 5))
+    expect_true(all(sapply(dfs$test, length) == 5))
 })
 
 test_that("cvFolds allows -1 for leave-one-out", {
@@ -46,8 +46,8 @@ test_that("cvFolds allows -1 for leave-one-out", {
     dfs = cvFolds(d, nfolds=-1)
     expect_equal(length(dfs$train), 10)
     expect_equal(length(dfs$test), 10)
-    expect_true(all(sapply(dfs$train, nrow) == 9))
-    expect_true(all(sapply(dfs$test, nrow) == 1))
+    expect_true(all(sapply(dfs$train, length) == 9))
+    expect_true(all(sapply(dfs$test, length) == 1))
 })
 
 test_that("cvFolds stratifies", {
@@ -57,11 +57,11 @@ test_that("cvFolds stratifies", {
     dfs = cvFolds(d, nfolds=5)
     expect_equal(length(dfs$train), 5)
     expect_equal(length(dfs$test), 5)
-    expect_true(all(sapply(dfs$train, nrow) == 8))
-    expect_true(all(sapply(dfs$test, nrow) == 2))
+    expect_true(all(sapply(dfs$train, length) == 8))
+    expect_true(all(sapply(dfs$test, length) == 2))
 
-    expect_true(all(sapply(dfs$train, function(x) { sum(x$best==0) }) == 4))
-    expect_true(all(sapply(dfs$train, function(x) { sum(x$best==1) }) == 4))
-    expect_true(all(sapply(dfs$test, function(x) { sum(x$best==0) }) == 1))
-    expect_true(all(sapply(dfs$test, function(x) { sum(x$best==1) }) == 1))
+    expect_true(all(sapply(dfs$train, function(x) { sum(d$data[x,]$best==0) }) == 4))
+    expect_true(all(sapply(dfs$train, function(x) { sum(d$data[x,]$best==1) }) == 4))
+    expect_true(all(sapply(dfs$test, function(x) { sum(d$data[x,]$best==0) }) == 1))
+    expect_true(all(sapply(dfs$test, function(x) { sum(d$data[x,]$best==1) }) == 1))
 })

@@ -1,6 +1,6 @@
 test_that("regressionPairs predicts", {
     fold = data.frame(a=rep.int(0, 10), best=rep.int("foo", 10), foo=rep.int(0, 10), bar=rep.int(1, 10))
-    d = list(data=rbind(fold, fold), train=list(fold), test=list(fold), features=c("a"), performance=c("foo", "bar"), minimize=T)
+    d = list(data=rbind(fold, fold), train=list(1:nrow(fold)), test=list(1:nrow(fold) + nrow(fold)), features=c("a"), performance=c("foo", "bar"), minimize=T)
     class(d) = "llama.data"
     attr(d, "hasSplits") = TRUE
     res = regressionPairs(regressor=testregressor, d)
@@ -9,7 +9,7 @@ test_that("regressionPairs predicts", {
 
 test_that("regressionPairs returns predictor", {
    fold = data.frame(a=rep.int(0, 10), best=rep.int("foo", 10), foo=rep.int(0, 10), bar=rep.int(1, 10))
-    d = list(data=rbind(fold, fold), train=list(fold), test=list(fold), features=c("a"), performance=c("foo", "bar"), minimize=T)
+    d = list(data=rbind(fold, fold), train=list(1:nrow(fold)), test=list(1:nrow(fold) + nrow(fold)), features=c("a"), performance=c("foo", "bar"), minimize=T)
     class(d) = "llama.data"
     attr(d, "hasSplits") = TRUE
     res = regressionPairs(regressor=testregressor, d)
@@ -33,7 +33,7 @@ test_that("regressionPairs raises error without train/test split", {
 
 test_that("regressionPairs respects minimize", {
     fold = data.frame(a=rep.int(0, 10), best=rep.int("bar", 10), foo=rep.int(0, 10), bar=rep.int(1, 10))
-    d = list(data=rbind(fold, fold), train=list(fold), test=list(fold), features=c("a"), performance=c("foo", "bar"), minimize=F)
+    d = list(data=rbind(fold, fold), train=list(1:nrow(fold)), test=list(1:nrow(fold) + nrow(fold)), features=c("a"), performance=c("foo", "bar"), minimize=F)
     class(d) = "llama.data"
     attr(d, "hasSplits") = TRUE
     res = regressionPairs(regressor=testregressor, d)
@@ -43,7 +43,7 @@ test_that("regressionPairs respects minimize", {
 
 test_that("regressionPairs allows combine classifier", {
     fold = data.frame(foo=rep.int(0, 10), best=c(rep.int("a", 5), rep.int("bar", 5)), a=c(rep.int(0, 5), rep.int(1, 5)), bar=c(rep.int(1, 5), rep.int(0, 5)))
-    d = list(data=rbind(fold, fold), train=list(fold), test=list(fold), features=c("foo"), performance=c("a", "bar"), minimize=T)
+    d = list(data=rbind(fold, fold), train=list(1:nrow(fold)), test=list(1:nrow(fold) + nrow(fold)), features=c("foo"), performance=c("a", "bar"), minimize=T)
     class(d) = "llama.data"
     attr(d, "hasSplits") = TRUE
     res = regressionPairs(regressor=testregressor, d, combine=othertestclassifier)

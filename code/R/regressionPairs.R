@@ -12,15 +12,15 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
     totalBests = data.frame(target=factor(breakBestTies(data), levels=data$performance))
     combns = combn(data$performance, 2)
     predictions = parallelMap(function(i) {
-        trf = pre(data$train[[i]][data$features])
-        tsf = pre(data$test[[i]][data$features], trf$meta)
-        trp = data$train[[i]][data$performance]
+        trf = pre(data$data[data$train[[i]],][data$features])
+        tsf = pre(data$data[data$test[[i]],][data$features], trf$meta)
+        trp = data$data[data$train[[i]],][data$performance]
         trw = abs(apply(trp, 1, max) - apply(trp, 1, min))
 
         trainpredictions = matrix(nrow=nrow(trf$features), ncol=ncol(combns))
         pairpredictions = matrix(nrow=nrow(tsf$features), ncol=ncol(combns))
         for (j in 1:ncol(combns)) {
-            values = data.frame(target=data$train[[i]][[combns[1,j]]] - data$train[[i]][[combns[2,j]]])
+            values = data.frame(target=data$data[data$train[[i]],combns[1,j]] - data$data[data$train[[i]],combns[2,j]])
             task = makeRegrTask(id="regression", target="target", data=cbind(values, trf$features), fixup.data="quiet")
             model = train(regressor, task = task)
             if(!is.na(save.models)) {

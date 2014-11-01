@@ -22,13 +22,13 @@ trainTest(data, trainpart = 0.6, stratify = T)
 }
 \details{
 Partitions the data set into training and test set according to the specified
-fraction. The training and test set are added to the original data and returned.
-If requested, the distribution of the best algorithms in training and test set
-is approximately the same, i.e. the sets are stratified.
+fraction. The training and test index sets are added to the original data and
+returned. If requested, the distribution of the best algorithms in training and
+test set is approximately the same, i.e. the sets are stratified.
 }
 \value{
-\item{train}{a (one-element) list of data sets for training.}
-\item{test}{a (one-element) list of data sets for testing.}
+\item{train}{a (one-element) list of index sets for training.}
+\item{test}{a (one-element) list of index sets for testing.}
 \item{...}{the original members of \code{data}. See \code{\link{input}}.}
 }
 \author{

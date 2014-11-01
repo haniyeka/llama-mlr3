@@ -12,9 +12,9 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
     totalBests = data.frame(target=factor(breakBestTies(data), levels=data$performance))
     combns = combn(data$performance, 2)
     predictions = parallelMap(function(i) {
-        trf = pre(data$train[[i]][data$features])
-        tsf = pre(data$test[[i]][data$features], trf$meta)
-        trp = data$train[[i]][data$performance]
+        trf = pre(data$data[data$train[[i]],][data$features])
+        tsf = pre(data$data[data$test[[i]],][data$features], trf$meta)
+        trp = data$data[data$train[[i]],][data$performance]
         trw = abs(apply(trp, 1, max) - apply(trp, 1, min))
 
         trainpredictions = data.frame(row.names=1:nrow(trf$features))
@@ -22,16 +22,16 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
         for (j in 1:ncol(combns)) {
             if(data$minimize) {
                 cmp = function(x, y) {
-                    sapply(data$train[[i]][[x]] < data$train[[i]][[y]], function(z) { if(z) { x } else { y } })
+                    sapply(data$data[data$train[[i]],][x] < data$data[data$train[[i]],][y], function(z) { if(z) { x } else { y } })
                 }
             } else {
                 cmp = function(x, y) {
-                    sapply(data$train[[i]][[x]] > data$train[[i]][[y]], function(z) { if(z) { x } else { y } })
+                    sapply(data$data[data$train[[i]],][x] > data$data[data$train[[i]],][y], function(z) { if(z) { x } else { y } })
                 }
             }
             labels = data.frame(target=factor(cmp(combns[1,j], combns[2,j]), levels=data$performance))
             if(hasProperties(classifier, "weights")) {
-                task = makeClassifTask(id="classifyPairs", target="target", weights=abs(data$train[[i]][[combns[1,j]]] - data$train[[i]][[combns[2,j]]]), data=cbind(labels, trf$features), fixup.data="quiet")
+                task = makeClassifTask(id="classifyPairs", target="target", weights=abs(data$data[data$train[[i]],][combns[1,j]] - data$data[data$train[[i]],][combns[2,j]]), data=cbind(labels, trf$features), fixup.data="quiet")
             } else {
                 task = makeClassifTask(id="classifyPairs", target="target", data=cbind(labels, trf$features), fixup.data="quiet")
             }

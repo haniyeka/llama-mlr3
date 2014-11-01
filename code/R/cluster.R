@@ -32,8 +32,8 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
 
     i = 1 # prevent warning when checking package
     predictions = parallelMap(function(i) {
-        trf = pre(data$train[[i]][data$features])
-        tsf = pre(data$test[[i]][data$features], trf$meta)
+        trf = pre(data$data[data$train[[i]],][data$features])
+        tsf = pre(data$data[data$test[[i]],][data$features], trf$meta)
 
         trainpredictions = matrix(nrow=nrow(trf$features), ncol=length(clusterer))
         ensemblepredictions = list()
@@ -44,12 +44,12 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
                 saveRDS(list(model=model, train.data=task, test.data=tsf$features), file = paste(save.models, clusterer[[j]]$id, i, "rds", sep="."))
             }
             trainclusters = predict(model, newdata=trf$features)$data$response
-            best = by(data$train[[i]], trainclusters, bestfun)
+            best = by(data$data[data$train[[i]],], trainclusters, bestfun)
             if(inherits(combinator, "Learner")) { # only do this if we need it
                 trainpredictions[,j] = sapply(predict(model, newdata=trf$features)$data$response,
                 function(x) {
                     if(is.na(x)) {
-                        innerbest(data$train[[i]]);
+                        innerbest(data$data[data$train[[i]],]);
                     } else {
                         best[[which(names(best)==x)]][1,1]
                     }
@@ -60,7 +60,7 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
             for(k in 1:length(preds)) {
                 x = preds[k]
                 if(is.na(x)) {
-                    ensemblepredictions[[j]][[k]] = bestfun(data$train[[k]])
+                    ensemblepredictions[[j]][[k]] = bestfun(data$data[data$train[[k]],])
                 } else {
                     ensemblepredictions[[j]][[k]] = best[[which(names(best)==x)]]
                 }
@@ -102,7 +102,7 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
             lapply(1:length(preds), function(k) {
                 x = preds[k]
                 if(is.na(x)) {
-                    bestfun(data$train[[k]])
+                    bestfun(data$data[data$train[[k]],])
                 } else {
                     best[[which(names(best)==x)]]
                 }

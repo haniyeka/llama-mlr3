@@ -1,6 +1,6 @@
 test_that("classifyPairs classifies", {
     fold = data.frame(a=rep.int(0, 10), foo=c(rep.int(1, 5), rep.int(0, 5)), bar=c(rep.int(0, 5), rep.int(1, 5)), best=c(rep.int("bar", 5), rep.int("foo", 5)))
-    d = list(data=rbind(fold, fold), train=list(fold), test=list(fold), features=c("a"), performance=c("foo", "bar"), minimize=T)
+    d = list(data=rbind(fold, fold), train=list(1:nrow(fold)), test=list(1:nrow(fold) + nrow(fold)), features=c("a"), performance=c("foo", "bar"), minimize=T)
     class(d) = "llama.data"
     attr(d, "hasSplits") = TRUE
     res = classifyPairs(classifier=idtestclassifier, d)
@@ -9,7 +9,7 @@ test_that("classifyPairs classifies", {
 
 test_that("classifyPairs returns predictor", {
     fold = data.frame(a=rep.int(0, 10), foo=c(rep.int(1, 5), rep.int(0, 5)), bar=c(rep.int(0, 5), rep.int(1, 5)), best=c(rep.int("bar", 5), rep.int("foo", 5)))
-    d = list(data=rbind(fold, fold), train=list(fold), test=list(fold), features=c("a"), performance=c("foo", "bar"), minimize=T)
+    d = list(data=rbind(fold, fold), train=list(1:nrow(fold)), test=list(1:nrow(fold) + nrow(fold)), features=c("a"), performance=c("foo", "bar"), minimize=T)
     class(d) = "llama.data"
     attr(d, "hasSplits") = TRUE
     res = classifyPairs(classifier=idtestclassifier, d)
@@ -33,7 +33,7 @@ test_that("classifyPairs raises error without train/test split", {
 
 test_that("classifyPairs respects minimize", {
     fold = data.frame(a=rep.int(0, 10), foo=c(rep.int(1, 5), rep.int(0, 5)), bar=c(rep.int(0, 5), rep.int(1, 5)), best=c(rep.int("bar", 5), rep.int("foo", 5)))
-    d = list(data=rbind(fold, fold), train=list(fold), test=list(fold), features=c("a"), performance=c("foo", "bar"), minimize=F)
+    d = list(data=rbind(fold, fold), train=list(1:nrow(fold)), test=list(1:nrow(fold) + nrow(fold)), features=c("a"), performance=c("foo", "bar"), minimize=F)
     class(d) = "llama.data"
     attr(d, "hasSplits") = TRUE
     res = classifyPairs(classifier=idtestclassifier, d)
@@ -43,7 +43,7 @@ test_that("classifyPairs respects minimize", {
 
 test_that("classifyPairs allows combination function", {
     fold = data.frame(a=rep.int(0, 10), foo=c(rep.int(1, 5), rep.int(0, 5)), bar=c(rep.int(0, 5), rep.int(1, 5)), best=c(rep.int("bar", 5), rep.int("foo", 5)))
-    d = list(data=rbind(fold, fold), train=list(fold), test=list(fold), features=c("a"), performance=c("foo", "bar"), minimize=T)
+    d = list(data=rbind(fold, fold), train=list(1:nrow(fold)), test=list(1:nrow(fold) + nrow(fold)), features=c("a"), performance=c("foo", "bar"), minimize=T)
     class(d) = "llama.data"
     attr(d, "hasSplits") = TRUE
     res = classifyPairs(classifier=idtestclassifier, d, combinator=bartestclassifier)

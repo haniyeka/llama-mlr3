@@ -11,15 +11,15 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
 
     totalBests = data.frame(target=factor(breakBestTies(data), levels=data$performance))
     predictions = parallelMap(function(i) {
-        trf = pre(data$train[[i]][data$features])
-        tsf = pre(data$test[[i]][data$features], trf$meta)
-        trp = data$train[[i]][data$performance]
+        trf = pre(data$data[data$train[[i]],][data$features])
+        tsf = pre(data$data[data$test[[i]],][data$features], trf$meta)
+        trp = data$data[data$train[[i]],][data$performance]
         trw = abs(apply(trp, 1, max) - apply(trp, 1, min))
 
         trainpredictions = data.frame(row.names=1:nrow(trf$features))
         performancePredictions = data.frame(row.names=1:nrow(tsf$features))
         for (j in 1:length(data$performance)) {
-            task = makeRegrTask(id="regression", target="target", data=cbind(data.frame(target=data$train[[i]][[data$performance[j]]]), trf$features))
+            task = makeRegrTask(id="regression", target="target", data=cbind(data.frame(target=data$data[data$train[[i]],data$performance[j]]), trf$features))
             model = train(regressor, task = task)
             if(!is.na(save.models)) {
                 saveRDS(list(model=model, train.data=task, test.data=tsf$features), file = paste(save.models, regressor$id, data$performance[[j]], i, "rds", sep="."))

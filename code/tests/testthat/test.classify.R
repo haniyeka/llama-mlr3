@@ -1,6 +1,6 @@
 test_that("classify classifies", {
     fold = data.frame(a=rep.int(0, 10), b=c(rep.int(1, 5), rep.int(0, 5)), c=c(rep.int(0, 5), rep.int(1, 5)), best=c(rep.int("c", 5), rep.int("b", 5)))
-    d = list(data=rbind(fold, fold), train=list(fold), test=list(fold), features=c("a"), minimize=T, performance=c("b", "c"))
+    d = list(data=rbind(fold, fold), train=list(1:nrow(fold)), test=list(1:nrow(fold) + nrow(fold)), features=c("a"), minimize=T, performance=c("b", "c"))
     class(d) = "llama.data"
     attr(d, "hasSplits") = TRUE
     res = classify(classifier=testclassifier, d)
@@ -9,7 +9,7 @@ test_that("classify classifies", {
 
 test_that("classify returns predictor", {
     fold = data.frame(a=rep.int(0, 10), b=c(rep.int(1, 5), rep.int(0, 5)), c=c(rep.int(0, 5), rep.int(1, 5)), best=c(rep.int("c", 5), rep.int("b", 5)))
-    d = list(data=rbind(fold, fold), train=list(fold), test=list(fold), features=c("a"), minimize=T, performance=c("b", "c"))
+    d = list(data=rbind(fold, fold), train=list(1:nrow(fold)), test=list(1:nrow(fold) + nrow(fold)), features=c("a"), minimize=T, performance=c("b", "c"))
     class(d) = "llama.data"
     attr(d, "hasSplits") = TRUE
     res = classify(classifier=testclassifier, d)
@@ -33,7 +33,7 @@ test_that("classify raises error without train/test split", {
 
 test_that("classify takes list of classifiers", {
     fold = data.frame(a=rep.int(0, 10), b=c(rep.int(1, 5), rep.int(0, 5)), c=c(rep.int(0, 5), rep.int(1, 5)), best=c(rep.int("c", 5), rep.int("b", 5)))
-    d = list(data=rbind(fold, fold), train=list(fold), test=list(fold), features=c("a"), minimize=T, performance=c("b", "c"))
+    d = list(data=rbind(fold, fold), train=list(1:nrow(fold)), test=list(1:nrow(fold) + nrow(fold)), features=c("a"), minimize=T, performance=c("b", "c"))
     class(d) = "llama.data"
     attr(d, "hasSplits") = TRUE
     res = classify(classifier=list(testclassifier, testclassifier, testclassifier), d)
@@ -43,7 +43,7 @@ test_that("classify takes list of classifiers", {
 
 test_that("classify takes list of classifiers and combination function", {
     fold = data.frame(a=c(rep.int(0, 5), rep.int(1, 5)), b=c(rep.int(1, 5), rep.int(0, 5)), c=rep.int(1, 10), best=rep.int("b", 10))
-    d = list(data=rbind(fold, fold), train=list(fold), test=list(fold), features=c("c"), minimize=T, performance=c("a", "b"))
+    d = list(data=rbind(fold, fold), train=list(1:nrow(fold)), test=list(1:nrow(fold) + nrow(fold)), features=c("c"), minimize=T, performance=c("a", "b"))
     class(d) = "llama.data"
     attr(d, "hasSplits") = TRUE
     res = classify(classifier=list(foo, foo, foo, .combine=othertestclassifier), d)
@@ -54,7 +54,7 @@ test_that("classify takes list of classifiers and combination function", {
 
 test_that("classify ensemble does majority voting by default", {
     fold = data.frame(a=c(rep.int(0, 5), rep.int(1, 5)), b=c(rep.int(1, 5), rep.int(0, 5)), c=rep.int(1, 10), best=rep.int("b", 10))
-    d = list(data=rbind(fold, fold), train=list(fold), test=list(fold), features=c("c"), minimize=T, performance=c("a", "b"))
+    d = list(data=rbind(fold, fold), train=list(1:nrow(fold)), test=list(1:nrow(fold) + nrow(fold)), features=c("c"), minimize=T, performance=c("a", "b"))
     class(d) = "llama.data"
     attr(d, "hasSplits") = TRUE
     res = classify(classifier=list(testclassifier, othertestclassifier, othertestclassifier), d)

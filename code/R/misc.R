@@ -92,7 +92,7 @@ function(data=NULL, fold=NULL) {
     if(is.null(fold)) {
         perfs = data$data[data$performance]
     } else {
-        perfs = data$train[[fold]][data$performance]
+        perfs = data$data[data$train[[fold]],][data$performance]
     }
     order = names(sort(sapply(perfs, sum), decreasing=!data$minimize))
     optfun = if(data$minimize) { which.min } else { which.max }

@@ -27,12 +27,12 @@ Partitions the data set into folds. Stratification, if requested, is done by the
 best algorithm, i.e. the one with the best performance. The distribution of the
 best algorithms in each fold will be approximately the same. The folds are
 assembled into training and test sets by combining $n-1$ folds for training and
-using the remaining fold for testing. The sets are added to the original data
-set and returned.
+using the remaining fold for testing. The sets of indices are added to the
+original data set and returned.
 }
 \value{
-\item{train}{a list of data sets for training.}
-\item{test}{a list of data sets for testing.}
+\item{train}{a list of index sets for training.}
+\item{test}{a list of index sets for testing.}
 \item{...}{the original members of \code{data}. See \code{\link{input}}.}
 }
 \author{

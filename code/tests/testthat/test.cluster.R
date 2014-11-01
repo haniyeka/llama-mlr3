@@ -15,7 +15,7 @@ test_that("cluster raises error without train/test split", {
 
 test_that("cluster raises error with unknown bestBy", {
     fold = data.frame(a=rep.int(0, 10), b=rep.int(1, 10), best=rep.int("b", 10))
-    d = list(data=rbind(fold, fold), train=list(fold), test=list(fold), features=c("a"), performance=c("b"), minimize=T)
+    d = list(data=rbind(fold, fold), train=list(1:nrow(fold)), test=list(1:nrow(fold) + nrow(fold)), features=c("a"), performance=c("b"), minimize=T)
     class(d) = "llama.data"
     attr(d, "hasSplits") = TRUE
     expect_error(cluster(testclusterer, d, bestBy="foo"), "Unknown bestBy: foo")
@@ -23,7 +23,7 @@ test_that("cluster raises error with unknown bestBy", {
 
 test_that("cluster finds best for cluster", {
     fold = data.frame(a=rep.int(0, 10), b=rep.int(1, 10), c=rep.int(0, 10), best=rep.int("b", 10))
-    d = list(data=rbind(fold, fold), train=list(fold), test=list(fold), features=c("a"), performance=c("b", "c"), minimize=T)
+    d = list(data=rbind(fold, fold), train=list(1:nrow(fold)), test=list(1:nrow(fold) + nrow(fold)), features=c("a"), performance=c("b", "c"), minimize=T)
     class(d) = "llama.data"
     attr(d, "hasSplits") = TRUE
     res = cluster(testclusterer, d)
@@ -32,7 +32,7 @@ test_that("cluster finds best for cluster", {
 
 test_that("cluster finds best by count for cluster", {
     fold = data.frame(a=rep.int(0, 10), b=rep.int(1, 10), c=rep.int(0, 10), best=rep.int("b", 10))
-    d = list(data=rbind(fold, fold), train=list(fold), test=list(fold), features=c("a"), performance=c("b", "c"), minimize=T)
+    d = list(data=rbind(fold, fold), train=list(1:nrow(fold)), test=list(1:nrow(fold) + nrow(fold)), features=c("a"), performance=c("b", "c"), minimize=T)
     class(d) = "llama.data"
     attr(d, "hasSplits") = TRUE
     res = cluster(testclusterer, d, bestBy="count")
@@ -41,7 +41,7 @@ test_that("cluster finds best by count for cluster", {
 
 test_that("cluster finds best by successes for cluster", {
     fold = data.frame(a=rep.int(0, 10), b=rep.int(1, 10), c=rep.int(0, 10), best=rep.int("b", 10), d=rep.int(T, 10), e=rep.int(F, 10))
-    d = list(data=rbind(fold, fold), train=list(fold), test=list(fold), features=c("a"), performance=c("b", "c"), success=c("d", "e"), minimize=T)
+    d = list(data=rbind(fold, fold), train=list(1:nrow(fold)), test=list(1:nrow(fold) + nrow(fold)), features=c("a"), performance=c("b", "c"), success=c("d", "e"), minimize=T)
     class(d) = "llama.data"
     attr(d, "hasSplits") = TRUE
     res = cluster(testclusterer, d, bestBy="successes")
@@ -50,7 +50,7 @@ test_that("cluster finds best by successes for cluster", {
 
 test_that("cluster returns predictor", {
     fold = data.frame(a=rep.int(0, 10), b=rep.int(1, 10), best=rep.int("b", 10))
-    d = list(data=rbind(fold, fold), train=list(fold), test=list(fold), features=c("a"), performance=c("b"), minimize=T)
+    d = list(data=rbind(fold, fold), train=list(1:nrow(fold)), test=list(1:nrow(fold) + nrow(fold)), features=c("a"), performance=c("b"), minimize=T)
     class(d) = "llama.data"
     attr(d, "hasSplits") = TRUE
     res = cluster(testclusterer, d)
@@ -59,7 +59,7 @@ test_that("cluster returns predictor", {
 
 test_that("cluster takes list of clusterers", {
     fold = data.frame(a=rep.int(0, 10), b=rep.int(1, 10), best=rep.int("b", 10))
-    d = list(data=rbind(fold, fold), train=list(fold), test=list(fold), features=c("a"), performance=c("b"), minimize=T)
+    d = list(data=rbind(fold, fold), train=list(1:nrow(fold)), test=list(1:nrow(fold) + nrow(fold)), features=c("a"), performance=c("b"), minimize=T)
     class(d) = "llama.data"
     attr(d, "hasSplits") = TRUE
     res = cluster(list(testclusterer, testclusterer, testclusterer), d)
@@ -69,7 +69,7 @@ test_that("cluster takes list of clusterers", {
 
 test_that("cluster takes list of clusterers and combinator", {
     fold = data.frame(a=rep.int(0, 10), b=rep.int(1, 10), best=rep.int("b", 10))
-    d = list(data=rbind(fold, fold), train=list(fold), test=list(fold), features=c("a"), performance=c("b"), minimize=T)
+    d = list(data=rbind(fold, fold), train=list(1:nrow(fold)), test=list(1:nrow(fold) + nrow(fold)), features=c("a"), performance=c("b"), minimize=T)
     class(d) = "llama.data"
     attr(d, "hasSplits") = TRUE
     res = cluster(list(testclusterer, testclusterer, testclusterer, .combine=testclassifier), d)
