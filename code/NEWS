@@ -3,6 +3,7 @@ llama_0.7.3:
   the model builders
 - various performance improvements, especially in the score computing functions
 - introduce functions for result analysis: perfScatterPlot, predTable
+- allow to create train/test splits with bootstrapping
 
 llama_0.7.2:
 - take success (if present) into account when determining best algorithm: if

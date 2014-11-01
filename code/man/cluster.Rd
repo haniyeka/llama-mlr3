@@ -21,7 +21,7 @@ cluster(clusterer = NULL, data = NULL,
 }
   \item{data}{
   the data to use with training and test sets. The structure returned by
-  \code{trainTest} or \code{cvFolds}.
+  one of the partitioning functions.
 }
   \item{bestBy}{
   the criteria by which to determine the best algorithm in a cluster. Can be one

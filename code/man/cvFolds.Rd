@@ -39,7 +39,7 @@ original data set and returned.
 Lars Kotthoff
 }
 \seealso{
-\code{\link{trainTest}}
+\code{\link{bsFolds}}, \code{\link{trainTest}}
 }
 \examples{
 data(satsolvers)

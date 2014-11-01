@@ -35,7 +35,7 @@ test set is approximately the same, i.e. the sets are stratified.
 Lars Kotthoff
 }
 \seealso{
-\code{\link{cvFolds}}
+\code{\link{bsFolds}}, \code{\link{cvFolds}}
 }
 \examples{
 data(satsolvers)

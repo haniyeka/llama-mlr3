@@ -22,7 +22,7 @@ regressionPairs(regressor = NULL, data = NULL,
 }
   \item{data}{
   the data to use with training and test sets. The structure returned by
-  \code{trainTest} or \code{cvFolds}.
+  one of the partitioning functions.
 }
   \item{pre}{
   a function to preprocess the data. Currently only \code{normalize}.
