@@ -11,7 +11,7 @@ function(data=NULL, model=NULL, timeout=NULL, addCosts=TRUE) {
     if(is.null(hp) || hp != TRUE) {
         if(length(data$test) > 0) {
             predictions = lapply(data$test, function(x) {
-                data$data = x
+                data$data = data$data[x,]
                 model(data)
             })
         } else {
@@ -21,7 +21,7 @@ function(data=NULL, model=NULL, timeout=NULL, addCosts=TRUE) {
         predictions = model$predictions
     }
     if(length(data$test) == 0) {
-        data$test = list(data$data)
+        data$test = list(1:nrow(data$data))
         predictions = list(predictions)
     }
 
@@ -39,19 +39,19 @@ function(data=NULL, model=NULL, timeout=NULL, addCosts=TRUE) {
     }
 
     return(unlist(lapply(1:length(data$test), function(i) {
-        perfs = data$test[[i]][data$performance]
-        successes = data$test[[i]][data$success]
+        perfs = data$data[data$test[[i]],][data$performance]
+        successes = data$data[data$test[[i]],][data$success]
         chosen = sapply(predictions[[i]], function(x) { which(as.character(x$algorithm[1]) == data$performance) })
         if(!addCosts || is.null(data$cost)) {
-            costs = rep.int(0, nrow(data$test[[i]]))
+            costs = rep.int(0, length(data$test[[i]]))
         } else {
             if(is.null(data$costGroups)) {
-                costs = apply(data$test[[i]][usedFeatures], 1, sum)
+                costs = apply(data$data[data$test[[i]],][usedFeatures], 1, sum)
             } else {
-                costs = apply(data$test[[i]][usedGroups], 1, sum)
+                costs = apply(data$data[data$test[[i]],][usedGroups], 1, sum)
             }
         }
-        sapply(1:nrow(data$test[[i]]), function(j) {
+        sapply(1:length(data$test[[i]]), function(j) {
             if(is.numeric(chosen[j])) {
                 value = as.numeric(perfs[j,chosen[j]]) + costs[j]
                 if(!as.logical(successes[j,chosen[j]]) || value > timeout) {

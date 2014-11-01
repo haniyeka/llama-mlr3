@@ -1,7 +1,8 @@
 test_that("parscores returns parscores", {
     fold = data.frame(a=rep.int(1, 5), b=rep.int(0, 5),
         d=rep.int(F, 5), e=rep.int(T, 5))
-    d = list(data=rbind(fold, fold), test=list(fold, fold), performance=c("a", "b"), success=c("d", "e"))
+    d = list(data=rbind(fold, fold), test=list(1:5, 6:10), performance=c("a", "b"),
+        success=c("d", "e"))
     as = rep.int(list(data.frame(algorithm="a", score=1)), 5)
     bs = rep.int(list(data.frame(algorithm="b", score=1)), 5)
     modela = list(predictions=list(as, as))
@@ -17,7 +18,7 @@ test_that("parscores returns parscores", {
 
 test_that("parscores raises error if no successes are given", {
     fold = data.frame(a=rep.int(1, 5), b=rep.int(0, 5))
-    d = list(data=rbind(fold, fold), test=list(fold, fold), performance=c("a", "b"))
+    d = list(data=rbind(fold, fold), test=list(1:5, 6:10), performance=c("a", "b"))
     as = rep.int(list(data.frame(algorithm="a", score=1)), 5)
     modela = list(predictions=list(as, as))
     class(modela) = "llama.model"
@@ -43,7 +44,8 @@ test_that("parscores works without test split", {
 test_that("parscores allows to specify factor", {
     fold = data.frame(a=rep.int(1, 5), b=rep.int(0, 5),
         d=rep.int(F, 5), e=rep.int(T, 5))
-    d = list(data=rbind(fold, fold), test=list(fold, fold), performance=c("a", "b"), success=c("d", "e"))
+    d = list(data=rbind(fold, fold), test=list(1:5, 6:10), performance=c("a", "b"),
+        success=c("d", "e"))
     as = rep.int(list(data.frame(algorithm="a", score=1)), 5)
     bs = rep.int(list(data.frame(algorithm="b", score=1)), 5)
     modela = list(predictions=list(as, as))
@@ -60,7 +62,8 @@ test_that("parscores allows to specify factor", {
 test_that("parscores allows to specify timeout", {
     fold = data.frame(a=rep.int(1, 5), b=rep.int(0, 5),
         d=rep.int(F, 5), e=rep.int(T, 5))
-    d = list(data=rbind(fold, fold), test=list(fold, fold), performance=c("a", "b"), success=c("d", "e"))
+    d = list(data=rbind(fold, fold), test=list(1:5, 6:10), performance=c("a", "b"),
+        success=c("d", "e"))
     as = rep.int(list(data.frame(algorithm="a", score=1)), 5)
     bs = rep.int(list(data.frame(algorithm="b", score=1)), 5)
     modela = list(predictions=list(as, as))
@@ -77,7 +80,8 @@ test_that("parscores allows to specify timeout", {
 test_that("parscores takes feature costs into account", {
     fold = data.frame(a=rep.int(1, 5), b=rep.int(0, 5),
         d=rep.int(T, 5), e=rep.int(T, 5), c=rep.int(1, 5), c_cost=rep.int(2, 5))
-    d = list(data=rbind(fold, fold), test=list(fold, fold), performance=c("a", "b"), success=c("d", "e"), cost=c("c_cost"), features=c("c"))
+    d = list(data=rbind(fold, fold), test=list(1:5, 6:10), performance=c("a", "b"),
+        success=c("d", "e"), cost=c("c_cost"), features=c("c"))
     as = rep.int(list(data.frame(algorithm="a", score=1)), 5)
     bs = rep.int(list(data.frame(algorithm="b", score=1)), 5)
     modela = list(predictions=list(as, as))
@@ -98,8 +102,10 @@ test_that("parscores takes feature costs into account", {
 
 test_that("parscores does not cost unused features", {
     fold = data.frame(a=rep.int(1, 5), b=rep.int(0, 5),
-        d=rep.int(T, 5), e=rep.int(T, 5), c=rep.int(1, 5), c_cost=rep.int(2, 5), f_cost=rep.int(1, 5))
-    d = list(data=rbind(fold, fold), test=list(fold, fold), performance=c("a", "b"), success=c("d", "e"), cost=c("c_cost", "f_cost"), features=c("c"))
+        d=rep.int(T, 5), e=rep.int(T, 5), c=rep.int(1, 5),
+        c_cost=rep.int(2, 5), f_cost=rep.int(1, 5))
+    d = list(data=rbind(fold, fold), test=list(1:5, 6:10), performance=c("a", "b"),
+        success=c("d", "e"), cost=c("c_cost", "f_cost"), features=c("c"))
     as = rep.int(list(data.frame(algorithm="a", score=1)), 5)
     modela = list(predictions=list(as, as))
     class(modela) = "llama.model"
@@ -110,10 +116,11 @@ test_that("parscores does not cost unused features", {
 })
 
 test_that("parscores takes feature cost groups into account", {
-    fold = data.frame(a=rep.int(1, 5), e=rep.int(0, 5), f=rep.int(0, 5), g=rep.int(0, 5),
-        d=rep.int(T, 5), g1=rep.int(1, 5), g2=rep.int(1, 5))
+    fold = data.frame(a=rep.int(1, 5), e=rep.int(0, 5), f=rep.int(0, 5),
+        g=rep.int(0, 5), d=rep.int(T, 5), g1=rep.int(1, 5), g2=rep.int(1, 5))
     groups = list(g1=c("e", "f"), g2=c("g"))
-    d = list(data=rbind(fold, fold), test=list(fold, fold), performance=c("a"), success=c("d"), costGroups=groups, cost=c("g1", "g2"), features=c("f", "g"))
+    d = list(data=rbind(fold, fold), test=list(1:5, 6:10), performance=c("a"),
+        success=c("d"), costGroups=groups, cost=c("g1", "g2"), features=c("f", "g"))
     e = d
     e$features = c("f")
 
@@ -133,7 +140,8 @@ test_that("parscores takes feature cost groups into account", {
 test_that("parscores works for test splits", {
     fold = data.frame(a=rep.int(1, 5), b=rep.int(0, 5),
         d=rep.int(F, 5), e=rep.int(T, 5))
-    d = list(data=rbind(fold, fold), test=list(fold), performance=c("a", "b"), success=c("d", "e"))
+    d = list(data=rbind(fold, fold), test=list(1:5), performance=c("a", "b"),
+        success=c("d", "e"))
     model = function(data) {
         lapply(1:nrow(data$data), function(i) { data.frame(algorithm="a", score=1) })
     }
@@ -146,7 +154,8 @@ test_that("parscores works for test splits", {
 test_that("parscores works with NA predictions", {
     fold = data.frame(a=rep.int(1, 5), b=rep.int(0.5, 5),
         d=rep.int(F, 5), e=rep.int(T, 5))
-    d = list(data=rbind(fold, fold), test=list(fold, fold), performance=c("a", "b"), success=c("d", "e"))
+    d = list(data=rbind(fold, fold), test=list(1:5, 6:10), performance=c("a", "b"),
+        success=c("d", "e"))
     nas = rep.int(list(data.frame(algorithm=NA, score=0)), 5)
     as = rep.int(list(data.frame(algorithm="b", score=1)), 5)
     model = list(predictions=list(nas, as))

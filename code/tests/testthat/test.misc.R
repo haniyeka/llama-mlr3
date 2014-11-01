@@ -129,7 +129,8 @@ test_that("single best by par works with train/test split", {
     fold = data.frame(a=rep.int(1, 10), b=rep.int(0, 10),
         d=rep.int(F, 10), e=rep.int(T, 10))
     fold$best = bestlistlong
-    d = list(data=rbind(fold, fold), test=list(fold), train=list(fold), performance=c("a", "b"), success=c("d", "e"))
+    d = list(data=rbind(fold, fold), test=list(1:5), train=list(6:10),
+        performance=c("a", "b"), success=c("d", "e"))
     class(d) = "llama.data"
 
     preds = singleBestByPar(d)
@@ -181,7 +182,8 @@ test_that("break best ties recomputes bests without ties", {
 
 test_that("break best ties accepts fold argument", {
     fold = data=data.frame(a=c(1,2,3), b=c(2,2,2.5))
-    d = list(data=rbind(fold, fold), performance=c("a", "b"), minimize=T, train=list(1:nrow(fold)))
+    d = list(data=rbind(fold, fold), performance=c("a", "b"), minimize=T,
+        train=list(1:nrow(fold)))
     class(d) = "llama.data"
 
     expect_equal(breakBestTies(d), factor(c("a", "a", "b", "a", "a", "b")))
