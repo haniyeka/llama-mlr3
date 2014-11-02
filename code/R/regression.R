@@ -96,10 +96,12 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
     }
     class(predictor) = "llama.model"
     attr(predictor, "hasPredictions") = FALSE
+    attr(predictor, "addCosts") = TRUE
 
     retval = list(predictions=predictions, models=models, predictor=predictor)
     class(retval) = "llama.model"
     attr(retval, "hasPredictions") = TRUE
+    attr(retval, "addCosts") = TRUE
 
     return(retval)
 }

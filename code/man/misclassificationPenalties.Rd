@@ -8,7 +8,7 @@ Calculates the penalty incurred because of making incorrect decisions, i.e.
 choosing suboptimal algorithms.
 }
 \usage{
-misclassificationPenalties(data, model, addCosts)
+misclassificationPenalties(data, model, addCosts = NULL)
 }
 \arguments{
   \item{data}{the data used to induce the model. The same as given to

@@ -1,10 +1,19 @@
 successes <-
-function(data=NULL, model=NULL, timeout=NULL, addCosts=TRUE) {
+function(data=NULL, model=NULL, timeout=NULL, addCosts=NULL) {
     if(is.null(data) || is.null(model)) {
         stop("Need both data and model to calculate successes!")
     }
     if(is.null(data$success)) {
         stop("Need successes to calculate successes!")
+    }
+
+    if(is.null(addCosts)) {
+        ac = attr(model, "addCosts")
+        if(is.null(ac) || ac == TRUE) {
+            addCosts = TRUE
+        } else {
+            addCosts = FALSE
+        }
     }
 
     hp = attr(model, "hasPredictions")

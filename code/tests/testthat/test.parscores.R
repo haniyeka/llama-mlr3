@@ -8,9 +8,11 @@ test_that("parscores returns parscores", {
     modela = list(predictions=list(as, as))
     class(modela) = "llama.model"
     attr(modela, "hasPredictions") = TRUE
+    attr(modela, "addCosts") = TRUE
     modelb = list(predictions=list(bs, bs))
     class(modelb) = "llama.model"
     attr(modelb, "hasPredictions") = TRUE
+    attr(modelb, "addCosts") = TRUE
 
     expect_equal(sum(parscores(d, modela)), 100)
     expect_equal(sum(parscores(d, modelb)), 0)
@@ -23,6 +25,7 @@ test_that("parscores raises error if no successes are given", {
     modela = list(predictions=list(as, as))
     class(modela) = "llama.model"
     attr(modela, "hasPredictions") = TRUE
+    attr(modela, "addCosts") = TRUE
     expect_error(parscores(d, modela), "Need successes to calculate PAR scores!")
 })
 
@@ -33,9 +36,11 @@ test_that("parscores works without test split", {
     modela = list(predictions=rep.int(list(data.frame(algorithm="a", score=1)), 10))
     class(modela) = "llama.model"
     attr(modela, "hasPredictions") = TRUE
+    attr(modela, "addCosts") = TRUE
     modelb = list(predictions=rep.int(list(data.frame(algorithm="b", score=1)), 10))
     class(modelb) = "llama.model"
     attr(modelb, "hasPredictions") = TRUE
+    attr(modelb, "addCosts") = TRUE
 
     expect_equal(sum(parscores(d, modela)), 100)
     expect_equal(sum(parscores(d, modelb)), 0)
@@ -51,9 +56,11 @@ test_that("parscores allows to specify factor", {
     modela = list(predictions=list(as, as))
     class(modela) = "llama.model"
     attr(modela, "hasPredictions") = TRUE
+    attr(modela, "addCosts") = TRUE
     modelb = list(predictions=list(bs, bs))
     class(modelb) = "llama.model"
     attr(modelb, "hasPredictions") = TRUE
+    attr(modelb, "addCosts") = TRUE
 
     expect_equal(sum(parscores(d, modela, 100)), 1000)
     expect_equal(sum(parscores(d, modelb, 100)), 0)
@@ -69,9 +76,11 @@ test_that("parscores allows to specify timeout", {
     modela = list(predictions=list(as, as))
     class(modela) = "llama.model"
     attr(modela, "hasPredictions") = TRUE
+    attr(modela, "addCosts") = TRUE
     modelb = list(predictions=list(bs, bs))
     class(modelb) = "llama.model"
     attr(modelb, "hasPredictions") = TRUE
+    attr(modelb, "addCosts") = TRUE
 
     expect_equal(sum(parscores(d, modela, timeout=5)), 500)
     expect_equal(sum(parscores(d, modelb, timeout=5)), 0)
@@ -87,9 +96,11 @@ test_that("parscores takes feature costs into account", {
     modela = list(predictions=list(as, as))
     class(modela) = "llama.model"
     attr(modela, "hasPredictions") = TRUE
+    attr(modela, "addCosts") = TRUE
     modelb = list(predictions=list(bs, bs))
     class(modelb) = "llama.model"
     attr(modelb, "hasPredictions") = TRUE
+    attr(modelb, "addCosts") = TRUE
 
     expect_equal(sum(parscores(d, modela, timeout=1.5)), 150)
     expect_equal(sum(parscores(d, modela, timeout=5)), 30)
@@ -98,6 +109,12 @@ test_that("parscores takes feature costs into account", {
     expect_equal(sum(parscores(d, modela, timeout=0.5, addCosts=F)), 50)
     expect_equal(sum(parscores(d, modela, timeout=5, addCosts=F)), 10)
     expect_equal(sum(parscores(d, modelb, timeout=2.5, addCosts=F)), 0)
+
+    attr(modela, "addCosts") = FALSE
+    attr(modelb, "addCosts") = FALSE
+    expect_equal(sum(parscores(d, modela, timeout=0.5)), 50)
+    expect_equal(sum(parscores(d, modela, timeout=5)), 10)
+    expect_equal(sum(parscores(d, modelb, timeout=2.5)), 0)
 })
 
 test_that("parscores does not cost unused features", {
@@ -108,6 +125,7 @@ test_that("parscores does not cost unused features", {
         success=c("d", "e"), cost=c("c_cost", "f_cost"), features=c("c"))
     as = rep.int(list(data.frame(algorithm="a", score=1)), 5)
     modela = list(predictions=list(as, as))
+    attr(modela, "addCosts") = TRUE
     class(modela) = "llama.model"
     attr(modela, "hasPredictions") = TRUE
 
@@ -128,6 +146,7 @@ test_that("parscores takes feature cost groups into account", {
     modela = list(predictions=list(as, as))
     class(modela) = "llama.model"
     attr(modela, "hasPredictions") = TRUE
+    attr(modela, "addCosts") = TRUE
 
     expect_equal(sum(parscores(d, modela, timeout=2.5)), 250)
     expect_equal(sum(parscores(d, modela, timeout=1.5)), 150)
@@ -147,6 +166,7 @@ test_that("parscores works for test splits", {
     }
     class(model) = "llama.model"
     attr(model, "hasPredictions") = FALSE
+    attr(model, "addCosts") = TRUE
 
     expect_equal(sum(parscores(d, model)), 50)
 })
@@ -161,6 +181,7 @@ test_that("parscores works with NA predictions", {
     model = list(predictions=list(nas, as))
     class(model) = "llama.model"
     attr(model, "hasPredictions") = TRUE
+    attr(model, "addCosts") = TRUE
 
     pars = parscores(d, model)
     expect_equal(length(pars), 10)

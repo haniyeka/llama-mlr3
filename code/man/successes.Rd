@@ -7,7 +7,7 @@ Success
 Was the problem solved successfully using the chosen algorithm?
 }
 \usage{
-successes(data, model, timeout, addCosts = TRUE)
+successes(data, model, timeout, addCosts = NULL)
 }
 \arguments{
   \item{data}{the data used to induce the model. The same as given to
@@ -20,9 +20,11 @@ successes(data, model, timeout, addCosts = TRUE)
   \item{timeout}{the timeout value to be multiplied by the penalization factor.
       If not specified, the maximum performance value of all algorithms on the
       entire data is used.}
-  \item{addCosts}{whether to add feature costs. This should always be true (the
-      default) except for comparison algorithms (i.e. single best and virtual
-      best).}
+  \item{addCosts}{whether to add feature costs. You should not need to set this
+      manually, the default of \code{NULL} will have LLAMA figure out
+      automatically depending on the model whether to add costs or not. This
+      should always be true (the default) except for comparison algorithms (i.e.
+      single best and virtual best).}
 }
 \details{
 Returns TRUE if the chosen algorithm successfully solved the problem instance,

@@ -14,6 +14,7 @@ function(data=NULL) {
 }
 class(vbs) = "llama.model"
 attr(vbs, "hasPredictions") = FALSE
+attr(vbs, "addCosts") = FALSE
 
 singleBestByCount <-
 function(data=NULL) {
@@ -26,6 +27,7 @@ function(data=NULL) {
 }
 class(singleBestByCount) = "llama.model"
 attr(singleBestByCount, "hasPredictions") = FALSE
+attr(singleBestByCount, "addCosts") = FALSE
 
 singleBestByPar <-
 function(data=NULL, factor=10) {
@@ -41,6 +43,7 @@ function(data=NULL, factor=10) {
         model = list(predictions=prs)
         class(model) = "llama.model"
         attr(model, "hasPredictions") = TRUE
+        attr(model, "addCosts") = FALSE
         sum(parscores(data, model, factor=factor))
     })))[1]
     preds = rep.int(best, length(data$data$best))
@@ -48,6 +51,7 @@ function(data=NULL, factor=10) {
 }
 class(singleBestByPar) = "llama.model"
 attr(singleBestByPar, "hasPredictions") = FALSE
+attr(singleBestByPar, "addCosts") = FALSE
 
 singleBestBySuccesses <-
 function(data=NULL) {
@@ -62,6 +66,7 @@ function(data=NULL) {
         model = list(predictions=replicate(length(data$data$best), setNames(data.frame(table(x)), predNames), simplify=F))
         class(model) = "llama.model"
         attr(model, "hasPredictions") = TRUE
+        attr(model, "addCosts") = FALSE
         sum(successes(data, model))
     }), decreasing=T))[1]
     preds = rep.int(best, length(data$data$best))
@@ -69,6 +74,7 @@ function(data=NULL) {
 }
 class(singleBestBySuccesses) = "llama.model"
 attr(singleBestBySuccesses, "hasPredictions") = FALSE
+attr(singleBestBySuccesses, "addCosts") = FALSE
 
 singleBest <-
 function(data=NULL) {
@@ -82,6 +88,7 @@ function(data=NULL) {
 }
 class(singleBest) = "llama.model"
 attr(singleBest, "hasPredictions") = FALSE
+attr(singleBest, "addCosts") = FALSE
 
 breakBestTies <-
 function(data=NULL, fold=NULL) {
