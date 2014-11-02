@@ -73,18 +73,15 @@ Lars Kotthoff
 data(satsolvers)
 
 # number of total successes for virtual best solver
-print(sum(successes(satsolvers, vbs, addCosts = FALSE)))
+print(sum(successes(satsolvers, vbs)))
 # number of total successes for single best solver by count
-print(sum(successes(satsolvers, singleBestByCount,
-    addCosts = FALSE)))
+print(sum(successes(satsolvers, singleBestByCount)))
 
 # sum of PAR10 scores for single best solver by PAR10 score
-print(sum(parscores(satsolvers, singleBestByPar,
-    addCosts = FALSE)))
+print(sum(parscores(satsolvers, singleBestByPar)))
 
 # number of total successes for single best solver by successes
-print(sum(successes(satsolvers, singleBestBySuccesses,
-    addCosts = FALSE)))
+print(sum(successes(satsolvers, singleBestBySuccesses)))
 
 # print a table of the best solvers per instance
 print(predTable(vbs(satsolvers)))

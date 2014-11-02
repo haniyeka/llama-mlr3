@@ -8,7 +8,7 @@ Functions to plot the performance of selectors and compare them to others.
 }
 \usage{
 perfScatterPlot(metric, modelx, modely, datax, datay=datax,
-    addCostsx=TRUE, addCostsy=TRUE, ...)
+    addCostsx=NULL, addCostsy=NULL, ...)
 }
 \arguments{
   \item{metric}{the metric used to evaluate the model. Can be one of
@@ -25,12 +25,16 @@ perfScatterPlot(metric, modelx, modely, datax, datay=datax,
       \code{metric} function.}
   \item{datay}{the data used to evaluate \code{modely}. Can be omitted if the
       same as for \code{modelx}. Will be passed to the \code{metric} function.}
-  \item{addCostsx}{whether to add feature costs for \code{modelx}. This should
-      always be true (the default) except for comparison algorithms (i.e. single
-      best and virtual best).}
-  \item{addCostsy}{whether to add feature costs for \code{modely}. This should
-      always be true (the default) except for comparison algorithms (i.e. single
-      best and virtual best).}
+  \item{addCostsx}{whether to add feature costs for \code{modelx}. You should
+      not need to set this manually, the default of \code{NULL} will have LLAMA
+      figure out automatically depending on the model whether to add costs or
+      not. This should always be true (the default) except for comparison
+      algorithms (i.e. single best and virtual best).}
+  \item{addCostsy}{whether to add feature costs for \code{modely}. You should
+      not need to set this manually, the default of \code{NULL} will have LLAMA
+      figure out automatically depending on the model whether to add costs or
+      not. This should always be true (the default) except for comparison
+      algorithms (i.e. single best and virtual best).}
   \item{...}{any additional arguments to be passed to the metrics. For example
       the penalisation factor for \code{parscores}.}
 }
@@ -63,8 +67,7 @@ model = classify(classifier=makeLearner("classif.J48"), data=folds)
 # Simple plot to compare our selector to the single best in terms of PAR10 score
 perfScatterPlot(parscores,
         model, singleBest,
-        folds, satsolvers,
-        addCostsy=F) + # don't add feature costs for the single best
+        folds, satsolvers) +
     geom_point() + scale_x_log10() + scale_y_log10() +
     xlab("J48") + ylab("single best")
 }

@@ -1,5 +1,5 @@
 perfScatterPlot <-
-function(metric, modelx, modely, datax, datay=datax, addCostsx=TRUE, addCostsy=TRUE, ...) {
+function(metric, modelx, modely, datax, datay=datax, addCostsx=NULL, addCostsy=NULL, ...) {
     if(is.null(metric)) {
         stop("Need evaluation metric for plotting!")
     }
