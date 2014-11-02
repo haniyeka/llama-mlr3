@@ -1,4 +1,5 @@
-library(llama)
+library(devtools)
+load_all("../code")
 
 features = read.csv("features.csv")
 
