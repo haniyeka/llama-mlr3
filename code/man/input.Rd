@@ -64,15 +64,16 @@ specifying this small amount of time may confuse some of the algorithm selection
 model learners.
 }
 \value{
-\item{data}{the combined data (features, performance, successes) and the best
-algorithm.}
+\item{data}{the combined data (features, performance, successes).}
+\item{best}{a list of the best algorithms.}
+\item{ids}{a list of names denoting the instance ID columns.}
 \item{features}{a list of names denoting problem features.}
 \item{performance}{a list of names denoting algorithm performances.}
 \item{success}{a list of names denoting algorithm successes.}
 \item{minimize}{true if the smaller performance values are better, else false.}
 \item{cost}{a list of names denoting feature costs.}
 \item{costGroups}{a list of list of names denoting which features belong to
-which group. Only returned if cost groups are given as input.}
+    which group. Only returned if cost groups are given as input.}
 }
 \author{
 Lars Kotthoff

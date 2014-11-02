@@ -34,7 +34,7 @@ function(features, performances, successes=NULL, costs=NULL, minimize=T) {
     }
 
     optfun = if(minimize) { min } else { max }
-    combined$best = apply(combined, 1,
+    best = apply(combined, 1,
         function(x) {
             tosel = pnames
             if(!is.null(successes)) {
@@ -50,16 +50,16 @@ function(features, performances, successes=NULL, costs=NULL, minimize=T) {
             }
         })
     # simplify...
-    names(combined$best) = NULL
+    names(best) = NULL
 
 
-    retval = list(data=combined, features=setdiff(names(features), common), performance=pnames, success=snames, minimize=minimize)
+    retval = list(data=combined, features=setdiff(names(features), common), performance=pnames, success=snames, minimize=minimize, best=best, ids=common)
 
 
     if(!is.null(costs)) {
         if(is.numeric(costs)) {
             # same cost for everything
-            combined$cost = rep.int(costs, times=length(combined$best))
+            combined$cost = rep.int(costs, times=length(best))
             cnames = c("cost")
         } else if(is.data.frame(costs)) {
             commonCosts = intersect(names(costs), common)

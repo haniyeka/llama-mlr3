@@ -5,7 +5,7 @@ function(data, nfolds=10, stratify=T) {
         nfolds = nrow(data$data)
     }
     if(stratify) {
-        stratifier = sapply(data$data$best, paste, collapse="-")
+        stratifier = sapply(data$best, paste, collapse="-")
     } else {
         stratifier = rep.int(T, nrow(data$data))
     }

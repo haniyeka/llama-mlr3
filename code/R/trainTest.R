@@ -1,7 +1,7 @@
 trainTest <-
 function(data, trainpart=0.6, stratify=T) {
     if(stratify) {
-        stratifier = sapply(data$data$best, paste, collapse="-")
+        stratifier = sapply(data$best, paste, collapse="-")
     } else {
         stratifier = rep.int(T, nrow(data$data))
     }

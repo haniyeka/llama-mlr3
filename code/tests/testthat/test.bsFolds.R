@@ -1,5 +1,5 @@
 test_that("bsFolds splits", {
-    d = list(data=data.frame(a=rep.int(0, 10), best=rep.int(0, 10)))
+    d = list(data=data.frame(a=rep.int(0, 10)), best=rep.int(0, 10))
     class(d) = "llama.data"
 
     dfs = bsFolds(d)
@@ -11,7 +11,7 @@ test_that("bsFolds splits", {
 
 test_that("bsFolds splits with best list", {
     d = list(data=data.frame(a=rep.int(0, 10)))
-    d$data$best = list(0, 0, 0, c(0,1), 0, 0, c(0,1), 0, 0, 0)
+    d$best = list(0, 0, 0, c(0,1), 0, 0, c(0,1), 0, 0, 0)
     class(d) = "llama.data"
 
     dfs = bsFolds(d, nfolds=2)
@@ -22,7 +22,7 @@ test_that("bsFolds splits with best list", {
 })
 
 test_that("bsFolds allows to specify number of folds", {
-    d = list(data=data.frame(a=rep.int(0, 10), best=rep.int(0, 10)))
+    d = list(data=data.frame(a=rep.int(0, 10)), best=rep.int(0, 10))
     class(d) = "llama.data"
 
     dfs = bsFolds(d, nfolds=2)
@@ -33,7 +33,7 @@ test_that("bsFolds allows to specify number of folds", {
 })
 
 test_that("bsFolds stratifies", {
-    d = list(data=data.frame(a=rep.int(0, 10), best=c(rep.int(0, 5), rep.int(1, 5))))
+    d = list(data=data.frame(a=rep.int(0, 10)), best=c(rep.int(0, 5), rep.int(1, 5)))
     class(d) = "llama.data"
 
     dfs = bsFolds(d, nfolds=5)
@@ -44,7 +44,7 @@ test_that("bsFolds stratifies", {
 
     # random, you know...
     #expect_true(all(sapply(dfs$train,
-    #    function(x) { abs(sum(d$data[x,]$best==0) - sum(d$data[x,]$best==1)) < 1 })))
+    #    function(x) { abs(sum(d$best[x]==0) - sum(d$best[x]==1)) < 1 })))
     #expect_true(all(sapply(dfs$test,
-    #    function(x) { abs(sum(d$data[x,]$best==0) - sum(d$data[x,]$best==1)) < 1 })))
+    #    function(x) { abs(sum(d$best[x]==0) - sum(d$best[x]==1)) < 1 })))
 })

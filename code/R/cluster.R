@@ -18,7 +18,7 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
     if(bestBy == "performance") {
         innerbest = function(ss) { sort(sapply(data$performance, function(x) { sum(ss[x]) }), decreasing=!data$minimize) }
     } else if(bestBy == "count") {
-        innerbest = function(ss) { sort(table(unlist(ss$best)), decreasing=!data$minimize) }
+        innerbest = function(ss) { sort(table(data$best[as.integer(rownames(ss))]), decreasing=T) }
     } else if(bestBy == "successes") {
         if(is.null(data$success)) {
             stop("Need successes to determine best by successes!")

@@ -1,9 +1,5 @@
-bests = c("a", "a", "a", "b", "b")
-bestlist = list("a", "b", c("a", "b"))
-bestlistlong = list("a", "a", "b", c("a", "b"), "a", "a", c("a", "b"), "a", "a", "a")
-
 test_that("virtual best returns the vbs", {
-    d = list(data=list(best=bests))
+    d = list(best=bests)
     class(d) = "llama.data"
 
     preds = vbs(d)
@@ -13,7 +9,7 @@ test_that("virtual best returns the vbs", {
 })
 
 test_that("virtual best works with best list", {
-    d = list(data=list(best=bestlist))
+    d = list(best=bestlist)
     class(d) = "llama.data"
 
     preds = vbs(d)
@@ -33,7 +29,7 @@ test_that("single best raises error without data", {
 })
 
 test_that("virtual best works with NAs", {
-    d = list(data=list(best=c(NA)))
+    d = list(best=c(NA))
     class(d) = "llama.data"
 
     preds = vbs(d)
@@ -42,10 +38,10 @@ test_that("virtual best works with NAs", {
 })
 
 test_that("single best returns the single best", {
-    fold = data.frame(a=rep.int(1, 10), b=rep.int(0, 10), best=rep.int("a", 10))
-    d = list(data=fold, performance=c("a", "b"), minimize=T)
+    fold = data.frame(a=rep.int(1, 10), b=rep.int(0, 10))
+    d = list(data=fold, performance=c("a", "b"), minimize=T, best=rep.int("a", 10))
     class(d) = "llama.data"
-    e = list(data=fold, performance=c("a", "b"), minimize=F)
+    e = list(data=fold, performance=c("a", "b"), minimize=F, best=rep.int("a", 10))
     class(e) = "llama.data"
 
     preds = singleBest(d)
@@ -60,10 +56,11 @@ test_that("single best returns the single best", {
 
 test_that("single best works with best list", {
     fold = data.frame(a=rep.int(1, 10), b=rep.int(0, 10))
-    fold$best = bestlistlong
     d = list(data=fold, performance=c("a", "b"), minimize=T)
+    d$best = bestlistlong
     class(d) = "llama.data"
     e = list(data=fold, performance=c("a", "b"), minimize=F)
+    e$best = bestlistlong
     class(e) = "llama.data"
 
     preds = singleBest(d)
@@ -79,7 +76,7 @@ test_that("single best works with best list", {
 test_that("single best by count returns the single best", {
     d = list(data=data.frame(a=c(1,2,3), b=c(2,2,3)),
              performance=c("a", "b"), minimize=T)
-    d$data$best = rep.int("a", 3)
+    d$best = rep.int("a", 3)
     class(d) = "llama.data"
 
     preds = singleBestByCount(d)
@@ -91,7 +88,7 @@ test_that("single best by count returns the single best", {
 test_that("single best by count works with best list", {
     d = list(data=data.frame(a=c(1,2,3), b=c(2,2,3)),
              performance=c("a", "b"), minimize=T)
-    d$data$best = bestlist
+    d$best = bestlist
     class(d) = "llama.data"
 
     preds = singleBestByCount(d)
@@ -102,8 +99,8 @@ test_that("single best by count works with best list", {
 
 test_that("single best by par returns the single best", {
     fold = data.frame(a=rep.int(1, 10), b=rep.int(0, 10),
-        d=rep.int(F, 10), e=rep.int(T, 10), best=rep.int("a", 10))
-    d = list(data=fold, performance=c("a", "b"), success=c("d", "e"))
+        d=rep.int(F, 10), e=rep.int(T, 10))
+    d = list(data=fold, performance=c("a", "b"), success=c("d", "e"), best=rep.int("a", 10))
     class(d) = "llama.data"
 
     preds = singleBestByPar(d)
@@ -115,8 +112,8 @@ test_that("single best by par returns the single best", {
 test_that("single best by par works with best list", {
     fold = data.frame(a=rep.int(1, 10), b=rep.int(0, 10),
         d=rep.int(F, 10), e=rep.int(T, 10))
-    fold$best = bestlistlong
     d = list(data=fold, performance=c("a", "b"), success=c("d", "e"))
+    d$best = bestlistlong
     class(d) = "llama.data"
 
     preds = singleBestByPar(d)
@@ -128,9 +125,9 @@ test_that("single best by par works with best list", {
 test_that("single best by par works with train/test split", {
     fold = data.frame(a=rep.int(1, 10), b=rep.int(0, 10),
         d=rep.int(F, 10), e=rep.int(T, 10))
-    fold$best = bestlistlong
     d = list(data=rbind(fold, fold), test=list(1:5), train=list(6:10),
         performance=c("a", "b"), success=c("d", "e"))
+    d$best = bestlistlong
     class(d) = "llama.data"
 
     preds = singleBestByPar(d)
@@ -145,8 +142,8 @@ test_that("single best by par raises error without data", {
 
 test_that("single best by successes returns the single best", {
     fold = data.frame(a=rep.int(1, 10), b=rep.int(0, 10),
-        d=rep.int(F, 10), e=rep.int(T, 10), best=rep.int("a", 10))
-    d = list(data=fold, performance=c("a", "b"), success=c("d", "e"))
+        d=rep.int(F, 10), e=rep.int(T, 10))
+    d = list(data=fold, performance=c("a", "b"), success=c("d", "e"), best=rep.int("a", 10))
     class(d) = "llama.data"
 
     preds = singleBestBySuccesses(d)
@@ -158,8 +155,8 @@ test_that("single best by successes returns the single best", {
 test_that("single best by successes works with best list", {
     fold = data.frame(a=rep.int(1, 10), b=rep.int(0, 10),
         d=rep.int(F, 10), e=rep.int(T, 10))
-    fold$best = bestlistlong
     d = list(data=fold, performance=c("a", "b"), success=c("d", "e"))
+    d$best = bestlistlong
     class(d) = "llama.data"
 
     preds = singleBestBySuccesses(d)
@@ -191,7 +188,7 @@ test_that("break best ties accepts fold argument", {
 })
 
 test_that("predTable tabulates", {
-    d = list(data=list(best=bestlist))
+    d = list(best=bestlist)
     class(d) = "llama.data"
     preds = vbs(d)
 
