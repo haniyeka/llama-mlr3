@@ -103,3 +103,4 @@ publications!
     }
 
 .. image:: https://magnum-ci.com/status/8a4ee327a7a82d2a109b6788b55b0b1b.png
+   :target: https://magnum-ci.com/public/43c8f6ac0ae602b9ce45/builds
