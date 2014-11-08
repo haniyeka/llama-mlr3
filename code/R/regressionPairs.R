@@ -9,11 +9,22 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         stop("Need data with train/test split!")
     }
 
+    signPair = function(k, p, sign, row, combns) {
+        if(p == combns[1,k]) {
+            sign(row[k])
+        } else if(p == combns[2,k]) {
+            sign(-row[k])
+        } else {
+            0
+        }
+    }
+
     totalBests = data.frame(target=factor(breakBestTies(data), levels=data$performance))
     combns = combn(data$performance, 2)
-    predictions = parallelMap(function(i) {
+    predictions = do.call(rbind, parallelMap(function(i) {
         trf = pre(data$data[data$train[[i]],][data$features])
         tsf = pre(data$data[data$test[[i]],][data$features], trf$meta)
+        ids = data$data[data$test[[i]],][data$ids]
         trp = data$data[data$train[[i]],][data$performance]
         trw = abs(apply(trp, 1, max) - apply(trp, 1, min))
 
@@ -44,30 +55,27 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
                 saveRDS(list(model=combinedmodel, train.data=task, test.data=cbind(tsf$features, data.frame(pairpredictions))), file = paste(save.models, combine$id, "combined", i, "rds", sep="."))
             }
             preds = predict(combinedmodel, newdata=cbind(tsf$features, data.frame(pairpredictions)))$data$response
-            combinedpredictions = lapply(preds, function(l) { setNames(data.frame(table(l)), predNames) })
+            combinedpredictions = do.call(rbind, lapply(1:length(preds), function(j) {
+                tab = table(preds[j,drop=F])
+                data.frame(ids[j,,drop=F], algorithm=names(tab), score=as.vector(tab), iteration=i, row.names = NULL)
+            }))
         } else {
             if(data$minimize) {
                 sign = function(d) { return(-d); }
             } else {
                 sign = function(d) { return(d); }
             }
-            combinedpredictions = apply(pairpredictions, 1, function(row) {
+            combinedpredictions = do.call(rbind, lapply(1:nrow(pairpredictions), function(j) {
+                row = pairpredictions[j,]
                 performanceSums = sapply(data$performance, function(p) {
-                    sum(sapply(1:ncol(combns), function(k) {
-                        if(p == combns[1,k]) {
-                            sign(row[k])
-                        } else if(p == combns[2,k]) {
-                            sign(-row[k])
-                        } else {
-                            0
-                        }
-                    }))
+                    sum(sapply(1:ncol(combns), signPair, p, sign, row, combns))
                 })
-                setNames(data.frame(data$performance[sort.list(performanceSums, decreasing=T)], sort(performanceSums, decreasing=T), row.names=NULL), predNames)
-            })
+                x = sort(performanceSums, decreasing = TRUE)
+                data.frame(ids[j,,drop=F], algorithm=names(x), score=unlist(x), iteration=i, row.names = NULL)
+            }))
         }
-        return(list(combinedpredictions))
-    }, 1:length(data$train), simplify=T)
+        return(combinedpredictions)
+    }, 1:length(data$train)))
 
     fs = pre(data$data[data$features])
     fp = data$data[data$performance]
@@ -92,33 +100,31 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
 
     predictor = function(x) {
         tsf = pre(x[data$features], fs$meta)
+        ids = x[data$ids]
         pairpredictions = matrix(nrow=nrow(tsf$features), ncol=ncol(combns))
         for(i in 1:ncol(combns)) {
             pairpredictions[,i] = predict(models[[i]], newdata=tsf$features)$data$response
         }
         if(!is.null(combine)) {
             preds = predict(combinedmodel, newdata=cbind(tsf$features, data.frame(pairpredictions)))$data$response
-            combinedpredictions = lapply(preds, function(l) { setNames(data.frame(table(l)), predNames) })
+            combinedpredictions = do.call(rbind, lapply(1:length(preds), function(j) {
+                tab = table(preds[j,drop=F])
+                data.frame(ids[j,,drop=F], algorithm=names(tab), score=as.vector(tab), iteration=1, row.names = NULL)
+            }))
         } else {
             if(data$minimize) {
                 sign = function(d) { return(-d); }
             } else {
                 sign = function(d) { return(d); }
             }
-            combinedpredictions = apply(pairpredictions, 1, function(row) {
+            combinedpredictions = do.call(rbind, lapply(1:nrow(pairpredictions), function(j) {
+                row = pairpredictions[j,]
                 performanceSums = sapply(data$performance, function(p) {
-                    sum(sapply(1:ncol(combns), function(k) {
-                        if(p == combns[1,k]) {
-                            sign(row[k])
-                        } else if(p == combns[2,k]) {
-                            sign(-row[k])
-                        } else {
-                            0
-                        }
-                    }))
+                    sum(sapply(1:ncol(combns), signPair, p, sign, row, combns))
                 })
-                setNames(data.frame(data$performance[sort.list(performanceSums, decreasing=T)], sort(performanceSums, decreasing=T), row.names=NULL), predNames)
-            })
+                x = sort(performanceSums, decreasing = TRUE)
+                data.frame(ids[j,,drop=F], algorithm=names(x), score=unlist(x), iteration=1, row.names = NULL)
+            }))
         }
         return(combinedpredictions)
     }

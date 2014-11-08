@@ -1,23 +1,24 @@
 test_that("virtual best returns the vbs", {
-    d = list(best=bests)
+    d = list(data=data.frame(id=1:5), best=bests, ids=c("id"))
     class(d) = "llama.data"
 
     preds = vbs(d)
-    expect_true(all(sapply(1:length(preds), function(i) {
-        preds[[i]] == data.frame(algorithm=bests[i], score=1)
-    })))
+    by(preds, preds$id, function(ss) {
+        expect_equal(ss$algorithm, factor(bests[ss$id], levels=unique(bests)))
+        expect_equal(ss$score, 1)
+    })
 })
 
 test_that("virtual best works with best list", {
-    d = list(best=bestlist)
+    d = list(data=data.frame(id=1:3), best=bestlist, ids=c("id"))
     class(d) = "llama.data"
 
     preds = vbs(d)
-    expect_true(all(sapply(1:length(preds), function(i) {
-        algs = bestlist[[i]]
-        df = data.frame(algorithm=algs, score=rep.int(1, length(algs)))
-        all(preds[[i]] == df)
-    })))
+    by(preds, preds$id, function(ss) {
+        algs = bestlist[[ss$id[1]]]
+        expect_equal(ss$algorithm, factor(algs, levels = c("a", "b")))
+        expect_equal(ss$score, rep.int(1, length(algs)))
+    })
 })
 
 test_that("virtual best raises error without data", {
@@ -29,111 +30,123 @@ test_that("single best raises error without data", {
 })
 
 test_that("virtual best works with NAs", {
-    d = list(best=c(NA))
+    d = list(data=data.frame(id=1), best=c(NA), ids=c("id"))
     class(d) = "llama.data"
 
     preds = vbs(d)
-    expect_equal(length(preds), 1)
-    expect_equal(preds[[1]], data.frame(algorithm=NA, score=0))
+    expect_equal(nrow(preds), 1)
+    by(preds, preds$id, function(ss) {
+        expect_equal(ss$algorithm, NA)
+        expect_equal(ss$score, 0)
+    })
 })
 
 test_that("single best returns the single best", {
-    fold = data.frame(a=rep.int(1, 10), b=rep.int(0, 10))
-    d = list(data=fold, performance=c("a", "b"), minimize=T, best=rep.int("a", 10))
+    fold = data.frame(id=1:10, a=rep.int(1, 10), b=rep.int(0, 10))
+    d = list(data=fold, performance=c("a", "b"), minimize=T, best=rep.int("a", 10), ids=c("id"))
     class(d) = "llama.data"
-    e = list(data=fold, performance=c("a", "b"), minimize=F, best=rep.int("a", 10))
+    e = list(data=fold, performance=c("a", "b"), minimize=F, best=rep.int("a", 10), ids=c("id"))
     class(e) = "llama.data"
 
     preds = singleBest(d)
-    expect_true(all(sapply(1:length(preds), function(i) {
-        preds[[i]] == data.frame(algorithm="b", score=1)
-    })))
+    by(preds, preds$id, function(ss) {
+        expect_equal(ss$algorithm, factor("b"))
+        expect_equal(ss$score, 1)
+    })
     preds = singleBest(e)
-    expect_true(all(sapply(1:length(preds), function(i) {
-        preds[[i]] == data.frame(algorithm="a", score=1)
-    })))
+    by(preds, preds$id, function(ss) {
+        expect_equal(ss$algorithm, factor("a"))
+        expect_equal(ss$score, 1)
+    })
 })
 
 test_that("single best works with best list", {
-    fold = data.frame(a=rep.int(1, 10), b=rep.int(0, 10))
-    d = list(data=fold, performance=c("a", "b"), minimize=T)
+    fold = data.frame(id=1:10, a=rep.int(1, 10), b=rep.int(0, 10))
+    d = list(data=fold, performance=c("a", "b"), minimize=T, ids=c("id"))
     d$best = bestlistlong
     class(d) = "llama.data"
-    e = list(data=fold, performance=c("a", "b"), minimize=F)
+    e = list(data=fold, performance=c("a", "b"), minimize=F, ids=c("id"))
     e$best = bestlistlong
     class(e) = "llama.data"
 
     preds = singleBest(d)
-    expect_true(all(sapply(1:length(preds), function(i) {
-        preds[[i]] == data.frame(algorithm="b", score=1)
-    })))
+    by(preds, preds$id, function(ss) {
+        expect_equal(ss$algorithm, factor("b"))
+        expect_equal(ss$score, 1)
+    })
     preds = singleBest(e)
-    expect_true(all(sapply(1:length(preds), function(i) {
-        preds[[i]] == data.frame(algorithm="a", score=1)
-    })))
+    by(preds, preds$id, function(ss) {
+        expect_equal(ss$algorithm, factor("a"))
+        expect_equal(ss$score, 1)
+    })
 })
 
 test_that("single best by count returns the single best", {
-    d = list(data=data.frame(a=c(1,2,3), b=c(2,2,3)),
-             performance=c("a", "b"), minimize=T)
+    d = list(data=data.frame(id=1:3, a=c(1,2,3), b=c(2,2,3)),
+             performance=c("a", "b"), minimize=T, ids=c("id"))
     d$best = rep.int("a", 3)
     class(d) = "llama.data"
 
     preds = singleBestByCount(d)
-    expect_true(all(sapply(1:length(preds), function(i) {
-        preds[[i]] == data.frame(algorithm="a", score=1)
-    })))
+    by(preds, preds$id, function(ss) {
+        expect_equal(ss$algorithm, factor("a"))
+        expect_equal(ss$score, 1)
+    })
 })
 
 test_that("single best by count works with best list", {
-    d = list(data=data.frame(a=c(1,2,3), b=c(2,2,3)),
-             performance=c("a", "b"), minimize=T)
+    d = list(data=data.frame(id=1:3, a=c(1,2,3), b=c(2,2,3)),
+             performance=c("a", "b"), minimize=T, ids=c("id"))
     d$best = bestlist
     class(d) = "llama.data"
 
     preds = singleBestByCount(d)
-    expect_true(all(sapply(1:length(preds), function(i) {
-        preds[[i]] == data.frame(algorithm="a", score=1)
-    })))
+    by(preds, preds$id, function(ss) {
+        expect_equal(ss$algorithm, factor("a"))
+        expect_equal(ss$score, 1)
+    })
 })
 
 test_that("single best by par returns the single best", {
-    fold = data.frame(a=rep.int(1, 10), b=rep.int(0, 10),
+    fold = data.frame(id=1:10, a=rep.int(1, 10), b=rep.int(0, 10),
         d=rep.int(F, 10), e=rep.int(T, 10))
-    d = list(data=fold, performance=c("a", "b"), success=c("d", "e"), best=rep.int("a", 10))
+    d = list(data=fold, performance=c("a", "b"), success=c("d", "e"), best=rep.int("a", 10), ids=c("id"))
     class(d) = "llama.data"
 
     preds = singleBestByPar(d)
-    expect_true(all(sapply(1:length(preds), function(i) {
-        preds[[i]] == data.frame(algorithm="b", score=1)
-    })))
+    by(preds, preds$id, function(ss) {
+        expect_equal(ss$algorithm, factor("b"))
+        expect_equal(ss$score, 1)
+    })
 })
 
 test_that("single best by par works with best list", {
-    fold = data.frame(a=rep.int(1, 10), b=rep.int(0, 10),
+    fold = data.frame(id=1:10, a=rep.int(1, 10), b=rep.int(0, 10),
         d=rep.int(F, 10), e=rep.int(T, 10))
-    d = list(data=fold, performance=c("a", "b"), success=c("d", "e"))
+    d = list(data=fold, performance=c("a", "b"), success=c("d", "e"), ids=c("id"))
     d$best = bestlistlong
     class(d) = "llama.data"
 
     preds = singleBestByPar(d)
-    expect_true(all(sapply(1:length(preds), function(i) {
-        preds[[i]] == data.frame(algorithm="b", score=1)
-    })))
+    by(preds, preds$id, function(ss) {
+        expect_equal(ss$algorithm, factor("b"))
+        expect_equal(ss$score, 1)
+    })
 })
 
 test_that("single best by par works with train/test split", {
-    fold = data.frame(a=rep.int(1, 10), b=rep.int(0, 10),
+    fold = data.frame(id=1:10, a=rep.int(1, 10), b=rep.int(0, 10),
         d=rep.int(F, 10), e=rep.int(T, 10))
-    d = list(data=rbind(fold, fold), test=list(1:5), train=list(6:10),
-        performance=c("a", "b"), success=c("d", "e"))
+    d = list(data=fold, test=list(1:5), train=list(6:10),
+        performance=c("a", "b"), success=c("d", "e"), ids=c("id"))
     d$best = bestlistlong
     class(d) = "llama.data"
 
     preds = singleBestByPar(d)
-    expect_true(all(sapply(1:length(preds), function(i) {
-        preds[[i]] == data.frame(algorithm="b", score=1)
-    })))
+    by(preds, preds$id, function(ss) {
+        expect_equal(ss$algorithm, factor("b"))
+        expect_equal(ss$score, 1)
+    })
 })
 
 test_that("single best by par raises error without data", {
@@ -141,28 +154,30 @@ test_that("single best by par raises error without data", {
 })
 
 test_that("single best by successes returns the single best", {
-    fold = data.frame(a=rep.int(1, 10), b=rep.int(0, 10),
+    fold = data.frame(id=1:10, a=rep.int(1, 10), b=rep.int(0, 10),
         d=rep.int(F, 10), e=rep.int(T, 10))
-    d = list(data=fold, performance=c("a", "b"), success=c("d", "e"), best=rep.int("a", 10))
+    d = list(data=fold, performance=c("a", "b"), success=c("d", "e"), best=rep.int("a", 10), ids=c("id"))
     class(d) = "llama.data"
 
     preds = singleBestBySuccesses(d)
-    expect_true(all(sapply(1:length(preds), function(i) {
-        preds[[i]] == data.frame(algorithm="b", score=1)
-    })))
+    by(preds, preds$id, function(ss) {
+        expect_equal(ss$algorithm, factor("b"))
+        expect_equal(ss$score, 1)
+    })
 })
 
 test_that("single best by successes works with best list", {
-    fold = data.frame(a=rep.int(1, 10), b=rep.int(0, 10),
+    fold = data.frame(id=1:10, a=rep.int(1, 10), b=rep.int(0, 10),
         d=rep.int(F, 10), e=rep.int(T, 10))
-    d = list(data=fold, performance=c("a", "b"), success=c("d", "e"))
+    d = list(data=fold, performance=c("a", "b"), success=c("d", "e"), ids=c("id"))
     d$best = bestlistlong
     class(d) = "llama.data"
 
     preds = singleBestBySuccesses(d)
-    expect_true(all(sapply(1:length(preds), function(i) {
-        preds[[i]] == data.frame(algorithm="b", score=1)
-    })))
+    by(preds, preds$id, function(ss) {
+        expect_equal(ss$algorithm, factor("b"))
+        expect_equal(ss$score, 1)
+    })
 })
 
 test_that("single best by successes raises error without data", {
@@ -188,7 +203,7 @@ test_that("break best ties accepts fold argument", {
 })
 
 test_that("predTable tabulates", {
-    d = list(best=bestlist)
+    d = list(data=data.frame(id=1:3), best=bestlist, ids=c("id"))
     class(d) = "llama.data"
     preds = vbs(d)
 
@@ -200,14 +215,16 @@ test_that("predTable tabulates", {
     expect_equal(as.vector(tab2), c(2, 2))
     expect_equal(names(tab2), c("a", "b"))
 
-    as = rep.int(list(data.frame(algorithm="a", score = 1)), 6)
-    bs = rep.int(list(data.frame(algorithm="b", score = 1)), 4)
-    preds = list(as, bs)
+    preds = data.frame(id=1:3, algorithm=c("a", "a", "b"), score = 1, iteration=1)
     tab3 = predTable(preds)
-    expect_equal(as.vector(tab3), c(6, 4))
+    expect_equal(as.vector(tab3), c(2, 1))
     expect_equal(names(tab3), c("a", "b"))
 
-    tab4 = predTable(preds, FALSE)
-    expect_equal(as.vector(tab4), c(6, 4))
+    preds = data.frame(id=c(1, 2, 3, 3), algorithm=c("a", "a", "a", "b"), score = 1, iteration=1)
+    tab4 = predTable(preds)
+    expect_equal(as.vector(tab4), c(3, 0))
     expect_equal(names(tab4), c("a", "b"))
+    tab5 = predTable(preds, FALSE)
+    expect_equal(as.vector(tab5), c(3, 1))
+    expect_equal(names(tab5), c("a", "b"))
 })

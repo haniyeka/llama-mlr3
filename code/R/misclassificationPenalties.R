@@ -8,32 +8,25 @@ function(data=NULL, model=NULL, addCosts=NULL) {
         predictions = model$predictions
     } else {
         if(length(data$test) > 0) {
-            predictions = lapply(data$test, function(x) {
+            predictions = do.call(rbind, lapply(data$test, function(x) {
                 data$data = data$data[x,]
                 model(data)
-            })
+            }))
         } else {
             predictions = model(data)
         }
     }
 
-    if(length(data$test) == 0) {
-        data$test = list(1:nrow(data$data))
-        predictions = list(predictions)
-    }
-
     optfun = if(data$minimize) { min } else { max }
-
-    return(unlist(lapply(1:length(data$test), function(i) {
-        perfs = data$data[data$test[[i]],][data$performance]
-        opts = apply(perfs, 1, optfun)
-        chosen = sapply(predictions[[i]], function(x) { as.character(x$algorithm[1]) })
-        sapply(1:length(data$test[[i]]), function(j) {
-            if(is.na(chosen[j])) {
-                0
-            } else {
-                as.numeric(abs(perfs[j,chosen[j]] - opts[j]))
-            }
-        })
-    })))
+    perfs = data$data[data$performance]
+    opts = apply(perfs, 1, optfun)
+    chosen = as.character(unlist(tapply(predictions$algorithm, predictions[data$ids],
+        head, 1, simplify = FALSE)))
+    sapply(1:nrow(perfs), function(i) {
+        if(is.na(chosen[i])) {
+            0
+        } else {
+            as.numeric(abs(perfs[i,chosen[i]] - opts[i]))
+        }
+    })
 }

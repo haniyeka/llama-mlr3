@@ -16,32 +16,75 @@ test_that("cluster raises error with unknown bestBy", {
 
 test_that("cluster finds best for cluster", {
     res = cluster(testclusterer, g)
-    expect_true(all(sapply(1:length(res$predictions), function(i) { sapply(res$predictions[[i]], function(x) { x == data.frame(algorithm=c("c", "b"), score=c(0, 10)) }) })))
+    algs = c("c", "b")
+    expect_equal(unique(res$predictions$id), 11:20)
+    by(res$predictions, res$predictions$id, function(ss) {
+        expect_equal(ss$algorithm, factor(algs, levels=algs))
+        expect_equal(ss$score, c(0, 10))
+    })
 })
 
 test_that("cluster finds best by count for cluster", {
     res = cluster(testclusterer, g, bestBy="count")
-    expect_true(all(sapply(1:length(res$predictions), function(i) { sapply(res$predictions[[i]], function(x) { x == data.frame(algorithm="b", score=10) }) })))
+    expect_equal(unique(res$predictions$id), 11:20)
+    by(res$predictions, res$predictions$id, function(ss) {
+        expect_equal(ss$algorithm, factor("b"))
+        expect_equal(ss$score, 10)
+    })
 })
 
 test_that("cluster finds best by successes for cluster", {
     res = cluster(testclusterer, g, bestBy="successes")
-    expect_true(all(sapply(1:length(res$predictions), function(i) { sapply(res$predictions[[i]], function(x) { x == data.frame(algorithm=c("b", "c"), score=c(10, 0)) }) })))
+    expect_equal(unique(res$predictions$id), 11:20)
+    by(res$predictions, res$predictions$id, function(ss) {
+        expect_equal(ss$algorithm, factor(c("b", "c")))
+        expect_equal(ss$score, c(10, 0))
+    })
 })
 
 test_that("cluster returns predictor", {
     res = cluster(testclusterer, g)
-    expect_true(all(sapply(res$predictor(foldg), function(x) { x == data.frame(algorithm=c("c", "b"), score=c(0, 20)) })))
+    algs = c("c", "b")
+    foldg$id = 1:10
+    preds = res$predictor(foldg)
+    expect_equal(unique(preds$id), 1:10)
+    by(preds, preds$id, function(ss) {
+        expect_equal(ss$algorithm, factor(algs, levels=algs))
+        expect_equal(ss$score, c(0, 20))
+    })
 })
 
 test_that("cluster takes list of clusterers", {
     res = cluster(list(testclusterer, testclusterer, testclusterer), g)
-    expect_true(all(sapply(1:length(res$predictions), function(i) { sapply(res$predictions[[i]], function(x) { x == data.frame(algorithm=c("c", "b"), score=c(0, 30)) }) })))
-    expect_true(all(sapply(res$predictor(foldg), function(x) { x == data.frame(algorithm=c("c", "b"), score=c(0, 60)) })))
+    algs = c("c", "b")
+    expect_equal(unique(res$predictions$id), 11:20)
+    by(res$predictions, res$predictions$id, function(ss) {
+        expect_equal(ss$algorithm, factor(algs, levels=algs))
+        expect_equal(ss$score, c(0, 30))
+    })
+
+    foldg$id = 1:10
+    preds = res$predictor(foldg)
+    expect_equal(unique(preds$id), 1:10)
+    by(preds, preds$id, function(ss) {
+        expect_equal(ss$algorithm, factor(algs, levels=algs))
+        expect_equal(ss$score, c(0, 60))
+    })
 })
 
 test_that("cluster takes list of clusterers and combinator", {
     res = cluster(list(testclusterer, testclusterer, testclusterer, .combine=idtestclassifier), g)
-    expect_true(all(sapply(1:length(res$predictions), function(i) { sapply(res$predictions[[i]], function(x) { x == data.frame(algorithm="c", score=1) }) })))
-    expect_true(all(sapply(res$predictor(foldg), function(x) { x == data.frame(algorithm="c", score=1) })))
+    expect_equal(unique(res$predictions$id), 11:20)
+    by(res$predictions, res$predictions$id, function(ss) {
+        expect_equal(ss$algorithm, factor("c"))
+        expect_equal(ss$score, 1)
+    })
+
+    foldg$id = 1:10
+    preds = res$predictor(foldg)
+    expect_equal(unique(preds$id), 1:10)
+    by(preds, preds$id, function(ss) {
+        expect_equal(ss$algorithm, factor("c"))
+        expect_equal(ss$score, 1)
+    })
 })

@@ -1,11 +1,21 @@
 test_that("classifyPairs classifies", {
     res = classifyPairs(classifier=idtestclassifier, d)
-    expect_true(all(sapply(1:length(res$predictions), function(i) { sapply(res$predictions[[i]], function(x) { x == data.frame(algorithm="b", score=1) }) })))
+    expect_equal(unique(res$predictions$id), 11:20)
+    by(res$predictions, res$predictions$id, function(ss) {
+        expect_equal(ss$algorithm, factor(c("b", "c")))
+        expect_equal(ss$score, c(1, 0))
+    })
 })
 
 test_that("classifyPairs returns predictor", {
     res = classifyPairs(classifier=idtestclassifier, d)
-    expect_true(all(sapply(res$predictor(fold), function(x) { x == data.frame(algorithm="b", score=1) })))
+    fold$id = 1:10
+    preds = res$predictor(fold)
+    expect_equal(unique(preds$id), 1:10)
+    by(preds, preds$id, function(ss) {
+        expect_equal(ss$algorithm, factor(c("b", "c")))
+        expect_equal(ss$score, c(1, 0))
+    })
 })
 
 test_that("classifyPairs raises error without classifier", {
@@ -22,13 +32,34 @@ test_that("classifyPairs raises error without train/test split", {
 
 test_that("classifyPairs respects minimize", {
     res = classifyPairs(classifier=idtestclassifier, d)
-    expect_true(all(sapply(1:length(res$predictions), function(i) { sapply(res$predictions[[i]], function(x) { x == data.frame(algorithm="b", score=1) }) })))
-    expect_true(all(sapply(res$predictor(fold), function(x) { x == data.frame(algorithm="b", score=1) })))
+    expect_equal(unique(res$predictions$id), 11:20)
+    by(res$predictions, res$predictions$id, function(ss) {
+        expect_equal(ss$algorithm, factor(c("b", "c")))
+        expect_equal(ss$score, c(1, 0))
+    })
+
+    fold$id = 1:10
+    preds = res$predictor(fold)
+    expect_equal(unique(preds$id), 1:10)
+    by(preds, preds$id, function(ss) {
+        expect_equal(ss$algorithm, factor(c("b", "c")))
+        expect_equal(ss$score, c(1, 0))
+    })
 })
 
 test_that("classifyPairs allows combination function", {
     res = classifyPairs(classifier=idtestclassifier, e, combinator=othertestclassifier)
-    expectedDf = data.frame(algorithm=c("a", "b"), score=c(1, 0))
-    expect_true(all(sapply(1:length(res$predictions), function(i) { sapply(res$predictions[[i]], function(x) { x == expectedDf }) })))
-    expect_true(all(sapply(res$predictor(folde), function(x) { x == expectedDf })))
+    expect_equal(unique(res$predictions$id), 11:20)
+    by(res$predictions, res$predictions$id, function(ss) {
+        expect_equal(ss$algorithm, factor(c("a", "b")))
+        expect_equal(ss$score, c(1, 0))
+    })
+
+    fold$id = 1:10
+    preds = res$predictor(fold)
+    expect_equal(unique(preds$id), 1:10)
+    by(preds, preds$id, function(ss) {
+        expect_equal(ss$algorithm, factor(c("a", "b")))
+        expect_equal(ss$score, c(1, 0))
+    })
 })

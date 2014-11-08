@@ -31,9 +31,10 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
     bestfun = function(ss) { setNames(data.frame(as.table(innerbest(ss))), predNames) }
 
     i = 1 # prevent warning when checking package
-    predictions = parallelMap(function(i) {
+    predictions = do.call(rbind, parallelMap(function(i) {
         trf = pre(data$data[data$train[[i]],][data$features])
         tsf = pre(data$data[data$test[[i]],][data$features], trf$meta)
+        ids = data$data[data$test[[i]],][data$ids]
 
         trainpredictions = matrix(nrow=nrow(trf$features), ncol=length(clusterer))
         ensemblepredictions = list()
@@ -80,16 +81,20 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
                 }
             }
             preds = predict(combinedmodel, newdata=cbind(tsf$features, data.frame(featureData)))$data$response
-            combinedpredictions = lapply(preds, function(l) { setNames(data.frame(table(l)), predNames) })
+            combinedpredictions = do.call(rbind, lapply(1:length(preds), function(j) {
+                tab = table(preds[j,drop=F])
+                data.frame(ids[j,,drop=F], algorithm=names(tab), score=as.vector(tab), iteration=i, row.names = NULL)
+            }))
         } else {
-            combinedpredictions = Reduce(function(x, y) {
-                lapply(1:length(x), function(k) {
-                    aggregate(data=rbind(x[[k]], y[[k]]), as.formula(paste(predNames[2], predNames[1], sep="~")), sum)
-                })
-            }, ensemblepredictions)
+            combinedpredictions = do.call(rbind, lapply(1:nrow(ids), function(j) {
+                df = do.call(rbind, lapply(ensemblepredictions, function(x) { x[[j]] }))
+                df = aggregate(data=df, as.formula(paste(predNames[2], predNames[1], sep="~")), sum)
+                df$iteration = i
+                cbind(ids[j,,drop=F], df, row.names = NULL)
+            }))
         }
-        return(list(combinedpredictions))
-    }, 1:length(data$train), simplify=T)
+        return(combinedpredictions)
+    }, 1:length(data$train)))
 
     fs = pre(data$data[data$features])
     models = lapply(1:length(clusterer), function(i) {
@@ -120,6 +125,7 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
 
     predictor = function(x) {
         tsf = pre(x[data$features], fs$meta)
+        ids = x[data$ids]
         ensemblepredictions = list()
         for(j in 1:length(clusterer)) {
             ensemblepredictions[[j]] = models[[j]](tsf$features)
@@ -132,13 +138,17 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
                 }
             }
             preds = predict(combinedmodel, newdata=cbind(tsf$features, data.frame(featureData)))$data$response
-            combinedpredictions = lapply(preds, function(l) { setNames(data.frame(table(l)), predNames) })
+            combinedpredictions = do.call(rbind, lapply(1:length(preds), function(j) {
+                tab = table(preds[j,drop=F])
+                data.frame(ids[j,,drop=F], algorithm=names(tab), score=as.vector(tab), iteration=1, row.names = NULL)
+            }))
         } else {
-            combinedpredictions = Reduce(function(x, y) {
-                lapply(1:length(x), function(k) {
-                    aggregate(data=rbind(x[[k]], y[[k]]), as.formula(paste(predNames[2], predNames[1], sep="~")), sum)
-                })
-            }, ensemblepredictions)
+            combinedpredictions = do.call(rbind, lapply(1:nrow(ids), function(j) {
+                df = do.call(rbind, lapply(ensemblepredictions, function(x) { x[[j]] }))
+                df = aggregate(data=df, as.formula(paste(predNames[2], predNames[1], sep="~")), sum)
+                df$iteration = 1
+                cbind(ids[j,,drop=F], df, row.names = NULL)
+            }))
         }
         return(combinedpredictions)
     }

@@ -1,11 +1,21 @@
 test_that("regressionPairs predicts", {
     res = regressionPairs(regressor=testregressor, d)
-    expect_true(all(sapply(1:length(res$predictions), function(i) { sapply(res$predictions[[i]], function(x) { x == data.frame(algorithm=c("c", "b"), score=c(1, -1)) }) })))
+    expect_equal(unique(res$predictions$id), 11:20)
+    by(res$predictions, res$predictions$id, function(ss) {
+        expect_equal(ss$algorithm, factor(c("c", "b")))
+        expect_equal(ss$score, c(1, -1))
+    })
 })
 
 test_that("regressionPairs returns predictor", {
     res = regressionPairs(regressor=testregressor, d)
-    expect_true(all(sapply(res$predictor(fold), function(x) { x == data.frame(algorithm=c("c", "b"), score=c(1, -1)) })))
+    fold$id = 1:10
+    preds = res$predictor(fold)
+    expect_equal(unique(preds$id), 1:10)
+    by(preds, preds$id, function(ss) {
+        expect_equal(ss$algorithm, factor(c("c", "b")))
+        expect_equal(ss$score, c(1, -1))
+    })
 })
 
 test_that("regressionPairs raises error without regressor", {
@@ -24,18 +34,41 @@ test_that("regressionPairs raises error without train/test split", {
 })
 
 test_that("regressionPairs respects minimize", {
-    fold = data.frame(a=rep.int(0, 10), best=rep.int("bar", 10), foo=rep.int(0, 10), bar=rep.int(1, 10))
-    d = list(data=rbind(fold, fold), train=list(1:nrow(fold)), test=list(1:nrow(fold) + nrow(fold)), features=c("a"), performance=c("foo", "bar"), minimize=F)
+    fold = data.frame(a=rep.int(0, 10), best=rep.int("b", 10), foo=rep.int(2, 10), bar=rep.int(1, 10))
+    d = list(data=rbind(cbind(fold, id=1:10), cbind(fold, id=11:20)),
+        train=list(1:nrow(fold)), test=list(1:nrow(fold) + nrow(fold)),
+        features=c("a"), performance=c("foo", "bar"), minimize=F, ids=c("id"))
     class(d) = "llama.data"
     attr(d, "hasSplits") = TRUE
     res = regressionPairs(regressor=testregressor, d)
-    expect_true(all(sapply(1:length(res$predictions), function(i) { sapply(res$predictions[[i]], function(x) { x == data.frame(algorithm=c("bar", "foo"), score=c(1, -1)) }) })))
-    expect_true(all(sapply(res$predictor(fold), function(x) { x == data.frame(algorithm=c("bar", "foo"), score=c(1, -1)) })))
+    expect_equal(unique(res$predictions$id), 11:20)
+    by(res$predictions, res$predictions$id, function(ss) {
+        expect_equal(ss$algorithm, factor(c("foo", "bar")))
+        expect_equal(ss$score, c(1, -1))
+    })
+
+    fold$id = 1:10
+    preds = res$predictor(fold)
+    expect_equal(unique(preds$id), 1:10)
+    by(preds, preds$id, function(ss) {
+        expect_equal(ss$algorithm, factor(c("foo", "bar")))
+        expect_equal(ss$score, c(1, -1))
+    })
 })
 
 test_that("regressionPairs allows combine classifier", {
     res = regressionPairs(regressor=testregressor, d, combine=idtestclassifier)
-    expectedDf = data.frame(algorithm=c("b", "c"), score=c(1, 0))
-    expect_true(all(sapply(1:length(res$predictions), function(i) { sapply(res$predictions[[i]], function(x) { x == expectedDf }) })))
-    expect_true(all(sapply(res$predictor(fold), function(x) { x == expectedDf })))
+    expect_equal(unique(res$predictions$id), 11:20)
+    by(res$predictions, res$predictions$id, function(ss) {
+        expect_equal(ss$algorithm, factor(c("b", "c")))
+        expect_equal(ss$score, c(1, 0))
+    })
+
+    fold$id = 1:10
+    preds = res$predictor(fold)
+    expect_equal(unique(preds$id), 1:10)
+    by(preds, preds$id, function(ss) {
+        expect_equal(ss$algorithm, factor(c("b", "c")))
+        expect_equal(ss$score, c(1, 0))
+    })
 })
