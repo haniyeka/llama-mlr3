@@ -53,6 +53,7 @@ what was specified when the LLAMA data frame was created.
 
 The evaluation across the training and test sets will be parallelized
 automatically if a suitable backend for parallel computation is loaded.
+The \code{parallelMap} level is "llama-fold".
 
 If the given classifier supports case weights and \code{use.weights} is
 \code{TRUE}, the performance difference between the best and the worst algorithm
