@@ -88,7 +88,8 @@ saved in a different file.
  algorithm with a score of 1.}
  \item{predictor}{a function that encapsulates the model learned on the
  \emph{entire} data set. Can be called with data for the same features with the
- same feature names as the training data to obtain predictions.}
+ same feature names as the training data to obtain predictions in the same
+ format as the \code{predictions} member.}
  \item{models}{the list of models trained on the \emph{entire} data set. This is
  meant for debugging/inspection purposes and does not include any models used to
  combine predictions of individual models.}
