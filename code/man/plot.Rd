@@ -66,6 +66,7 @@ folds = cvFolds(satsolvers)
 model = classify(classifier=makeLearner("classif.J48"), data=folds)
 
 # Simple plot to compare our selector to the single best in terms of PAR10 score
+library(ggplot2)
 perfScatterPlot(parscores,
         model, singleBest,
         folds, satsolvers) +
