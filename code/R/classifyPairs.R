@@ -64,7 +64,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
             }))
         } else {
             combinedpredictions = do.call(rbind, lapply(1:nrow(pairpredictions), function(j) {
-                tab = as.table(sort(table(pairpredictions[j,]), decreasing=T))
+                tab = as.table(sort(table(unlist(pairpredictions[j,])), decreasing=T))
                 data.frame(ids[j,,drop=F], algorithm=names(tab), score=as.vector(tab), iteration=i, row.names = NULL)
             }))
         }
@@ -124,7 +124,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
             }))
         } else {
             combinedpredictions = do.call(rbind, lapply(1:nrow(pairpredictions), function(j) {
-                tab = as.table(sort(table(pairpredictions[j,]), decreasing=T))
+                tab = as.table(sort(table(unlist(pairpredictions[j,])), decreasing=T))
                 data.frame(ids[j,,drop=F], algorithm=names(tab), score=as.vector(tab), iteration=1, row.names = NULL)
             }))
         }
