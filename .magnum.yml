@@ -13,3 +13,4 @@ install:
   - java -cp /usr/local/lib/R/site-library/RWekajars/java/weka.jar weka.core.WekaPackageManager -install-package XMeans
 script:
   - ./travis-tool.sh run_tests
+  - R_CHECK_ARGS="" ./travis-tool.sh run_tests
