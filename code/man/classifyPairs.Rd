@@ -70,12 +70,14 @@ other models, followed by the number of the fold. Each model for each fold is
 saved in a different file.
 }
 \value{
- \item{predictions}{a list of lists of data frames with the predictions for each
- test set. Each data frame has columns \code{algorithm} and \code{score} and is
- sorted according to preference, with the most preferred algorithm first. The
- score corresponds to the number of times the respective algorithm was predicted
- to be faster. If stacking is used, each data frame contains simply the best
- algorithm with a score of 1.}
+ \item{predictions}{a data frame with the predictions for each instance and test
+ set. The columns of the data frame are the instance ID columns (as determined
+ by \code{input}), the algorithm, the score of the algorithm, and the iteration
+ (e.g. the number of the fold for cross-validation). More than one prediction
+ may be made for each instance and iteration. The score corresponds to the
+ number of times the respective algorithm was predicted to be better. If
+ stacking is used, only the best algorithm for each algorithm-instance pair is
+ predicted with a score of 1.}
  \item{predictor}{a function that encapsulates the classifier learned on the
  \emph{entire} data set. Can be called with data for the same features with the
  same feature names as the training data to obtain predictions.}
