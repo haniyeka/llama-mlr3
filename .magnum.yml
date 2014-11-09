@@ -10,7 +10,7 @@ install:
   - ./travis-tool.sh github_package hadley/testthat
   - ./travis-tool.sh github_package hadley/assertthat
   - ./travis-tool.sh install_deps
-  - ./travis-tool.sh install_r e1071
+  - ./travis-tool.sh install_r e1071 kernlab
   - java -cp /usr/local/lib/R/site-library/RWekajars/java/weka.jar weka.core.WekaPackageManager -install-package XMeans
 script:
   - ./travis-tool.sh run_tests
