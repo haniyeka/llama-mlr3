@@ -79,7 +79,11 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
 
     predictor = function(x) {
         tsf = pre(x[data$features], fs$meta)
-        ids = x[data$ids]
+        if(length(intersect(colnames(x), data$ids)) > 0) {
+            ids = x[data$ids]
+        } else {
+            ids = data.frame(id = 1:nrow(x)) # don't have IDs, generate them
+        }
         performancePredictions = data.frame(row.names=1:nrow(tsf$features))
         for (i in 1:length(data$performance)) {
             performancePredictions[,i] = predict(models[[i]], newdata=tsf$features)$data$response

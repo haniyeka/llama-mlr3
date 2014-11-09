@@ -125,7 +125,11 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
 
     predictor = function(x) {
         tsf = pre(x[data$features], fs$meta)
-        ids = x[data$ids]
+        if(length(intersect(colnames(x), data$ids)) > 0) {
+            ids = x[data$ids]
+        } else {
+            ids = data.frame(id = 1:nrow(x)) # don't have IDs, generate them
+        }
         ensemblepredictions = list()
         for(j in 1:length(clusterer)) {
             ensemblepredictions[[j]] = models[[j]](tsf$features)

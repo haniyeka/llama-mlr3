@@ -18,6 +18,17 @@ test_that("regressionPairs returns predictor", {
     })
 })
 
+test_that("regressionPairs returns predictor that works without IDs", {
+    res = regressionPairs(regressor=testregressor, d)
+    fold$id = 1:10
+    preds = res$predictor(fold[d$features])
+    expect_equal(unique(preds$id), 1:10)
+    by(preds, preds$id, function(ss) {
+        expect_equal(ss$algorithm, factor(c("c", "b")))
+        expect_equal(ss$score, c(1, -1))
+    })
+})
+
 test_that("regressionPairs raises error without regressor", {
     expect_error(regressionPairs())
 })

@@ -54,6 +54,18 @@ test_that("cluster returns predictor", {
     })
 })
 
+test_that("cluster returns predictor that works without IDs", {
+    res = cluster(testclusterer, g)
+    algs = c("c", "b")
+    foldg$id = 1:10
+    preds = res$predictor(foldg[g$features])
+    expect_equal(unique(preds$id), 1:10)
+    by(preds, preds$id, function(ss) {
+        expect_equal(ss$algorithm, factor(algs, levels=algs))
+        expect_equal(ss$score, c(0, 20))
+    })
+})
+
 test_that("cluster takes list of clusterers", {
     res = cluster(list(testclusterer, testclusterer, testclusterer), g)
     algs = c("c", "b")

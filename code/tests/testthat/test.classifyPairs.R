@@ -18,6 +18,17 @@ test_that("classifyPairs returns predictor", {
     })
 })
 
+test_that("classifyPairs returns predictor that works without IDs", {
+    res = classifyPairs(classifier=idtestclassifier, d)
+    fold$id = 1:10
+    preds = res$predictor(fold[d$features])
+    expect_equal(unique(preds$id), 1:10)
+    by(preds, preds$id, function(ss) {
+        expect_equal(ss$algorithm, factor(c("b", "c")))
+        expect_equal(ss$score, c(1, 0))
+    })
+})
+
 test_that("classifyPairs raises error without classifier", {
     expect_error(classifyPairs())
 })
