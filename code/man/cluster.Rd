@@ -110,7 +110,7 @@ res = cluster(clusterer=makeLearner("cluster.XMeans"), data=folds, pre=normalize
 # the total number of successes
 sum(successes(folds, res))
 # predictions on the entire data set
-res$predictor(subset(satsolvers$data, TRUE, satsolvers$features))
+res$predictor(satsolvers$data[satsolvers$features])
 
 # determine best by number of successes
 res = cluster(clusterer=makeLearner("cluster.XMeans"), data=folds,

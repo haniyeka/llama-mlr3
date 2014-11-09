@@ -109,7 +109,7 @@ model = regressionPairs(regressor=makeLearner("regr.lm"), data=folds)
 # the total number of successes
 sum(successes(folds, model))
 # predictions on the entire data set
-model$predictor(subset(satsolvers$data, TRUE, satsolvers$features))
+model$predictor(satsolvers$data[satsolvers$features])
 
 # combine predictions using J48 induced classifier
 model = regressionPairs(regressor=makeLearner("regr.lm"), data=folds,

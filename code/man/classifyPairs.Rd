@@ -112,7 +112,7 @@ res = classifyPairs(classifier=makeLearner("classif.J48"), data=folds)
 # the total number of successes
 sum(successes(folds, res))
 # predictions on the entire data set
-res$predictor(subset(satsolvers$data, TRUE, satsolvers$features))
+res$predictor(satsolvers$data[satsolvers$features])
 
 # combine predictions using J48 induced classifier instead of majority vote
 res = classifyPairs(classifier=makeLearner("classif.J48"),
