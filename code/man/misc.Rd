@@ -58,10 +58,11 @@ algorithm. Set \code{bestOnly} to \code{TRUE} to tabulate only the best
 algorithm for each instance.
 }
 \value{
-A list of predictions, that is, data frames with columns \code{algorithm} and
-\code{score}. The data frames are sorted such that the most preferred algorithm
-is first. The score is 1 if the respective algorithm is chosen for the instance,
-0 otherwise.
+A data frame with the predictions for each instance. The columns of the data
+frame are the instance ID columns (as determined by \code{input}), the
+algorithm, the score of the algorithm, and the iteration (always 1). The score
+is 1 if the respective algorithm is chosen for the instance, 0 otherwise. More
+than one prediction may be made for each instance and iteration.
 
 For \code{predTable}, a table.
 }
