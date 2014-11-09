@@ -29,6 +29,22 @@ test_that("misclassificationPenalties works for test splits", {
     expect_equal(sum(misclassificationPenalties(dmeas, model)), 10)
 })
 
+test_that("misclassificationPenalties works for test splits that repeat", {
+    i = 0
+    model = function(data) {
+        i <<- i + 1
+        data.frame(id=data$data$id, algorithm="a", score=1, iteration=i)
+    }
+    class(model) = "llama.model"
+    attr(model, "hasPredictions") = FALSE
+    attr(model, "addCosts") = TRUE
+
+    d = dmeas
+    d$test = list(c(1,2), c(1,2), c(1,2))
+
+    expect_equal(sum(misclassificationPenalties(d, model)), 6)
+})
+
 test_that("misclassificationPenalties works with NA predictions", {
     nasmeas = data.frame(algorithm=rep.int(NA, 5), score=0, iteration=1)
     asmeas = data.frame(algorithm=rep.int("a", 5), score=1, iteration=1)

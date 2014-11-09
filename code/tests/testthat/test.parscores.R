@@ -90,7 +90,26 @@ test_that("parscores works for test splits", {
     attr(model, "hasPredictions") = FALSE
     attr(model, "addCosts") = TRUE
 
-    expect_equal(sum(parscores(dmeas, model)), 100)
+    d = dmeas
+    d$test = list(1:5)
+
+    expect_equal(sum(parscores(d, model)), 50)
+})
+
+test_that("parscores works for test splits that repeat", {
+    i = 0
+    model = function(data) {
+        i <<- i + 1
+        data.frame(id=data$data$id, algorithm="a", score=1, iteration=i)
+    }
+    class(model) = "llama.model"
+    attr(model, "hasPredictions") = FALSE
+    attr(model, "addCosts") = TRUE
+
+    d = dmeas
+    d$test = list(c(1,2), c(1,2), c(1,2))
+
+    expect_equal(sum(parscores(d, model)), 60)
 })
 
 test_that("parscores works with NA predictions", {

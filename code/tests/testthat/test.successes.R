@@ -79,7 +79,26 @@ test_that("successes works for test splits", {
     attr(model, "hasPredictions") = FALSE
     attr(model, "addCosts") = TRUE
 
-    expect_equal(sum(successes(dmeas, model)), 10)
+    d = dmeas
+    d$test = list(1:5)
+
+    expect_equal(sum(successes(d, model)), 5)
+})
+
+test_that("successes works for test splits that repeat", {
+    i = 0
+    model = function(data) {
+        i <<- i + 1
+        data.frame(id=data$data$id, algorithm="b", score=1, iteration=i)
+    }
+    class(model) = "llama.model"
+    attr(model, "hasPredictions") = FALSE
+    attr(model, "addCosts") = TRUE
+
+    d = dmeas
+    d$test = list(c(1,2), c(1,2), c(1,2))
+
+    expect_equal(sum(successes(d, model)), 6)
 })
 
 test_that("successes works with NA predictions", {

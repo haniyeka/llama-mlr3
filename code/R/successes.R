@@ -21,6 +21,7 @@ function(data=NULL, model=NULL, timeout=NULL, addCosts=NULL) {
         if(length(data$test) > 0) {
             predictions = do.call(rbind, lapply(data$test, function(x) {
                 data$data = data$data[x,]
+                data$best = data$best[x]
                 model(data)
             }))
         } else {
@@ -45,7 +46,7 @@ function(data=NULL, model=NULL, timeout=NULL, addCosts=NULL) {
 
     perfs = data$data[data$performance]
     successes = data$data[data$success]
-    chosen = unlist(tapply(predictions$algorithm, predictions[data$ids], function(ss) {
+    chosen = as.vector(by(predictions$algorithm, predictions[c(data$ids, "iteration")], function(ss) {
         idx = which(as.character(ss[1]) == data$performance)
         if(length(idx) == 0) { # NA prediction
             NA
@@ -58,12 +59,14 @@ function(data=NULL, model=NULL, timeout=NULL, addCosts=NULL) {
     } else {
         costs = apply(data$data[usedFeatures], 1, sum)
     }
-    sapply(1:nrow(perfs), function(i) {
+    sapply(1:length(chosen), function(i) {
         if(is.na(chosen[i])) {
             FALSE
         } else {
-            value = as.numeric(perfs[i,chosen[i]]) + costs[i]
-            if(!as.logical(successes[i,chosen[i]]) || value > timeout) {
+            ids = predictions[i,][data$ids]
+            idx = which(apply(data$data[data$ids], 1, function(x) { x == ids }))
+            value = as.numeric(perfs[idx,chosen[i]]) + costs[idx]
+            if(!as.logical(successes[idx,chosen[i]]) || value > timeout) {
                 FALSE
             } else {
                 TRUE
