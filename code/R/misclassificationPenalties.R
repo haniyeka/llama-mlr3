@@ -29,13 +29,13 @@ function(data=NULL, model=NULL, addCosts=NULL) {
             idx
         }
     }))
+    ids = predictions[data$ids]
+    idxs = which(apply(ids, 1, function(id) { any(data$data[data$ids] == id) }))
     sapply(1:length(chosen), function(i) {
         if(is.na(chosen[i])) {
             0
         } else {
-            ids = predictions[i,][data$ids]
-            idx = which(apply(data$data[data$ids], 1, function(x) { x == ids }))
-            as.numeric(abs(perfs[idx,chosen[i]] - opts[idx]))
+            as.numeric(abs(perfs[idxs[i],chosen[i]] - opts[idxs[i]]))
         }
     })
 }

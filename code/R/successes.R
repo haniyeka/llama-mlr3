@@ -59,14 +59,14 @@ function(data=NULL, model=NULL, timeout=NULL, addCosts=NULL) {
     } else {
         costs = apply(data$data[usedFeatures], 1, sum)
     }
+    ids = predictions[data$ids]
+    idxs = which(apply(ids, 1, function(id) { any(data$data[data$ids] == id) }))
     sapply(1:length(chosen), function(i) {
         if(is.na(chosen[i])) {
             FALSE
         } else {
-            ids = predictions[i,][data$ids]
-            idx = which(apply(data$data[data$ids], 1, function(x) { x == ids }))
-            value = as.numeric(perfs[idx,chosen[i]]) + costs[idx]
-            if(!as.logical(successes[idx,chosen[i]]) || value > timeout) {
+            value = as.numeric(perfs[idxs[i],chosen[i]]) + costs[idxs[i]]
+            if(!as.logical(successes[idxs[i],chosen[i]]) || value > timeout) {
                 FALSE
             } else {
                 TRUE
