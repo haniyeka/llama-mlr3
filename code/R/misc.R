@@ -115,8 +115,9 @@ function(predictions=NULL, bestOnly=TRUE) {
         stop("Need predictions to tabulate!")
     }
     if(bestOnly) {
-        ids = setdiff(names(predictions), c(predNames, "iteration"))
-        algorithms = unlist(tapply(predictions$algorithm, predictions[ids], head, 1, simplify = FALSE))
+        ids = setdiff(names(predictions), c(predNames))
+        lvls = levels(predictions$algorithm)
+        algorithms = factor(lvls[as.vector(by(predictions$algorithm, predictions[ids], head, 1))])
     } else {
         algorithms = predictions$algorithm
     }

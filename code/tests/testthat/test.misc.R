@@ -222,9 +222,29 @@ test_that("predTable tabulates", {
 
     preds = data.frame(id=c(1, 2, 3, 3), algorithm=c("a", "a", "a", "b"), score = 1, iteration=1)
     tab4 = predTable(preds)
-    expect_equal(as.vector(tab4), c(3, 0))
-    expect_equal(names(tab4), c("a", "b"))
+    expect_equal(as.vector(tab4), 3)
+    expect_equal(names(tab4), "a")
     tab5 = predTable(preds, FALSE)
     expect_equal(as.vector(tab5), c(3, 1))
     expect_equal(names(tab5), c("a", "b"))
+
+    i = 0
+    model = function(data) {
+        i <<- i + 1
+        data.frame(id=data$data$id, algorithm="a", score=1, iteration=i)
+    }
+    class(model) = "llama.model"
+    attr(model, "hasPredictions") = FALSE
+    attr(model, "addCosts") = TRUE
+
+    d = dmeas
+    d$test = list(c(1,2), c(1,2), c(1,2))
+    preds = do.call(rbind, lapply(d$test, function(x) {
+        d$data = d$data[x,]
+        d$best = d$best[x]
+        model(d)
+    }))
+    tab6 = predTable(preds)
+    expect_equal(as.vector(tab6), 6)
+    expect_equal(names(tab6), "a")
 })
