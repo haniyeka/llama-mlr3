@@ -10,7 +10,8 @@ features of the problem.
 \usage{
 regression(regressor = NULL, data = NULL,
     pre = function(x, y=NULL) { list(features=x) },
-    combine = NULL, expand = identity, save.models = NA)
+    combine = NULL, expand = identity, save.models = NA,
+    use.weights = TRUE)
 }
 \arguments{
   \item{regressor}{
@@ -38,6 +39,9 @@ regression(regressor = NULL, data = NULL,
   Whether to serialize and save the models trained during evaluation of the
   model. If not \code{NA}, will be used as a prefix for the file name.
 }
+  \item{use.weights}{
+  Whether to use instance weights if supported. Default \code{TRUE}.
+}
 }
 \details{
 \code{regression} takes \code{data} and processes it using \code{pre} (if
@@ -53,11 +57,11 @@ automatically if a suitable backend for parallel computation is loaded.
 If \code{combine} is not null, it is assumed to be an mlr classifier and will be
 used to learn a model to predict the best algorithm given the original features
 and the performance predictions for the individual algorithms. If this
-classifier supports weights, they will be passed as the difference between the
-best and the worst algorithm. Optionally, \code{expand} can be used to supply a
-function that will modify the predictions before giving them to the classifier,
-e.g. augment the performance predictions with the pairwise differences (see
-examples).
+classifier supports weights and \code{use.weights} is \code{TRUE}, they will be
+passed as the difference between the best and the worst algorithm. Optionally,
+\code{expand} can be used to supply a function that will modify the predictions
+before giving them to the classifier, e.g. augment the performance predictions
+with the pairwise differences (see examples).
 
 If \code{save.models} is not \code{NA}, the models trained during evaluation are
 serialized into files. Each file contains a list with members \code{model} (the

@@ -12,7 +12,7 @@ algorithm.
 \usage{
 regressionPairs(regressor = NULL, data = NULL,
     pre = function(x, y=NULL) { list(features=x) }, combine = NULL,
-    save.models = NA)
+    save.models = NA, use.weights = TRUE)
 }
 \arguments{
   \item{regressor}{
@@ -36,6 +36,9 @@ regressionPairs(regressor = NULL, data = NULL,
   Whether to serialize and save the models trained during evaluation of the
   model. If not \code{NA}, will be used as a prefix for the file name.
 }
+  \item{use.weights}{
+  Whether to use instance weights if supported. Default \code{TRUE}.
+}
 }
 \details{
 \code{regressionPairs} takes the training and test sets in \code{data} and
@@ -44,10 +47,11 @@ induce a regression model for each pair of algorithms to predict the performance
 difference between them. If \code{combine} is not supplied, the best overall
 algorithm is determined by summing the performance differences over all pairs
 for each algorithm and ranking them by this sum. The algorithm with the largest
-value is chosen. If it is supplied, it is assumed to be an mlr classifier. This classifier is
-passed the original features and the predictions for each pair of algorithms. If
-the classifier supports weights, the performance difference between the best and
-the worst algorithm is passed as weight.
+value is chosen. If it is supplied, it is assumed to be an mlr classifier. This
+classifier is passed the original features and the predictions for each pair of
+algorithms. If the classifier supports weights and \code{use.weights} is
+\code{TRUE}, the performance difference between the best and the worst algorithm
+is passed as weight.
 
 The aggregated score for each algorithm quantifies how much better it is than
 the other algorithms, where bigger values are better. Positive numbers denote

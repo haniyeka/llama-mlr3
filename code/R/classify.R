@@ -1,5 +1,5 @@
 classify <-
-function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }, save.models=NA) {
+function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }, save.models=NA, use.weights = TRUE) {
     if(!testClass(classifier, "Learner") && !testList(classifier, types="Learner")) {
         stop("Need classifier or list of classifiers!")
     }
@@ -29,7 +29,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
 
         trainBests = data.frame(target=factor(breakBestTies(data, i), levels=data$performance))
         for(j in 1:length(classifier)) {
-            if(hasProperties(classifier[[j]], "weights")) {
+            if(hasProperties(classifier[[j]], "weights") && use.weights) {
                 task = makeClassifTask(id="classify", target="target", weights = trw, data=cbind(trainBests, trf$features))
             } else {
                 task = makeClassifTask(id="classify", target="target", data=cbind(trainBests, trf$features))
@@ -44,7 +44,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
             ensemblepredictions[,j] = predict(model, newdata=tsf$features)$data$response
         }
         if(inherits(combinator, "Learner")) {
-            if(hasProperties(combinator, "weights")) {
+            if(hasProperties(combinator, "weights") && use.weights) {
                 task = makeClassifTask(id="classify", target="target", weights = trw, data=cbind(trainBests, trf$features, lapply(trainpredictions, factor, levels=data$performance)))
             } else {
                 task = makeClassifTask(id="classify", target="target", data=cbind(trainBests, trf$features, lapply(trainpredictions, factor, levels=data$performance)))
@@ -71,7 +71,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
     fp = data$data[data$performance]
     fw = abs(apply(fp, 1, max) - apply(fp, 1, min))
     models = lapply(1:length(classifier), function(i) {
-        if(hasProperties(classifier[[i]], "weights")) {
+        if(hasProperties(classifier[[i]], "weights") && use.weights) {
             task = task=makeClassifTask(id="classify", target="target", weights = fw, data=cbind(totalBests, fs$features))
         } else {
             task = task=makeClassifTask(id="classify", target="target", data=cbind(totalBests, fs$features))
@@ -83,7 +83,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
         for(i in 1:length(classifier)) {
             trainpredictions[,i] = predict(models[[i]], newdata=fs$features)$data$response
         }
-        if(hasProperties(combinator, "weights")) {
+        if(hasProperties(combinator, "weights") && use.weights) {
             task = makeClassifTask(id="classify", target="target", weights = fw, data=cbind(totalBests, fs$features, lapply(trainpredictions, factor, levels=data$performance)))
         } else {
             task = makeClassifTask(id="classify", target="target", data=cbind(totalBests, fs$features, lapply(trainpredictions, factor, levels=data$performance)))

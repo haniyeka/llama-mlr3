@@ -11,7 +11,7 @@ determine the best overall algorithm.
 \usage{
 classifyPairs(classifier = NULL, data = NULL,
     pre = function(x, y=NULL) { list(features=x) }, combinator = NULL,
-    save.models = NA)
+    save.models = NA, use.weights = TRUE)
 }
 \arguments{
   \item{classifier}{
@@ -34,6 +34,9 @@ classifyPairs(classifier = NULL, data = NULL,
   Whether to serialize and save the models trained during evaluation of the
   model. If not \code{NA}, will be used as a prefix for the file name.
 }
+  \item{use.weights}{
+  Whether to use instance weights if supported. Default \code{TRUE}.
+}
 }
 \details{
 \code{classifyPairs} takes the training and test sets in \code{data} and
@@ -51,9 +54,9 @@ what was specified when the LLAMA data frame was created.
 The evaluation across the training and test sets will be parallelized
 automatically if a suitable backend for parallel computation is loaded.
 
-If the given classifier supports case weights, the performance difference
-between the best and the worst algorithm is passed as a weight for each
-instance.
+If the given classifier supports case weights and \code{use.weights} is
+\code{TRUE}, the performance difference between the best and the worst algorithm
+is passed as a weight for each instance.
 
 Training this model can take a very long time. Given \code{n} algorithms,
 \code{choose(n, 2)} models are trained and evaluated. This is significantly

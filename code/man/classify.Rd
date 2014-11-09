@@ -10,7 +10,7 @@ features of the problem.
 \usage{
 classify(classifier = NULL, data = NULL,
     pre = function(x, y=NULL) { list(features=x) },
-    save.models = NA)
+    save.models = NA, use.weights = TRUE)
 }
 \arguments{
   \item{classifier}{
@@ -30,6 +30,9 @@ classify(classifier = NULL, data = NULL,
   Whether to serialize and save the models trained during evaluation of the
   model. If not \code{NA}, will be used as a prefix for the file name.
 }
+  \item{use.weights}{
+  Whether to use instance weights if supported. Default \code{TRUE}.
+}
 }
 \details{
 \code{classify} takes the training and test sets in \code{data} and
@@ -40,9 +43,9 @@ set(s).
 The evaluation across the training and test sets will be parallelized
 automatically if a suitable backend for parallel computation is loaded.
 
-If the given classifier supports case weights, the performance difference
-between the best and the worst algorithm is passed as a weight for each
-instance.
+If the given classifier supports case weights and \code{use.weights} is
+\code{TRUE}, the performance difference between the best and the worst algorithm
+is passed as a weight for each instance.
 
 If a list of classifiers is supplied in \code{classifier}, ensemble
 classification is performed. That is, the models are trained and used to make

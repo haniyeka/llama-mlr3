@@ -1,5 +1,5 @@
 regression <-
-function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }, combine=NULL, expand=identity, save.models=NA) {
+function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }, combine=NULL, expand=identity, save.models=NA, use.weights = TRUE) {
     if(!testClass(regressor, "Learner")) {
         stop("Need regressor!")
     }
@@ -34,7 +34,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
 
         if(!is.null(combine)) {
             trainBests = data.frame(target=factor(breakBestTies(data, i), levels=data$performance))
-            if(hasProperties(combine, "weights")) {
+            if(hasProperties(combine, "weights") && use.weights) {
                 task = makeClassifTask(id="regression", target="target", weights=trw, data=cbind(trainBests, trf$features, data.frame(expand(trainpredictions))))
             } else {
                 task = makeClassifTask(id="regression", target="target", data=cbind(trainBests, trf$features, data.frame(expand(trainpredictions))))
@@ -69,7 +69,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         for (i in 1:length(data$performance)) {
             trainpredictions[,i] = predict(models[[i]], newdata=fs$features)$data$response
         }
-        if(hasProperties(combine, "weights")) {
+        if(hasProperties(combine, "weights") && use.weights) {
             task = makeClassifTask(id="regression", target="target", weights=fw, data=cbind(totalBests, fs$features, data.frame(expand(trainpredictions))))
         } else {
             task = makeClassifTask(id="regression", target="target", data=cbind(totalBests, fs$features, data.frame(expand(trainpredictions))))
