@@ -38,7 +38,8 @@ A Game Theoretic Approach to Measure Contributions in Algorithm Portfolios.
 \emph{Technical Report RR-13-11, University of Oxford}.
 }
 \examples{
-\dontrun{
+limit = as.numeric(Sys.getenv("_R_CHECK_TIMINGS_"))
+if(is.na(limit) || limit == 0) {
 data(satsolvers)
 
 contributions(satsolvers)

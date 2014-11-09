@@ -64,7 +64,8 @@ Algorithm Selection for Combinatorial Search Problems: A survey.
 }
 \keyword{ package }
 \examples{
-\dontrun{
+limit = as.numeric(Sys.getenv("_R_CHECK_TIMINGS_"))
+if(is.na(limit) || limit == 0) {
 data(satsolvers)
 folds = cvFolds(satsolvers)
 
@@ -82,11 +83,7 @@ print(sum(successes(satsolvers, vbs, addCosts = FALSE)))
 # print predictions on the entire data set
 print(model$predictor(subset(satsolvers$data, TRUE, satsolvers$features)))
 
-# filter features and train a regression model
-library(FSelector)
-
-filtered = featureFilter(cfs, satsolvers)
-folds = cvFolds(filtered)
+# train a regression model
 model = regression(regressor=makeLearner("regr.lm"), data=folds)
 # print the total number of successes
 print(sum(successes(folds, model)))

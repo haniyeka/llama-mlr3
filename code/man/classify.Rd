@@ -96,7 +96,8 @@ Ensemble Classification for Constraint Solver Configuration.
 \emph{16th International Conference on Principles and Practices of Constraint Programming}, 321--329.
 }
 \examples{
-\dontrun{
+limit = as.numeric(Sys.getenv("_R_CHECK_TIMINGS_"))
+if(is.na(limit) || limit == 0) {
 data(satsolvers)
 folds = cvFolds(satsolvers)
 

@@ -58,7 +58,8 @@ Lars Kotthoff
 \code{\link{misclassificationPenalties}}, \code{\link{parscores}}
 }
 \examples{
-\dontrun{
+limit = as.numeric(Sys.getenv("_R_CHECK_TIMINGS_"))
+if(is.na(limit) || limit == 0) {
 data(satsolvers)
 folds = cvFolds(satsolvers)
 

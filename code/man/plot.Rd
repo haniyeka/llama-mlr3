@@ -59,7 +59,8 @@ Lars Kotthoff
 \code{\link{misclassificationPenalties}}, \code{\link{parscores}}, \code{\link{successes}}
 }
 \examples{
-\dontrun{
+limit = as.numeric(Sys.getenv("_R_CHECK_TIMINGS_"))
+if(is.na(limit) || limit == 0) {
 data(satsolvers)
 folds = cvFolds(satsolvers)
 model = classify(classifier=makeLearner("classif.J48"), data=folds)
