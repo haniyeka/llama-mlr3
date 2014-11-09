@@ -40,7 +40,7 @@ test_that("misclassificationPenalties works for test splits that repeat", {
     attr(model, "addCosts") = TRUE
 
     d = dmeas
-    d$test = list(c(1,2), c(1,2), c(1,2))
+    d$test = list(c(1,2), c(1,2), c(2,3))
 
     expect_equal(sum(misclassificationPenalties(d, model)), 6)
 })
