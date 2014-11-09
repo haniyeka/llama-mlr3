@@ -51,7 +51,7 @@ function(data=NULL, model=NULL, timeout=NULL, addCosts=NULL) {
     } else {
         costs = apply(data$data[usedFeatures], 1, sum)
     }
-    as.vector(by(predictions, predictions[c(data$ids, "iteration")], function(ss) {
+    as.vector(na.omit(as.vector(by(predictions, predictions[c(data$ids, "iteration")], function(ss) {
         pid = which(as.character(ss$algorithm[1]) == data$performance)
         if(length(pid) == 0) { # NA prediction
             FALSE
@@ -64,5 +64,5 @@ function(data=NULL, model=NULL, timeout=NULL, addCosts=NULL) {
                 TRUE
             }
         }
-    }))
+    }))))
 }
