@@ -46,30 +46,22 @@ function(data=NULL, model=NULL, factor=10, timeout=NULL, addCosts=NULL) {
 
     perfs = data$data[data$performance]
     successes = data$data[data$success]
-    chosen = as.vector(by(predictions$algorithm, predictions[c(data$ids, "iteration")], function(ss) {
-        idx = which(as.character(ss[1]) == data$performance)
-        if(length(idx) == 0) { # NA prediction
-            NA
-        } else {
-            idx
-        }
-    }))
     if(!addCosts || is.null(data$cost)) {
         costs = rep.int(0, nrow(perfs))
     } else {
         costs = apply(data$data[usedFeatures], 1, sum)
     }
-    ids = predictions[data$ids]
-    idxs = which(apply(ids, 1, function(id) { any(data$data[data$ids] == id) }))
-    sapply(1:length(chosen), function(i) {
-        if(is.na(chosen[i])) {
+    as.vector(by(predictions, predictions[c(data$ids, "iteration")], function(ss) {
+        pid = which(as.character(ss$algorithm[1]) == data$performance)
+        if(length(pid) == 0) { # NA prediction
             timeout * factor
         } else {
-            score = as.numeric(perfs[idxs[i],chosen[i]]) + costs[idxs[i]]
-            if(!as.logical(successes[idxs[i],chosen[i]]) || score > timeout) {
+            iid = which(ss[1,data$ids] == data$data[data$ids])
+            score = as.numeric(perfs[iid,pid]) + costs[iid]
+            if(!as.logical(successes[iid,pid]) || score > timeout) {
                 score = timeout * factor
             }
             score
         }
-    })
+    }))
 }

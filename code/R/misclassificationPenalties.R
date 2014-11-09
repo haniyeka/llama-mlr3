@@ -21,21 +21,13 @@ function(data=NULL, model=NULL, addCosts=NULL) {
     optfun = if(data$minimize) { min } else { max }
     perfs = data$data[data$performance]
     opts = apply(perfs, 1, optfun)
-    chosen = as.vector(by(predictions$algorithm, predictions[c(data$ids, "iteration")], function(ss) {
-        idx = which(as.character(ss[1]) == data$performance)
-        if(length(idx) == 0) { # NA prediction
-            NA
-        } else {
-            idx
-        }
-    }))
-    ids = predictions[data$ids]
-    idxs = which(apply(ids, 1, function(id) { any(data$data[data$ids] == id) }))
-    sapply(1:length(chosen), function(i) {
-        if(is.na(chosen[i])) {
+    as.vector(by(predictions, predictions[c(data$ids, "iteration")], function(ss) {
+        pid = which(as.character(ss$algorithm[1]) == data$performance)
+        if(length(pid) == 0) { # NA prediction
             0
         } else {
-            as.numeric(abs(perfs[idxs[i],chosen[i]] - opts[idxs[i]]))
+            iid = which(ss[1,data$ids] == data$data[data$ids])
+            as.numeric(abs(as.numeric(perfs[iid,pid]) - opts[iid]))
         }
-    })
+    }))
 }
