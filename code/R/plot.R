@@ -10,26 +10,24 @@ function(metric, modelx, modely, datax, datay=datax, addCostsx=NULL, addCostsy=N
         stop("Need data to plot performances!")
     }
 
-    idCols = setdiff(names(datax$data),
-        Reduce('union', list(datax$features, datax$performance, datax$success, datax$cost, "best")))
-    if(!all(idCols %in% names(datay$data))) {
-        stop("Cannot match up the two data frames!")
-    }
-
     if(length(datax$test) > 0) {
-        idsx = Reduce('rbind', datax$test)[idCols]
+        idsx = do.call(rbind, lapply(datax$test, function(x) {
+            datax$data[x,data$ids,drop=F]
+        }))
     } else {
-        idsx = datax$data[idCols]
+        idsx = datax$data[data$ids]
     }
     if(length(datay$test) > 0) {
-        idsy = Reduce('rbind', datay$test)[idCols]
+        idsy = do.call(rbind, lapply(datay$test, function(x) {
+            datay$data[x,data$ids,drop=F]
+        }))
     } else {
-        idsy = datay$data[idCols]
+        idsy = datay$data[data$ids]
     }
 
     scoresx = cbind(idsx, data.frame(scorex=metric(datax, modelx, addCosts=addCostsx, ...)))
     scoresy = cbind(idsy, data.frame(scorey=metric(datay, modely, addCosts=addCostsy, ...)))
 
-    d = merge(scoresx, scoresy, by=idCols)
+    d = merge(scoresx, scoresy, by=data$ids)
     ggplot(d, aes_string(x="scorex", y="scorey")) + geom_abline(slope = 1)
 }
