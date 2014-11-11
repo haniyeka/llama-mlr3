@@ -70,6 +70,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         for (i in 1:length(data$performance)) {
             trainpredictions[,i] = predict(models[[i]], newdata=fs$features)$data$response
         }
+        colnames(trainpredictions) = data$performance
         if(hasProperties(combine, "weights") && use.weights) {
             task = makeClassifTask(id="regression", target="target", weights=fw, data=cbind(totalBests, fs$features, data.frame(expand(trainpredictions))))
         } else {
