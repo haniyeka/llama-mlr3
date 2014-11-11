@@ -27,8 +27,8 @@ successes(data, model, timeout, addCosts = NULL)
       single best and virtual best).}
 }
 \details{
-Returns TRUE if the chosen algorithm successfully solved the problem instance,
-FALSE otherwise for each problem instance.
+Returns \code{TRUE} if the chosen algorithm successfully solved the problem
+instance, \code{FALSE} otherwise for each problem instance.
 
 If feature costs have been given and \code{addCosts} is \code{TRUE}, the cost of
 the used features or feature groups is added to the performance of the chosen
@@ -58,8 +58,7 @@ Lars Kotthoff
 \code{\link{misclassificationPenalties}}, \code{\link{parscores}}
 }
 \examples{
-limit = as.numeric(Sys.getenv("_R_CHECK_TIMINGS_"))
-if(is.na(limit) || limit == 0) {
+if(Sys.getenv("NOT_CRAN") == "true") {
 data(satsolvers)
 folds = cvFolds(satsolvers)
 

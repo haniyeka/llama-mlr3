@@ -49,8 +49,7 @@ A Simple Method for Regression Analysis with Censored Data.
 \emph{Technometrics} 21, no. 4, 417-432.
 }
 \examples{
-limit = as.numeric(Sys.getenv("_R_CHECK_TIMINGS_"))
-if(is.na(limit) || limit == 0) {
+if(Sys.getenv("NOT_CRAN") == "true") {
 data(satsolvers)
 imputed = imputeCensored(satsolvers)
 }

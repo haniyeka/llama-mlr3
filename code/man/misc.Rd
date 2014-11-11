@@ -70,8 +70,7 @@ For \code{predTable}, a table.
 Lars Kotthoff
 }
 \examples{
-limit = as.numeric(Sys.getenv("_R_CHECK_TIMINGS_"))
-if(is.na(limit) || limit == 0) {
+if(Sys.getenv("NOT_CRAN") == "true") {
 data(satsolvers)
 
 # number of total successes for virtual best solver

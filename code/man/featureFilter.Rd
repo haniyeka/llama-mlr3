@@ -35,8 +35,7 @@ features. The subset of the features chosen by the filter are saved in the
 Lars Kotthoff
 }
 \examples{
-limit = as.numeric(Sys.getenv("_R_CHECK_TIMINGS_"))
-if(is.na(limit) || limit == 0) {
+if(Sys.getenv("NOT_CRAN") == "true") {
 library(FSelector)
 
 data(satsolvers)

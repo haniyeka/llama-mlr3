@@ -1,3 +1,5 @@
+env: NOT_CRAN="true"
+
 before_install:
   - cd code/
   - curl -sOL http://raw.github.com/larskotthoff/r-travis/master/scripts/travis-tool.sh
@@ -14,4 +16,3 @@ install:
   - java -cp /usr/local/lib/R/site-library/RWekajars/java/weka.jar weka.core.WekaPackageManager -install-package XMeans
 script:
   - ./travis-tool.sh run_tests
-  - R_CHECK_ARGS="" ./travis-tool.sh run_tests

@@ -1,6 +1,3 @@
-limit = as.numeric(Sys.getenv("_R_CHECK_TIMINGS_"))
-if(is.na(limit) || limit == 0) {
-
 data(satsolvers)
 
 vbsp = sum(parscores(satsolvers, vbs))
@@ -8,6 +5,8 @@ vbsm = sum(misclassificationPenalties(satsolvers, vbs))
 vbss = sum(successes(satsolvers, vbs))
 
 test_that("singleBest and vbs", {
+    skip_on_cran()
+
     vbsse = sum(apply(satsolvers$data[satsolvers$success], 1, max))
     expect_equal(vbsse, 2125)
     expect_equal(vbss, 2125)
@@ -43,6 +42,8 @@ test_that("singleBest and vbs", {
 folds = cvFolds(satsolvers)
 
 test_that("classify", {
+    skip_on_cran()
+
     res = classify(classifier=makeLearner("classif.OneR"), data=folds)
     expect_true(sum(parscores(folds, res)) > vbsp)
     expect_true(sum(misclassificationPenalties(folds, res)) > vbsm)
@@ -70,6 +71,8 @@ test_that("classify", {
 })
 
 test_that("classifyPairs", {
+    skip_on_cran()
+
     res = classifyPairs(classifier=makeLearner("classif.OneR"), data=folds)
     expect_true(sum(parscores(folds, res)) > vbsp)
     expect_true(sum(misclassificationPenalties(folds, res)) > vbsm)
@@ -86,6 +89,8 @@ test_that("classifyPairs", {
 })
 
 test_that("cluster", {
+    skip_on_cran()
+
     res = cluster(clusterer=makeLearner("cluster.SimpleKMeans"), data=folds, pre=normalize)
     expect_true(sum(parscores(folds, res)) > vbsp)
     expect_true(sum(misclassificationPenalties(folds, res)) > vbsm)
@@ -119,6 +124,8 @@ test_that("cluster", {
 })
 
 test_that("regression", {
+    skip_on_cran()
+
     res = regression(regressor=makeLearner("regr.lm"), data=folds)
     expect_true(sum(parscores(folds, res)) > vbsp)
     expect_true(sum(misclassificationPenalties(folds, res)) > vbsm)
@@ -145,6 +152,8 @@ test_that("regression", {
 })
 
 test_that("regressionPairs", {
+    skip_on_cran()
+
     res = regressionPairs(regressor=makeLearner("regr.lm"), data=folds)
     expect_true(sum(parscores(folds, res)) > vbsp)
     expect_true(sum(misclassificationPenalties(folds, res)) > vbsm)
@@ -158,5 +167,3 @@ test_that("regressionPairs", {
     expect_true(sum(successes(folds, res)) < vbss)
     expect_true(is.data.frame(res$predictor(satsolvers$data[satsolvers$features])))
 })
-
-}
