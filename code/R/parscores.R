@@ -51,17 +51,21 @@ function(data=NULL, model=NULL, factor=10, timeout=NULL, addCosts=NULL) {
     } else {
         costs = apply(data$data[usedFeatures], 1, sum)
     }
-    as.vector(na.omit(as.vector(by(predictions, predictions[c(data$ids, "iteration")], function(ss) {
-        pid = which(as.character(ss$algorithm[1]) == data$performance)
-        if(length(pid) == 0) { # NA prediction
+    predictions$iid = match(do.call(paste, predictions[data$ids]), do.call(paste, data$data[data$ids]))
+    predictions$pid = match(predictions$algorithm, data$performance)
+    predictions$score = apply(predictions, 1, function(x) {
+        pid = as.numeric(x[["pid"]])
+        if(is.na(pid)) {
             timeout * factor
         } else {
-            iid = which(ss[1,data$ids] == data$data[data$ids])
+            iid = as.numeric(x[["iid"]])
             score = as.numeric(perfs[iid,pid]) + costs[iid]
             if(!as.logical(successes[iid,pid]) || score > timeout) {
                 score = timeout * factor
             }
             score
         }
-    }))))
+    })
+    agg = aggregate(as.formula(paste("score~", paste(c(data$ids, "iteration"), sep="+", collapse="+"))), predictions, function(ss) { ss[1] })
+    agg$score
 }
