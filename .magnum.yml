@@ -13,6 +13,6 @@ install:
   - sudo ./travis-tool.sh install_deps
   - sudo ./travis-tool.sh install_r e1071 kernlab RWeka
   - java -cp /usr/local/lib/R/site-library/RWekajars/java/weka.jar weka.core.WekaPackageManager -install-package XMeans
-  - mv /usr/lib/R/site-library/* /usr/lib/R/library
+  - sudo mv /usr/lib/R/site-library/* /usr/lib/R/library
 script:
   - ./travis-tool.sh run_tests
