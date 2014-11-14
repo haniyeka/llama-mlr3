@@ -10,7 +10,8 @@ install:
   - ./travis-tool.sh aptget_install r-cran-rjava
   - sudo R CMD javareconf
   - ./travis-tool.sh install_deps
-  - ./travis-tool.sh install_r e1071 kernlab RWeka
+  - ./travis-tool.sh install_r kernlab RWeka
+  - sudo Rscript -e 'install.packages(commandArgs(TRUE), repos="http://cran.rstudio.com")' "e1071"
   - java -cp /usr/local/lib/R/site-library/RWekajars/java/weka.jar weka.core.WekaPackageManager -install-package XMeans
 script:
   - ./travis-tool.sh run_tests
