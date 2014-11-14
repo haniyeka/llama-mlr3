@@ -107,18 +107,18 @@ sum(successes(folds, res))
 # predictions on the entire data set
 res$predictor(satsolvers$data[satsolvers$features])
 
-res = classify(classifier=makeLearner("classif.ksvm"), data=folds)
+res = classify(classifier=makeLearner("classif.svm"), data=folds)
 
 # ensemble classification
 rese = classify(classifier=list(makeLearner("classif.J48"),
                                 makeLearner("classif.IBk"),
-                                makeLearner("classif.ksvm")),
+                                makeLearner("classif.svm")),
                 data=folds)
 
 # ensemble classification with a classifier to combine predictions
 rese = classify(classifier=list(makeLearner("classif.J48"),
                                 makeLearner("classif.IBk"),
-                                makeLearner("classif.ksvm"),
+                                makeLearner("classif.svm"),
                                 .combine=makeLearner("classif.J48")),
                 data=folds)
 }
