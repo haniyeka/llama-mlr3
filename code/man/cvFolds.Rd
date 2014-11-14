@@ -8,7 +8,7 @@ Take data produced by \code{input} and amend it with (optionally)
 stratified folds for cross-validation.
 }
 \usage{
-cvFolds(data, nfolds = 10, stratify = T)
+cvFolds(data, nfolds = 10, stratify = FALSE)
 }
 \arguments{
   \item{data}{
@@ -19,7 +19,8 @@ cvFolds(data, nfolds = 10, stratify = T)
   cross-validation folds are produced.
 }
   \item{stratify}{
-  whether to stratify the folds. Defaults to TRUE.
+  whether to stratify the folds. Makes really only sense for classification
+  models. Defaults to \code{FALSE}.
 }
 }
 \details{
@@ -48,7 +49,7 @@ folds = cvFolds(satsolvers)
 # use 5 folds instead of the default 10
 folds5 = cvFolds(satsolvers, 5)
 
-# don't stratify
-foldsU = cvFolds(satsolvers, stratify=FALSE)
+# stratify
+foldsU = cvFolds(satsolvers, stratify=TRUE)
 }
 \keyword{ ~models }

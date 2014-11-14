@@ -1,5 +1,5 @@
 trainTest <-
-function(data, trainpart=0.6, stratify=T) {
+function(data, trainpart = 0.6, stratify = FALSE) {
     if(stratify) {
         stratifier = sapply(data$best, paste, collapse="-")
     } else {

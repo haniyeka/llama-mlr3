@@ -32,22 +32,11 @@ test_that("trainTest allows to specify split ratio", {
     expect_equal(length(dtt$test[[1]]), 9)
 })
 
-test_that("trainTest allows to not stratify", {
-    d = list(data=data.frame(a=rep.int(0, 10)), best=rep.int(0, 10))
-    class(d) = "llama.data"
-
-    dtt = trainTest(d, stratify=F)
-    expect_equal(length(dtt$train), 1)
-    expect_equal(length(dtt$test), 1)
-    expect_equal(length(dtt$train[[1]]), 6)
-    expect_equal(length(dtt$test[[1]]), 4)
-})
-
 test_that("trainTest stratifies", {
     d = list(data=data.frame(a=rep.int(0, 10)), best=c(rep.int(0, 5), rep.int(1, 5)))
     class(d) = "llama.data"
 
-    dtt = trainTest(d)
+    dtt = trainTest(d, stratify = T)
     expect_equal(length(dtt$train), 1)
     expect_equal(length(dtt$test), 1)
     expect_equal(length(dtt$train[[1]]), 6)
@@ -57,21 +46,4 @@ test_that("trainTest stratifies", {
     expect_equal(sum(d$best[dtt$train[[1]]]==1), 3)
     expect_equal(sum(d$best[dtt$test[[1]]]==0), 2)
     expect_equal(sum(d$best[dtt$test[[1]]]==1), 2)
-})
-
-test_that("trainTest allows stratification to be turned off", {
-    d = list(data=data.frame(a=rep.int(0, 10)), best=c(rep.int(0, 5), rep.int(1, 5)))
-    class(d) = "llama.data"
-
-    dtt = trainTest(d, stratify=F)
-    expect_equal(length(dtt$train), 1)
-    expect_equal(length(dtt$test), 1)
-    expect_equal(length(dtt$train[[1]]), 6)
-    expect_equal(length(dtt$test[[1]]), 4)
-
-    # can't assert these since it's random...
-    #expect_false(sum(d$best[dtt$train[[1]]]==0) == 3)
-    #expect_false(sum(d$best[dtt$train[[1]]]==1) == 3)
-    #expect_false(sum(d$best[dtt$test[[1]]]==0) == 2)
-    #expect_false(sum(d$best[dtt$test[[1]]]==1) == 2)
 })

@@ -1,5 +1,5 @@
 cvFolds <-
-function(data, nfolds=10, stratify=T) {
+function(data, nfolds = 10, stratify = FALSE) {
     if(nfolds == -1) {
         stratify = F
         nfolds = nrow(data$data)

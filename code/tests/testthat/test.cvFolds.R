@@ -54,7 +54,7 @@ test_that("cvFolds stratifies", {
     d = list(data=data.frame(a=rep.int(0, 10)), best=c(rep.int(0, 5), rep.int(1, 5)))
     class(d) = "llama.data"
 
-    dfs = cvFolds(d, nfolds=5)
+    dfs = cvFolds(d, nfolds=5, T)
     expect_equal(length(dfs$train), 5)
     expect_equal(length(dfs$test), 5)
     expect_true(all(sapply(dfs$train, length) == 8))

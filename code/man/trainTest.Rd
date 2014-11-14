@@ -7,7 +7,7 @@ Train / test split
 Split a data set into train and test set.
 }
 \usage{
-trainTest(data, trainpart = 0.6, stratify = T)
+trainTest(data, trainpart = 0.6, stratify = FALSE)
 }
 \arguments{
   \item{data}{
@@ -17,7 +17,8 @@ trainTest(data, trainpart = 0.6, stratify = T)
   the fraction of the data to use for training. Default 0.6.
 }
   \item{stratify}{
-  whether to stratify the folds. Defaults to TRUE.
+  whether to stratify the folds. Makes really only sense for classification
+  models. Defaults to \code{FALSE}.
 }
 }
 \details{
@@ -44,7 +45,7 @@ trainTest = trainTest(satsolvers)
 # use 50-50 split instead of 60-40
 trainTest1 = trainTest(satsolvers, 0.5)
 
-# don't stratify
-trainTestU = trainTest(satsolvers, stratify=FALSE)
+# stratify
+trainTestU = trainTest(satsolvers, stratify=TRUE)
 }
 \keyword{ ~models }

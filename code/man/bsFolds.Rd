@@ -8,7 +8,7 @@ Take data produced by \code{input} and amend it with (optionally)
 stratified folds determined through bootstrapping.
 }
 \usage{
-bsFolds(data, nfolds = 10, stratify = T)
+bsFolds(data, nfolds = 10, stratify = FALSE)
 }
 \arguments{
   \item{data}{
@@ -18,7 +18,8 @@ bsFolds(data, nfolds = 10, stratify = T)
   the number of folds. Defaults to 10.
 }
   \item{stratify}{
-  whether to stratify the folds. Defaults to TRUE.
+  whether to stratify the folds. Makes really only sense for classification
+  models. Defaults to \code{FALSE}.
 }
 }
 \details{
@@ -47,7 +48,7 @@ folds = bsFolds(satsolvers)
 # use 5 folds instead of the default 10
 folds5 = bsFolds(satsolvers, 5)
 
-# don't stratify
-foldsU = bsFolds(satsolvers, stratify=FALSE)
+# stratify
+foldsU = bsFolds(satsolvers, stratify=TRUE)
 }
 \keyword{ ~models }

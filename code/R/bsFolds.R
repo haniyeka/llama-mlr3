@@ -1,5 +1,5 @@
 bsFolds <-
-function(data, nfolds=10, stratify=T) {
+function(data, nfolds = 10, stratify = FALSE) {
     if(stratify) {
         stratifier = sapply(data$best, paste, collapse="-")
     } else {
