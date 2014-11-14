@@ -15,5 +15,4 @@ install:
   - ./travis-tool.sh install_r e1071 kernlab RWeka
   - java -cp /usr/local/lib/R/site-library/RWekajars/java/weka.jar weka.core.WekaPackageManager -install-package XMeans
 script:
-  - Rscript -e 'print(rownames(installed.packages()))'
   - ./travis-tool.sh run_tests
