@@ -23,7 +23,7 @@ export(
     vbs
 )
 importFrom(rJava, J, .jpackage, .jarray)
-importFrom(parallelMap, parallelMap)
+importFrom(parallelMap, parallelMap, parallelRegisterLevels)
 import(ggplot2)
 import(mlr)
 import(checkmate)
