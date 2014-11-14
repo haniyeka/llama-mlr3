@@ -1,5 +1,3 @@
-env: NOT_CRAN="true"
-
 before_install:
   - cd code/
   - curl -sOL http://raw.github.com/larskotthoff/r-travis/master/scripts/travis-tool.sh

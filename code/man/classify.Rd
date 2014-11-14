@@ -107,7 +107,6 @@ sum(successes(folds, res))
 # predictions on the entire data set
 res$predictor(satsolvers$data[satsolvers$features])
 
-library(e1071)
 res = classify(classifier=makeLearner("classif.svm"), data=folds)
 
 # ensemble classification
