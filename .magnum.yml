@@ -1,4 +1,5 @@
 env: NOT_CRAN="true"
+     R_LIBS_SITE="/usr/lib/R/library"
 
 before_install:
   - cd code/
