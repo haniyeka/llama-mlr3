@@ -4,6 +4,9 @@ llama_0.7.3:
 - various performance improvements, especially in the score computing functions
 - introduce functions for result analysis: perfScatterPlot, predTable
 - allow to create train/test splits with bootstrapping
+- stratification for the train/test split generation functions is now turned off
+  by default
+- feature selection functionality has been retired
 
 llama_0.7.2:
 - take success (if present) into account when determining best algorithm: if

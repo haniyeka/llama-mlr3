@@ -5,7 +5,6 @@ export(
     cluster,
     contributions,
     cvFolds,
-    featureFilter,
     input,
     imputeCensored,
     misclassificationPenalties,
