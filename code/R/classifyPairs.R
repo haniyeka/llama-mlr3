@@ -131,11 +131,13 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
         return(combinedpredictions)
     }
     class(predictor) = "llama.model"
+    attr(predictor, "type") = "classifyPairs"
     attr(predictor, "hasPredictions") = FALSE
     attr(predictor, "addCosts") = TRUE
 
     retval = list(predictions=predictions, models=models, predictor=predictor)
     class(retval) = "llama.model"
+    attr(retval, "type") = "classifyPairs"
     attr(retval, "hasPredictions") = TRUE
     attr(retval, "addCosts") = TRUE
 

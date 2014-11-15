@@ -157,11 +157,13 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
         return(combinedpredictions)
     }
     class(predictor) = "llama.model"
+    attr(predictor, "type") = "cluster"
     attr(predictor, "hasPredictions") = FALSE
     attr(predictor, "addCosts") = TRUE
 
     retval = list(predictions=predictions, models=models, predictor=predictor)
     class(retval) = "llama.model"
+    attr(retval, "type") = "cluster"
     attr(retval, "hasPredictions") = TRUE
     attr(retval, "addCosts") = TRUE
 

@@ -12,6 +12,8 @@ export(
     parscores,
     perfScatterPlot,
     predTable,
+    print.llama.data,
+    print.llama.model,
     regression,
     regressionPairs,
     singleBest,

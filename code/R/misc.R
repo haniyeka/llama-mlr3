@@ -13,6 +13,7 @@ function(data=NULL) {
     return(data.frame(ids, algorithm = bests, score = scores, iteration = 1))
 }
 class(vbs) = "llama.model"
+attr(vbs, "type") = "virtual best"
 attr(vbs, "hasPredictions") = FALSE
 attr(vbs, "addCosts") = FALSE
 
@@ -26,6 +27,7 @@ function(data=NULL) {
     data.frame(ids, algorithm = names(sort(table(best), decreasing=T)[1]), score = 1, iteration = 1)
 }
 class(singleBestByCount) = "llama.model"
+attr(singleBestByCount, "type") = "single best"
 attr(singleBestByCount, "hasPredictions") = FALSE
 attr(singleBestByCount, "addCosts") = FALSE
 
@@ -50,6 +52,7 @@ function(data=NULL, factor=10) {
     data.frame(ids, algorithm = best, score = 1, iteration = 1)
 }
 class(singleBestByPar) = "llama.model"
+attr(singleBestByPar, "type") = "single best"
 attr(singleBestByPar, "hasPredictions") = FALSE
 attr(singleBestByPar, "addCosts") = FALSE
 
@@ -74,6 +77,7 @@ function(data=NULL) {
     data.frame(ids, algorithm = best, score = 1, iteration = 1)
 }
 class(singleBestBySuccesses) = "llama.model"
+attr(singleBestBySuccesses, "type") = "single best"
 attr(singleBestBySuccesses, "hasPredictions") = FALSE
 attr(singleBestBySuccesses, "addCosts") = FALSE
 
@@ -88,6 +92,7 @@ function(data=NULL) {
     data.frame(ids, algorithm = best, score = 1, iteration = 1)
 }
 class(singleBest) = "llama.model"
+attr(singleBest, "type") = "single best"
 attr(singleBest, "hasPredictions") = FALSE
 attr(singleBest, "addCosts") = FALSE
 
