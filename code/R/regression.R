@@ -15,7 +15,6 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         tsf = pre(data$data[data$test[[i]],][data$features], trf$meta)
         ids = data$data[data$test[[i]],][data$ids]
         trp = data$data[data$train[[i]],][data$performance]
-        trw = abs(apply(trp, 1, max) - apply(trp, 1, min))
 
         trainpredictions = data.frame(row.names=1:nrow(trf$features))
         performancePredictions = data.frame(row.names=1:nrow(tsf$features))
@@ -36,6 +35,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             colnames(trainpredictions) = data$performance
             trainBests = data.frame(target=factor(breakBestTies(data, i), levels=data$performance))
             if(hasProperties(combine, "weights") && use.weights) {
+                trw = abs(apply(trp, 1, max) - apply(trp, 1, min))
                 task = makeClassifTask(id="regression", target="target", weights=trw, data=cbind(trainBests, trf$features, data.frame(expand(trainpredictions))))
             } else {
                 task = makeClassifTask(id="regression", target="target", data=cbind(trainBests, trf$features, data.frame(expand(trainpredictions))))
