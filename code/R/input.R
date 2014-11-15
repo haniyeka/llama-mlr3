@@ -1,4 +1,3 @@
-# FIXME: when excess (i.e. with no corresponding performance or feature) successes or costs are specified, no warning/error is given
 input <-
 function(features, performances, successes=NULL, costs=NULL, extra=NULL, minimize=T) {
     if(nrow(features) != nrow(performances) || (!is.null(successes) && (nrow(features) != nrow(successes) || nrow(performances) != nrow(successes)))) {

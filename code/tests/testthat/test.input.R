@@ -187,6 +187,14 @@ test_that("input warns about differing number of rows", {
     expect_warning(input(a, b), "Different number of rows in data frames, taking only common rows.")
 })
 
+test_that("input errors when performances and successes don't match", {
+    a = data.frame(a=c(1:5), b=rep.int(1, 5))
+    b = data.frame(a=c(1:5), c=rep.int(1, 5))
+    c = data.frame(a=c(1:5), d=rep.int(T, 5))
+
+    expect_error(input(a, b, c), "Successes")
+})
+
 test_that("input errors when not being able to link", {
     a = data.frame(a=rep.int(1, 5))
     b = data.frame(b=rep.int(1, 5))
