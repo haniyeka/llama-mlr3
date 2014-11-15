@@ -8,7 +8,7 @@ Functions to plot the performance of selectors and compare them to others.
 }
 \usage{
 perfScatterPlot(metric, modelx, modely, datax, datay=datax,
-    addCostsx=NULL, addCostsy=NULL, ...)
+    addCostsx=NULL, addCostsy=NULL, pargs=NULL, ...)
 }
 \arguments{
   \item{metric}{the metric used to evaluate the model. Can be one of
@@ -35,6 +35,7 @@ perfScatterPlot(metric, modelx, modely, datax, datay=datax,
       figure out automatically depending on the model whether to add costs or
       not. This should always be true (the default) except for comparison
       algorithms (i.e. single best and virtual best).}
+  \item{pargs}{any arguments to be passed to \code{geom_points}.}
   \item{...}{any additional arguments to be passed to the metrics. For example
       the penalisation factor for \code{parscores}.}
 }
@@ -44,10 +45,6 @@ two algorithm selectors. It plots the performance on each instance in the data
 set for \code{modelx} on the x axis versus \code{modely} on the y axis. In
 addition, a diagonal line is drawn to denote the line of equal performance for
 both selectors.
-
-Note that calling this function without doing anything with the return value
-will give an error message! You need to add the suitable ggplot calls to create
-the actual plot, see examples.
 }
 \value{
 A \code{ggplot} object.
@@ -69,7 +66,15 @@ library(ggplot2)
 perfScatterPlot(parscores,
         model, singleBest,
         folds, satsolvers) +
-    geom_point() + scale_x_log10() + scale_y_log10() +
+    scale_x_log10() + scale_y_log10() +
+    xlab("J48") + ylab("single best")
+
+# additional aesthetics for points
+perfScatterPlot(parscores,
+        model, singleBest,
+        folds, satsolvers,
+        pargs=aes(colour = scorex)) +
+    scale_x_log10() + scale_y_log10() +
     xlab("J48") + ylab("single best")
 }
 }

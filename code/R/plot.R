@@ -1,5 +1,5 @@
 perfScatterPlot <-
-function(metric, modelx, modely, datax, datay=datax, addCostsx=NULL, addCostsy=NULL, ...) {
+function(metric, modelx, modely, datax, datay=datax, addCostsx=NULL, addCostsy=NULL, pargs=NULL, ...) {
     if(is.null(metric)) {
         stop("Need evaluation metric for plotting!")
     }
@@ -34,5 +34,7 @@ function(metric, modelx, modely, datax, datay=datax, addCostsx=NULL, addCostsy=N
     scoresy = cbind(idsy, data.frame(scorey=metric(datay, modely, addCosts=addCostsy, ...)))
 
     d = merge(scoresx, scoresy, by=idCols)
-    ggplot(d, aes_string(x="scorex", y="scorey")) + geom_abline(slope = 1)
+    ggplot(d, aes_string(x="scorex", y="scorey")) +
+        geom_abline(slope = 1) +
+        geom_point(pargs)
 }
