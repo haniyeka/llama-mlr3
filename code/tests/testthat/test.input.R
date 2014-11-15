@@ -200,3 +200,15 @@ test_that("input errors with non-unique IDs", {
 
     expect_error(input(a, b), "Common columns do not provide unique IDs!")
 })
+
+test_that("input allows to specify extra data", {
+    a = data.frame(a=c(1:5), b=rep.int(1, 5))
+    b = data.frame(a=c(1:5), c=rep.int(1, 5))
+
+    data = input(a, b, extra=data.frame(a=c(1:5), foo=c(1:5)))
+    expect_equal(data$features, c("b"))
+    expect_equal(data$performance, c("c"))
+    expect_equal(data$extra, c("foo"))
+    expect_equal(data$data$foo, c(1:5))
+})
+

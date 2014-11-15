@@ -1,6 +1,6 @@
 # FIXME: when excess (i.e. with no corresponding performance or feature) successes or costs are specified, no warning/error is given
 input <-
-function(features, performances, successes=NULL, costs=NULL, minimize=T) {
+function(features, performances, successes=NULL, costs=NULL, extra=NULL, minimize=T) {
     if(nrow(features) != nrow(performances) || (!is.null(successes) && (nrow(features) != nrow(successes) || nrow(performances) != nrow(successes)))) {
         warning("Different number of rows in data frames, taking only common rows.")
     }
@@ -53,8 +53,16 @@ function(features, performances, successes=NULL, costs=NULL, minimize=T) {
     names(best) = NULL
 
 
-    retval = list(data=combined, features=setdiff(names(features), common), performance=pnames, success=snames, minimize=minimize, best=best, ids=common)
-
+    retval = list(data=combined, features=setdiff(names(features), common),
+        performance=pnames, success=snames, minimize=minimize,
+        best=best, ids=common)
+    
+    if(!is.null(extra)) {
+        extraNames = setdiff(names(extra), common)
+        combined = merge(combined, extra, by=common)
+        retval$extra = extraNames
+        retval$data = combined
+    }
 
     if(!is.null(costs)) {
         if(is.numeric(costs)) {
