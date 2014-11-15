@@ -75,7 +75,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             }))
         }
         return(combinedpredictions)
-    }, 1:length(data$train), level = "llama-fold"))
+    }, 1:length(data$train), level = "llama.llama-fold"))
 
     fs = pre(data$data[data$features])
     fp = data$data[data$performance]

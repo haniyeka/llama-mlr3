@@ -38,7 +38,7 @@ algorithms in R.
 
 The model building functions are using the \code{parallelMap} package
 (\url{https://github.com/berndbischl/parallelMap}) to parallelize across the
-data partitions (e.g. cross-validation folds) with level "llama-fold". By
+data partitions (e.g. cross-validation folds) with level "llama.llama-fold". By
 default, everything is run sequentially. By loading a suitable backend (e.g.
 through \code{parallelStartSocket(2)} for parallelization across 2 CPUs using
 sockets), the model building will be parallelized automatically and
