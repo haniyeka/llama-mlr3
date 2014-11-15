@@ -167,3 +167,21 @@ test_that("regressionPairs", {
     expect_true(sum(successes(folds, res)) < vbss)
     expect_true(is.data.frame(res$predictor(satsolvers$data[satsolvers$features])))
 })
+
+test_that("perfScatterPlot", {
+    skip_on_cran()
+
+    model = classify(classifier=makeLearner("classif.J48"), data=folds)
+    library(ggplot2)
+    p = perfScatterPlot(parscores, model, singleBest, folds, satsolvers) +
+        scale_x_log10() + scale_y_log10() +
+        xlab("J48") + ylab("single best")
+    expect_false(is.null(p))
+
+    satsolvers$extra = c("foo")
+    satsolvers$data$foo = 1:nrow(satsolvers$data)
+    p = perfScatterPlot(parscores, model, singleBest, folds, satsolvers, pargs=aes(colour = foo)) +
+        scale_x_log10() + scale_y_log10() +
+        xlab("J48") + ylab("single best")
+    expect_false(is.null(p))
+})

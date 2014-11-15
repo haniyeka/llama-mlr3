@@ -16,22 +16,32 @@ function(metric, modelx, modely, datax, datay=datax, addCostsx=NULL, addCostsy=N
     }
 
     if(length(datax$test) > 0) {
-        idsx = do.call(rbind, lapply(datax$test, function(x) {
+        edatax = do.call(rbind, lapply(datax$test, function(x) {
             datax$data[x,idCols,drop=F]
         }))
     } else {
-        idsx = datax$data[idCols]
+        if(!is.null(datax$extra)) {
+            sel = c(idCols, datax$extra)
+        } else {
+            sel = idCols
+        }
+        edatax = datax$data[sel]
     }
     if(length(datay$test) > 0) {
-        idsy = do.call(rbind, lapply(datay$test, function(x) {
+        edatay = do.call(rbind, lapply(datay$test, function(x) {
             datay$data[x,idCols,drop=F]
         }))
     } else {
-        idsy = datay$data[idCols]
+        if(!is.null(datay$extra)) {
+            sel = c(idCols, datay$extra)
+        } else {
+            sel = idCols
+        }
+        edatay = datay$data[sel]
     }
 
-    scoresx = cbind(idsx, data.frame(scorex=metric(datax, modelx, addCosts=addCostsx, ...)))
-    scoresy = cbind(idsy, data.frame(scorey=metric(datay, modely, addCosts=addCostsy, ...)))
+    scoresx = cbind(edatax, data.frame(scorex=metric(datax, modelx, addCosts=addCostsx, ...)))
+    scoresy = cbind(edatay, data.frame(scorey=metric(datay, modely, addCosts=addCostsy, ...)))
 
     d = merge(scoresx, scoresy, by=idCols)
     ggplot(d, aes_string(x="scorex", y="scorey")) +
