@@ -64,6 +64,10 @@ passed as the difference between the best and the worst algorithm. Optionally,
 before giving them to the classifier, e.g. augment the performance predictions
 with the pairwise differences (see examples).
 
+If all predictions of an underlying machine learning model are \code{NA}, the
+prediction will be \code{NA} for the algorithm and \code{-Inf} for the score if
+the performance value is to be maximised, \code{Inf} otherwise.
+
 If \code{save.models} is not \code{NA}, the models trained during evaluation are
 serialized into files. Each file contains a list with members \code{model} (the
 mlr model), \code{train.data} (the mlr task with the training data), and

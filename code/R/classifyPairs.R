@@ -59,13 +59,21 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
             }
             preds = predict(combinedmodel, newdata=cbind(tsf$features, lapply(data.frame(pairpredictions), factor, levels=data$performance)))$data$response
             combinedpredictions = do.call(rbind, lapply(1:length(preds), function(j) {
-                tab = as.table(sort(table(preds[j,drop=F]), decreasing=T))
-                data.frame(ids[j,,drop=F], algorithm=names(tab), score=as.vector(tab), iteration=i, row.names = NULL)
+                if(all(is.na(preds[j,drop=F]))) {
+                    data.frame(ids[j,,drop=F], algorithm=NA, score=-Inf, iteration=i, row.names = NULL)
+                } else {
+                    tab = as.table(sort(table(preds[j,drop=F]), decreasing=T))
+                    data.frame(ids[j,,drop=F], algorithm=names(tab), score=as.vector(tab), iteration=i, row.names = NULL)
+                }
             }))
         } else {
             combinedpredictions = do.call(rbind, lapply(1:nrow(pairpredictions), function(j) {
-                tab = as.table(sort(table(unlist(pairpredictions[j,])), decreasing=T))
-                data.frame(ids[j,,drop=F], algorithm=names(tab), score=as.vector(tab), iteration=i, row.names = NULL)
+                if(all(is.na(pairpredictions[j,]))) {
+                    data.frame(ids[j,,drop=F], algorithm=NA, score=-Inf, iteration=i, row.names = NULL)
+                } else {
+                    tab = as.table(sort(table(unlist(pairpredictions[j,])), decreasing=T))
+                    data.frame(ids[j,,drop=F], algorithm=names(tab), score=as.vector(tab), iteration=i, row.names = NULL)
+                }
             }))
         }
         return(combinedpredictions)
@@ -119,13 +127,21 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
         if(!is.null(combinator)) {
             preds = predict(combinedmodel, newdata=cbind(tsf$features, lapply(data.frame(pairpredictions), factor, levels=data$performance)))$data$response
             combinedpredictions = do.call(rbind, lapply(1:length(preds), function(j) {
-                tab = as.table(sort(table(preds[j,drop=F]), decreasing=T))
-                data.frame(ids[j,,drop=F], algorithm=names(tab), score=as.vector(tab), iteration=1, row.names = NULL)
+                if(all(is.na(preds[j,drop=F]))) {
+                    data.frame(ids[j,,drop=F], algorithm=NA, score=-Inf, iteration=1, row.names = NULL)
+                } else {
+                    tab = as.table(sort(table(preds[j,drop=F]), decreasing=T))
+                    data.frame(ids[j,,drop=F], algorithm=names(tab), score=as.vector(tab), iteration=1, row.names = NULL)
+                }
             }))
         } else {
             combinedpredictions = do.call(rbind, lapply(1:nrow(pairpredictions), function(j) {
-                tab = as.table(sort(table(unlist(pairpredictions[j,])), decreasing=T))
-                data.frame(ids[j,,drop=F], algorithm=names(tab), score=as.vector(tab), iteration=1, row.names = NULL)
+                if(all(is.na(pairpredictions[j,]))) {
+                    data.frame(ids[j,,drop=F], algorithm=NA, score=-Inf, iteration=1, row.names = NULL)
+                } else {
+                    tab = as.table(sort(table(unlist(pairpredictions[j,])), decreasing=T))
+                    data.frame(ids[j,,drop=F], algorithm=names(tab), score=as.vector(tab), iteration=1, row.names = NULL)
+                }
             }))
         }
         return(combinedpredictions)

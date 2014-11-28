@@ -91,3 +91,47 @@ test_that("classify ensemble does majority voting by default", {
         expect_equal(ss$score, c(2, 1))
     })
 })
+
+test_that("classify works with NA predictions", {
+    res = classify(classifier=natestclassifier, d)
+    expect_equal(unique(res$predictions$id), 11:20)
+    by(res$predictions, res$predictions$id, function(ss) {
+        expect_equal(ss$algorithm, NA)
+        expect_equal(ss$score, -Inf)
+    })
+    fold$id = 1:10
+    preds = res$predictor(fold)
+    expect_equal(unique(preds$id), 1:10)
+    by(preds, preds$id, function(ss) {
+        expect_equal(ss$algorithm, NA)
+        expect_equal(ss$score, -Inf)
+    })
+
+    res = classify(classifier=list(natestclassifier, natestclassifier, natestclassifier), d)
+    expect_equal(unique(res$predictions$id), 11:20)
+    by(res$predictions, res$predictions$id, function(ss) {
+        expect_equal(ss$algorithm, NA)
+        expect_equal(ss$score, -Inf)
+    })
+    fold$id = 1:10
+    preds = res$predictor(fold)
+    expect_equal(unique(preds$id), 1:10)
+    by(preds, preds$id, function(ss) {
+        expect_equal(ss$algorithm, NA)
+        expect_equal(ss$score, -Inf)
+    })
+
+    res = classify(classifier=list(natestclassifier, natestclassifier, natestclassifier, .combine=natestclassifier), d)
+    expect_equal(unique(res$predictions$id), 11:20)
+    by(res$predictions, res$predictions$id, function(ss) {
+        expect_equal(ss$algorithm, NA)
+        expect_equal(ss$score, -Inf)
+    })
+    fold$id = 1:10
+    preds = res$predictor(fold)
+    expect_equal(unique(preds$id), 1:10)
+    by(preds, preds$id, function(ss) {
+        expect_equal(ss$algorithm, NA)
+        expect_equal(ss$score, -Inf)
+    })
+})

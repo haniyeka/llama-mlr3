@@ -62,6 +62,10 @@ combine the ensemble predictions instead of majority voting. This classifier is
 passed the original features and the predictions of the classifiers in the
 ensemble.
 
+If all predictions of an underlying machine learning model are \code{NA}, the
+prediction will be \code{NA} for the algorithm and \code{-Inf} for the score if
+the performance value is to be maximised, \code{Inf} otherwise.
+
 If \code{save.models} is not \code{NA}, the models trained during evaluation are
 serialized into files. Each file contains a list with members \code{model} (the
 mlr model), \code{train.data} (the mlr task with the training data), and

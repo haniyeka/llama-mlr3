@@ -9,6 +9,8 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         stop("Need data with train/test split!")
     }
 
+    worstScore = if(data$minimize) { Inf } else { -Inf }
+
     totalBests = data.frame(target=factor(breakBestTies(data), levels=data$performance))
     predictions = do.call(rbind, parallelMap(function(i) {
         trf = pre(data$data[data$train[[i]],][data$features])
@@ -46,13 +48,21 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             }
             preds = predict(combinedmodel, newdata=cbind(tsf$features, data.frame(expand(performancePredictions))))$data$response
             combinedpredictions = do.call(rbind, lapply(1:length(preds), function(j) {
-                tab = as.table(sort(table(preds[j,drop=F]), decreasing=T))
-                data.frame(ids[j,,drop=F], algorithm=names(tab), score=as.vector(tab), iteration=i, row.names = NULL)
+                if(all(is.na(preds[j,drop=F]))) {
+                    data.frame(ids[j,,drop=F], algorithm=NA, score=worstScore, iteration=i, row.names = NULL)
+                } else {
+                    tab = as.table(sort(table(preds[j,drop=F]), decreasing=T))
+                    data.frame(ids[j,,drop=F], algorithm=names(tab), score=as.vector(tab), iteration=i, row.names = NULL)
+                }
             }))
         } else {
             combinedpredictions = do.call(rbind, lapply(1:nrow(performancePredictions), function(j) {
-                x = sort(performancePredictions[j,], decreasing = !data$minimize)
-                data.frame(ids[j,,drop=F], algorithm=names(x), score=unlist(x), iteration=i, row.names = NULL)
+                if(all(is.na(performancePredictions[j,]))) {
+                    data.frame(ids[j,,drop=F], algorithm=NA, score=worstScore, iteration=i, row.names = NULL)
+                } else {
+                    x = sort(performancePredictions[j,], decreasing = !data$minimize)
+                    data.frame(ids[j,,drop=F], algorithm=names(x), score=unlist(x), iteration=i, row.names = NULL)
+                }
             }))
         }
         return(combinedpredictions)
@@ -95,13 +105,21 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         if(!is.null(combine)) {
             preds = predict(combinedmodel, newdata=cbind(tsf$features, data.frame(expand(performancePredictions))))$data$response
             combinedpredictions = do.call(rbind, lapply(1:length(preds), function(j) {
-                tab = as.table(sort(table(preds[j,drop=F]), decreasing=T))
-                data.frame(ids[j,,drop=F], algorithm=names(tab), score=as.vector(tab), iteration=1, row.names = NULL)
+                if(all(is.na(preds[j,drop=F]))) {
+                    data.frame(ids[j,,drop=F], algorithm=NA, score=worstScore, iteration=1, row.names = NULL)
+                } else {
+                    tab = as.table(sort(table(preds[j,drop=F]), decreasing=T))
+                    data.frame(ids[j,,drop=F], algorithm=names(tab), score=as.vector(tab), iteration=1, row.names = NULL)
+                }
             }))
         } else {
             combinedpredictions = do.call(rbind, lapply(1:nrow(performancePredictions), function(j) {
-                x = sort(performancePredictions[j,], decreasing = !data$minimize)
-                data.frame(ids[j,,drop=F], algorithm=names(x), score=unlist(x), iteration=1, row.names = NULL)
+                if(all(is.na(performancePredictions[j,]))) {
+                    data.frame(ids[j,,drop=F], algorithm=NA, score=worstScore, iteration=1, row.names = NULL)
+                } else {
+                    x = sort(performancePredictions[j,], decreasing = !data$minimize)
+                    data.frame(ids[j,,drop=F], algorithm=names(x), score=unlist(x), iteration=1, row.names = NULL)
+                }
             }))
         }
         return(combinedpredictions)
