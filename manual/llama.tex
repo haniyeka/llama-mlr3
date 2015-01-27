@@ -1,4 +1,53 @@
-\documentclass{article}
+\documentclass{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
 
 \usepackage[british]{babel}
 \usepackage{cite}
@@ -6,14 +55,15 @@
 \usepackage{url}
 \usepackage{afterpage}
 \renewcommand*\ttdefault{txtt}
+
 \usepackage{listings}
-\lstset{language=R,escapechar=|,mathescape,basicstyle=\ttfamily,breaklines=true,breakatwhitespace=true}
+\lstset{language=R,basicstyle=\ttfamily}
 
 \title{LLAMA: Leveraging Learning to Automatically Manage Algorithms}
 
 \author{Lars Kotthoff}
 \date{}
-
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
 
 \begin{titlepage}
@@ -30,67 +80,118 @@ Algorithm portfolio and selection approaches have achieved remarkable
 improvements over single solvers. However, the implementation of such systems is
 often highly customised and specific to the problem domain. This makes it
 difficult for researchers to explore different techniques for their specific
-problems. We present LLAMA, a modular and extensible toolkit
-implemented as an R package that facilitates the exploration of a range of
-different portfolio techniques on any problem domain. It implements the
-algorithm selection approaches most commonly used in the literature and
-leverages the extensive library of machine learning algorithms and techniques in
-R. We describe the current capabilities and limitations of the toolkit and
-illustrate its usage on a set of example SAT problems.
+problems. We present LLAMA, a modular and extensible toolkit implemented as an R
+package that facilitates the exploration of a range of different portfolio
+techniques on any problem domain. It implements the algorithm selection
+approaches most commonly used in the literature and leverages the extensive
+library of machine learning algorithms and techniques in R. We describe the
+current capabilities and limitations of the toolkit and illustrate its usage on
+a set of example SAT problems.
 \end{abstract}
 
 \vspace*{\stretch{1}}
 
 \begin{center}
-This document corresponds to LLAMA version 0.7.2.
+This document corresponds to LLAMA version 0.8.
 \end{center}
 
 \end{titlepage}
 
-\section*{One-page quick start}
+
+\renewenvironment{knitrout}{\setlength{\topsep}{0mm}}{}
+
+
+\section*{Quick start}
 
 So you know about algorithm portfolios and selection and just want to get
 started. Here we go. In your R shell, type
-\begin{lstlisting}
-install.packages("llama")
-require(llama)
-\end{lstlisting}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{install.packages}\hlstd{(}\hlstr{"llama"}\hlstd{)}
+\hlkwd{require}\hlstd{(llama)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
 to install and load LLAMA. We're going to assume that you have two input CSV
 files for your data -- features and times. The rows designate problem instances
 and the columns feature and solver names. All files have an 'ID' column that
 allows to link them. Load them into the data structure required by LLAMA as
 follows.
-\begin{lstlisting}
-data = input(read.csv("features.csv"), read.csv("times.csv"))
-\end{lstlisting}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{data} \hlkwb{=} \hlkwd{input}\hlstd{(}\hlkwd{read.csv}\hlstd{(}\hlstr{"features.csv"}\hlstd{),} \hlkwd{read.csv}\hlstd{(}\hlstr{"times.csv"}\hlstd{))}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
 You can also use the SAT solver data that comes with LLAMA by running
-\lstinline{data(satsolvers)} followed by \lstinline{data = satsolvers}. Now
-partition the entire set of instances into training and test sets for
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{data}\hlstd{(satsolvers)}
+\hlstd{data} \hlkwb{=} \hlstd{satsolvers}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+Now partition the entire set of instances into training and test sets for
 cross-validation.
-\begin{lstlisting}
-folds = cvFolds(data)
-\end{lstlisting}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{folds} \hlkwb{=} \hlkwd{cvFolds}\hlstd{(data)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
 This will give you 10 folds for cross-validation. Now we're ready to train
 our first model. To do that, we'll need some machine learning algorithms --
 we're going to use a random forest classifier. Now train a simple classification
 model that predicts the best algorithm.
-\begin{lstlisting}
-model = classify(makeLearner("classif.randomForest"), folds)
-\end{lstlisting}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{model} \hlkwb{=} \hlkwd{classify}\hlstd{(}\hlkwd{makeLearner}\hlstd{(}\hlstr{"classif.randomForest"}\hlstd{),}
+    \hlstd{folds)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
 Great! Now let's see how well this model is doing and compare its performance to
 the virtual best solver (VBS) and the single best solver in terms of average
 misclassification penalty.
-\begin{lstlisting}
-mean(misclassificationPenalties(folds, model))
-mean(misclassificationPenalties(data, vbs))
-mean(misclassificationPenalties(data, singleBest))
-\end{lstlisting}
-These are the numbers I get for the \lstinline{satsolvers} data:
-\begin{description}
-\item[virtual best] 0
-\item[model] 74.73368
-\item[single best] 122.3186
-\end{description}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{mean}\hlstd{(}\hlkwd{misclassificationPenalties}\hlstd{(folds, model))}
+\end{alltt}
+\begin{verbatim}
+## [1] 75.80503
+\end{verbatim}
+\begin{alltt}
+\hlkwd{mean}\hlstd{(}\hlkwd{misclassificationPenalties}\hlstd{(data, vbs))}
+\end{alltt}
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+\begin{alltt}
+\hlkwd{mean}\hlstd{(}\hlkwd{misclassificationPenalties}\hlstd{(data, singleBest))}
+\end{alltt}
+\begin{verbatim}
+## [1] 122.3186
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
 While we are quite far off the virtual best, our classifier beats the single
 best algorithm! Not bad for a model trained in a single line of code.
 
@@ -168,7 +269,8 @@ these involving ensembles and stacking.
 A lot more background information can be found
 in~\cite{kotthoff_algorithm_2014} (even more in the extended
 version~\cite{kotthoff_algorithm_2012}) and the overview table of the relevant
-literature at \url{http://larskotthoff.github.io/assurvey/}.
+literature at\\
+\url{http://larskotthoff.github.io/assurvey/}.
 
 \medskip
 
@@ -319,14 +421,20 @@ usually with examples of how to use it. To access a help page, simply type
 
 LLAMA is available on CRAN. On a computer connected to the internet, all you
 have to do is open an R terminal and type
-\begin{lstlisting}
-install.packages("llama")
-\end{lstlisting}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{install.packages}\hlstd{(}\hlstr{"llama"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
 Alternatively, you can use the graphical package manager your R distribution
 provides, or download the package file yourself and install it manually.
 
 Once the package is installed, you can load it by typing
-\lstinline{require(llama)}.
+\lstinline{library(llama)}.
 
 \subsection{Reading data}
 
@@ -408,9 +516,15 @@ success.csv:
   ...more instances...
 \end{verbatim}
 You can load this data into LLAMA as follows.
-\begin{lstlisting}
-data = input(read.csv("features.csv"), read.csv("times.csv"), read.csv("success.csv"))
-\end{lstlisting}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{data} \hlkwb{=} \hlkwd{input}\hlstd{(}\hlkwd{read.csv}\hlstd{(}\hlstr{"features.csv"}\hlstd{),} \hlkwd{read.csv}\hlstd{(}\hlstr{"times.csv"}\hlstd{),}
+    \hlkwd{read.csv}\hlstd{(}\hlstr{"success.csv"}\hlstd{))}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
 
 The \lstinline{input()} function automatically computes all the meta data
 required by LLAMA -- the return value can be used right away. Full details on
@@ -425,12 +539,22 @@ measured. Success data (i.e.\ whether an algorithm timed out or not) is also
 available, but feature computation costs are not.
 
 To use this data, type
-\begin{lstlisting}
-data(satsolvers)
-satsolvers
-\end{lstlisting}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{data}\hlstd{(satsolvers)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
 If you want to run the following commands with this data, run
-\lstinline{data = satsolvers}.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{data} \hlkwb{=} \hlstd{satsolvers}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
 
 \subsection{Slicing and dicing the data}
 
@@ -442,9 +566,15 @@ sets. This is one of the tedious and error-prone steps that researchers have to
 deal with in practice and that LLAMA aims to make less painful. To split the
 data into 60\% training and 40\% test sets, we can run the following command,
 assuming that your data is available in the \lstinline{data} variable.
-\begin{lstlisting}
-split = trainTest(data)
-\end{lstlisting}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{split} \hlkwb{=} \hlkwd{trainTest}\hlstd{(data)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
 The second (optional) argument of the function specifies what fraction of the
 total data should be used for training. If, instead of a 60-40 split, we want a
 70-30 split, all we need to do is run \lstinline{split = trainTest(data, 0.7)}.
@@ -460,9 +590,15 @@ In addition to a simple train-test split, LLAMA also provides a function to
 create data folds for cross-validation~\cite{kohavi_study_1995}, which is in
 general seen as a more reliable way of evaluating the performance of a learning
 algorithm. To partition the entire data into 10 stratified folds, run
-\begin{lstlisting}
-folds = cvFolds(satsolvers)
-\end{lstlisting}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{folds} \hlkwb{=} \hlkwd{cvFolds}\hlstd{(satsolvers)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
 The optional argument \lstinline{nfolds} allows to specify the number of folds.
 The default behaviour is again to stratify the folds; this can be turned of in
 the same way as for \lstinline{trainTest()}.
@@ -476,9 +612,14 @@ approach is used for example in~\cite{gent_learning_2010}. We train a model
 using the C4.5 decision tree learner~\cite{quinlan_c4.5_1993}.
 For this, we call \lstinline{classify()} with the name of the machine learning
 algorithm and the data folds created above.
-\begin{lstlisting}
-model = classify(makeLearner("classif.J48"), folds)
-\end{lstlisting}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{model} \hlkwb{=} \hlkwd{classify}\hlstd{(}\hlkwd{makeLearner}\hlstd{(}\hlstr{"classif.J48"}\hlstd{), folds)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
 
 For the other available machine learning models, please consult the
 \lstinline{mlr} documentation~\cite{mlr}.
@@ -501,38 +642,62 @@ solve it, a constant factor times the time-out value. Usually, PAR10 is used,
 meaning that time-outs are penalized by a factor of 10. To compute the average
 PAR10 score and the total number of solved instances of the approach using the
 C4.5 decision tree, we can run the following code.
-\begin{lstlisting}
-parscore = mean(parscores(folds, model))
-solved = sum(successes(folds, model))
-\end{lstlisting}
-On the example data, we get 5833.845 for the mean PAR10 score and 2043 solved
-instances\footnote{Note that these numbers will be slightly different when you
-run the same code because the data partitioning functions are stochastic. This
-also applies to all other performance numbers of models reported here.}. The
-\lstinline{parscores} and \lstinline{successes} evaluation
-functions, along with their cousin \lstinline{misclassificationPenalties}, take
-the data for which the predictions were made as their first argument and the
-model that contains the predictions or the function that returns predictions (in
-the case of virtual best and single best algorithms) as the second. Optional
-arguments can be given to specify the penalty factor or the time-out value. By
-default, the performance value given for an unsuccessful run is assumed to be
-the time-out.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# mean PAR10 score}
+\hlkwd{mean}\hlstd{(}\hlkwd{parscores}\hlstd{(folds, model))}
+\end{alltt}
+\begin{verbatim}
+## [1] 5938.066
+\end{verbatim}
+\begin{alltt}
+\hlcom{# number of successes (solved instances)}
+\hlkwd{sum}\hlstd{(}\hlkwd{successes}\hlstd{(folds, model))}
+\end{alltt}
+\begin{verbatim}
+## [1] 2036
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+The \lstinline{parscores} and \lstinline{successes} evaluation functions, along
+with their cousin \lstinline{misclassificationPenalties}, take the data for
+which the predictions were made as their first argument and the model that
+contains the predictions or the function that returns predictions (in the case
+of virtual best and single best algorithms) as the second. Optional arguments
+can be given to specify the penalty factor or the time-out value. By default,
+the performance value given for an unsuccessful run is assumed to be the
+time-out.
 
 All evaluation functions return a list of the respective values for the chosen
 algorithm for each instance. That is, if there are 100 instances in the data,
 \lstinline{parscores()} will return a list with 100 values. The predictions
-LLAMA computes are actually not just simple labels. Each ``prediction'' is a
-data frame that contains a ranked list of algorithms along with a score value.
-The number of algorithms in the data frame and the meaning of the score value
-depend on the model-building function that is used and are explained in the
-respective on-line help pages. In this case, each data frame will contain only a
-single algorithm with a score of 1, meaning that this is the algorithm that was
-predicted by the one classifier. An individual prediction looks like this.
-\begin{lstlisting}
-model|$\$$|predictions[[1]][[1]]
-  algorithm score
-1     clasp     1
-\end{lstlisting}
+LLAMA computes are actually not just simple labels. It is a data frame that
+contains information on the predictions on every instance; the score. The number
+of algorithms in the data frame and the meaning of the score value depend on the
+model-building function that is used and are explained in the respective on-line
+help pages. In this case, the score for only a single algorithm per instance
+will be 1, meaning that this is the algorithm that was predicted by the one
+classifier.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{head}\hlstd{(model}\hlopt{$}\hlstd{predictions)}
+\end{alltt}
+\begin{verbatim}
+##   benchmark_id      algorithm score iteration
+## 1           20          clasp     1         1
+## 2           20        minisat     0         1
+## 3           20  cryptominisat     0         1
+## 4           20        glucose     0         1
+## 5           20 minisat_noelim     0         1
+## 6           20      lingeling     0         1
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 \medskip
 
@@ -548,20 +713,40 @@ in the data set.
 LLAMA provides convenience functions that allow to compare to both virtual best
 and single best solver. They are used in the same way as the predictions from a
 model are.
-\begin{lstlisting}
-vbsparscore = mean(parscores(data, vbs))
-vbssolved = sum(successes(data, vbs))
 
-sbparscore = mean(parscores(data, singleBest))
-sbsolved = sum(successes(data, singleBest))
-\end{lstlisting}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{mean}\hlstd{(}\hlkwd{parscores}\hlstd{(data, vbs))}
+\end{alltt}
+\begin{verbatim}
+## [1] 4631.264
+\end{verbatim}
+\begin{alltt}
+\hlkwd{sum}\hlstd{(}\hlkwd{successes}\hlstd{(data, vbs))}
+\end{alltt}
+\begin{verbatim}
+## [1] 2125
+\end{verbatim}
+\begin{alltt}
+\hlkwd{mean}\hlstd{(}\hlkwd{parscores}\hlstd{(data, singleBest))}
+\end{alltt}
+\begin{verbatim}
+## [1] 5778.983
+\end{verbatim}
+\begin{alltt}
+\hlkwd{sum}\hlstd{(}\hlkwd{successes}\hlstd{(data, singleBest))}
+\end{alltt}
+\begin{verbatim}
+## [1] 2048
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
 Comparing those numbers to the ones from the model that we trained should give
 us a better idea of its performance. Ideally, the model performance should be
 better than the one of the single best solver and as close to the virtual best
-as possible. On the example data, we get a mean PAR10 score of 4645.169 and 2124
-solved instances for the VBS, and a mean PAR10 score of 5779.526 and 2048 solved
-instances for the best single solver. Our classification model does not improve 
-on the single best solver in this case.
+as possible.
 
 There are several different definitions for the single best solver, depending on
 the performance measure used to determine it. The \lstinline{singleBest}
@@ -580,9 +765,25 @@ make predictions for the data that we have. Note that we're getting predictions
 for the same data that we used to train the model here -- do not use these
 predictions to evaluate the performance, this example is purely to illustrate
 what code to run.
-\begin{lstlisting}
-model|$\$$|predictor(subset(data|$\$$|data, TRUE, data|$\$$|features))
-\end{lstlisting}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{predictions} \hlkwb{=} \hlstd{model}\hlopt{$}\hlkwd{predictor}\hlstd{(}\hlkwd{subset}\hlstd{(data}\hlopt{$}\hlstd{data,}
+    \hlnum{TRUE}\hlstd{, data}\hlopt{$}\hlstd{features))}
+\hlkwd{head}\hlstd{(predictions)}
+\end{alltt}
+\begin{verbatim}
+##   id      algorithm score iteration
+## 1  1            mxc     1         1
+## 2  1        minisat     0         1
+## 3  1  cryptominisat     0         1
+## 4  1        glucose     0         1
+## 5  1 minisat_noelim     0         1
+## 6  1      lingeling     0         1
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 Oh and if you want better model performance than the single best, try the
 \lstinline{randomForest} classifier from the quick start.
@@ -604,45 +805,44 @@ is chosen.
 LLAMA supports this kind of performance model as well. All we have to do is call
 a different function and pass in a machine learning algorithm that is able to
 learn models to predict numeric quantities as an argument.
-\begin{lstlisting}
-model = regression(makeLearner("regr.lm"), folds)
-\end{lstlisting}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{model} \hlkwb{=} \hlkwd{regression}\hlstd{(}\hlkwd{makeLearner}\hlstd{(}\hlstr{"regr.lm"}\hlstd{), folds)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
 You will notice that running this command takes longer than for the
 classification example. This is because instead of a single classification
 model, we now need to train one regression model for each algorithm in the
 portfolio (if you're using the example SAT data, 19 different models).
 
 The structure returned by the call is the same as for classification and PAR10
-scores and similar are calculated in the same way. We get 5715.529 as mean PAR10
-score and 2051 solved instances on the example data -- an improvement on our
-earlier classification model and better than the single best algorithm. LLAMA
-offers a unified interface for all its model-building functions that makes it
-easy to quickly try different approaches. The difference is that the prediction
-data frames now contain a row for each algorithm in the portfolio and the score
-denotes the predicted performance value.
-\begin{lstlisting}
-model|$\$$|predictions[[1]][[1]]
-         algorithm       score
-V3         glucose -1466.69433
-V12           riss -1346.56839
-V6           clasp -1282.94105
-V15       qutersat -1260.05076
-V8        precosat -1247.51199
-V2   cryptominisat -1215.78077
-V11            mxc -1132.84599
-V13          sat4j -1125.51040
-V14    glueminisat -1119.74842
-V5       lingeling -1091.14724
-V7         picosat -1077.87968
-V4  minisat_noelim -1033.60871
-V10       march_rw -1031.15524
-V18     cirminisat -1007.40678
-V1         minisat -1001.13231
-V16      contrasat  -837.74060
-V17    MPhaseSAT64  -806.80840
-V19           rsat  -623.30907
-V9           kcnfs    30.10679
-\end{lstlisting}
+scores and similar are calculated in the same way. LLAMA offers a unified
+interface for all its model-building functions that makes it easy to quickly try
+different approaches. The difference is that the prediction data frame now
+contain a row for each algorithm in the portfolio and the score denotes the
+predicted performance value.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{head}\hlstd{(model}\hlopt{$}\hlstd{predictions)}
+\end{alltt}
+\begin{verbatim}
+##   benchmark_id     algorithm      score iteration
+## 1           20         clasp -307.04468         1
+## 2           20 cryptominisat -280.32895         1
+## 3           20      qutersat -250.39955         1
+## 4           20           mxc -191.50191         1
+## 5           20       glucose -163.59220         1
+## 6           20      march_rw  -92.12266         1
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
 Apart from the fact that the regression model is predicting negative runtimes,
 it appears to work quite well. Negative runtimes do not matter here, as we only
 use them to rank the algorithms.
@@ -666,39 +866,40 @@ algorithm that has most votes wins. The number of votes for each algorithm can
 be used to rank all of the portfolio algorithms. This approach is also
 implemented in LLAMA. The function is called \lstinline{classifyPairs} and
 conforms to the usual interface.
-\begin{lstlisting}
-model = classifyPairs(makeLearner("classif.J48"), folds)
-\end{lstlisting}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{model} \hlkwb{=} \hlkwd{classifyPairs}\hlstd{(}\hlkwd{makeLearner}\hlstd{(}\hlstr{"classif.J48"}\hlstd{),}
+    \hlstd{folds)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
 Running this command on the example SAT data will take quite a long time, as a
 model for each pair of algorithms needs to be trained. This approach offers
 great potential for parallelisation though; for more details, see
 Section~\ref{sec:parallel}.
 
-On the example data, we get a mean PAR10 score of 5841.625 and 2041 solved
-instances. The data frame for an individual prediction now looks as follows; the
-score corresponds to the number of votes.
-\begin{lstlisting}
-model|$\$$|predictions[[1]][[1]]
-        algorithm score
-1           clasp    18
-2        march_rw    17
-3             mxc    16
-4       lingeling    15
-5      cirminisat    14
-6         picosat    13
-7        precosat    12
-8     glueminisat    11
-9            rsat    10
-10          kcnfs     7
-11       qutersat     7
-12  cryptominisat     6
-13        minisat     6
-14    MPhaseSAT64     6
-15           riss     6
-16        glucose     3
-17 minisat_noelim     3
-18          sat4j     1
-\end{lstlisting}
+The data frame of predictions now looks as follows; the score corresponds to the
+number of votes.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{head}\hlstd{(model}\hlopt{$}\hlstd{predictions)}
+\end{alltt}
+\begin{verbatim}
+##   benchmark_id     algorithm score iteration
+## 1           20         clasp    18         1
+## 2           20           mxc    17         1
+## 3           20      march_rw    16         1
+## 4           20       minisat    15         1
+## 5           20   glueminisat    14         1
+## 6           20 cryptominisat    11         1
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 The model-building function \lstinline{regressionPairs} follows the same idea,
 but uses regression models to predict the performance difference between pairs
@@ -711,36 +912,37 @@ ISAC~\cite{kadioglu_isac_2010} is to cluster the training problems and assign
 the best algorithm to each cluster based on the algorithm performances on the
 instances in the cluster. Again the only change is to call a different function,
 this time the \lstinline{XMeans} clustering algorithm.
-\begin{lstlisting}
-model = cluster(makeLearner("cluster.XMeans"), folds)
-\end{lstlisting}
-The return value corresponds to the usual format. We get a mean PAR10 score of
-5736.518 and 2050 solved instances. The prediction data frames contain all
-portfolio algorithms ranked by performance. The score corresponds to the sum of
-the performances over all training instances in the respective cluster.
-\begin{lstlisting}
-model|$\$$|predictions[[1]][[1]]
-        algorithm score
-1         glucose  35080.60
-2           sat4j  44630.40
-3           clasp  71075.43
-4   cryptominisat  82763.40
-5         picosat  91257.26
-6        qutersat  91502.81
-7        precosat  92650.88
-8             mxc  94293.15
-9     MPhaseSAT64  94380.41
-10      lingeling  94471.09
-11    glueminisat  95136.49
-12 minisat_noelim  97807.69
-13     cirminisat  97813.11
-14        minisat  97893.97
-15           riss  98565.03
-16      contrasat 115014.06
-17       march_rw 175335.97
-18           rsat 277272.10
-19          kcnfs 336441.61
-\end{lstlisting}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{model} \hlkwb{=} \hlkwd{cluster}\hlstd{(}\hlkwd{makeLearner}\hlstd{(}\hlstr{"cluster.XMeans"}\hlstd{),}
+    \hlstd{folds)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+The return value corresponds to the usual format. The prediction data frame
+contains all portfolio algorithms ranked by performance. The score corresponds
+to the sum of the performances over all training instances in the respective
+cluster.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{head}\hlstd{(model}\hlopt{$}\hlstd{predictions)}
+\end{alltt}
+\begin{verbatim}
+##   benchmark_id     algorithm    score iteration
+## 1           20         clasp 614771.4         1
+## 2           20 cryptominisat 658174.2         1
+## 3           20      qutersat 677029.6         1
+## 4           20           mxc 716264.2         1
+## 5           20       glucose 825106.7         1
+## 6           20      march_rw 884623.1         1
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 The \lstinline{cluster} model-builder provides different ways of determining the
 best algorithm for a cluster that correspond to the different ways of
@@ -764,46 +966,6 @@ the values of some of the features are the same on all instances, or there is no
 correlation between feature values and performance. All of this can impact the
 performance of machine learning models. LLAMA provides functionality to mitigate
 this.
-
-\subsubsection{Selecting the most important features}
-
-Feature selection is a process by which the features that are relevant for
-making a particular prediction are identified. If, for example, the values of
-one feature are the same on all problem instances, the feature does not
-contribute anything and can be omitted. If on the other hand the values of a
-feature change as the prediction to be made changes, we definitely want to
-include this feature.
-
-LLAMA does not offer any actual feature filtering algorithms, just like it does
-not offer any machine learning algorithms. Rather, it provides the
-infrastructure to use existing algorithms, which are plentiful in R. As an
-example, we will use the FSelector package, which provides a number of such
-functions.
-
-Feature filtering in LLAMA is done through the \lstinline{featureFilter}
-function. It takes a filtering algorithm and the data frame to use, which has to
-be in the usual LLAMA format, i.e.\ what is returned by the \lstinline{input}
-function.
-\begin{lstlisting}
-require(FSelector)
-newdata = featureFilter(cfs, data)
-\end{lstlisting}
-The function takes the entire data and runs the feature filtering algorithm to
-determine the effectiveness of the features with respect to predicting the best
-algorithm. The features which are retained after filtering will be used in the
-returned data frame.
-
-This new data can now be used to split into training and test sets and build new
-models.
-\begin{lstlisting}
-newfolds = cvFolds(newdata)
-
-model = classify(makeLearner("classif.J48"), folds)
-newmodel = classify(makeLearner("classif.J48"), newfolds)
-\end{lstlisting}
-The model without feature filtering achieves a mean PAR10 score of 5833.845 with
-2043 instances solved, while the model with feature filtering manages a slight
-improvement to a mean PAR10 score of 5645.93 and 2055 solved instances.
 
 \subsubsection{Normalising feature values}
 
@@ -830,9 +992,16 @@ LLAMA currently provides only a single function, \lstinline{normalize}, for
 feature value normalisation. This function scales the feature values such that
 the range for all features is -1 to 1. It is specified through the
 \lstinline{pre} argument.
-\begin{lstlisting}
-model = cluster(makeLearner("cluster.XMeans"), folds, pre=normalize)
-\end{lstlisting}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{model} \hlkwb{=} \hlkwd{cluster}\hlstd{(}\hlkwd{makeLearner}\hlstd{(}\hlstr{"cluster.XMeans"}\hlstd{),}
+    \hlstd{folds,} \hlkwc{pre} \hlstd{= normalize)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
 We are using the cluster model builder here, as clustering is an application
 that intrinsically relies on distance measures and is likely to be most affected
 by large differences in the range of feature values. The feature values can be
@@ -860,22 +1029,51 @@ repeated to get better models and estimates~\cite{schmee_simple_1979}.
 
 This method is implemented in LLAMA in the \lstinline{imputeCensored} function.
 Its arguments are a LLAMA data frame, the regression algorithm to model the
-runtime, and termination conditions. Similar to \lstinline{featureFilter}, it
-returns a new data frame with the imputed censored runtimes. Note that, similar
-to the regression model learner, the imputation function does not check the
-plausibility of the results -- it is possible that the predicted runtimes are
-less than the time-out!
-\begin{lstlisting}
-imputed = imputeCensored(data, makeLearner("regr.lm"))
-imputedFolds = cvFolds(imputed)
-model = regression(makeLearner("regr.lm"), imputedFolds)
-\end{lstlisting}
+runtime, and termination conditions. It returns a new data frame with the
+imputed censored runtimes. Note that, similar to the regression model learner,
+the imputation function does not check the plausibility of the results -- it is
+possible that the predicted runtimes are less than the time-out!
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{imputed} \hlkwb{=} \hlkwd{imputeCensored}\hlstd{(data,} \hlkwd{makeLearner}\hlstd{(}\hlstr{"regr.lm"}\hlstd{))}
+\hlstd{imputedFolds} \hlkwb{=} \hlkwd{cvFolds}\hlstd{(imputed)}
+\hlstd{imputedModel} \hlkwb{=} \hlkwd{regression}\hlstd{(}\hlkwd{makeLearner}\hlstd{(}\hlstr{"regr.lm"}\hlstd{),}
+    \hlstd{imputedFolds)}
+\hlkwd{mean}\hlstd{(}\hlkwd{misclassificationPenalties}\hlstd{(folds, model))}
+\end{alltt}
+\begin{verbatim}
+## [1] 106.0375
+\end{verbatim}
+\begin{alltt}
+\hlkwd{mean}\hlstd{(}\hlkwd{parscores}\hlstd{(folds, model))}
+\end{alltt}
+\begin{verbatim}
+## [1] 5736.611
+\end{verbatim}
+\begin{alltt}
+\hlkwd{mean}\hlstd{(}\hlkwd{misclassificationPenalties}\hlstd{(imputedFolds,}
+    \hlstd{imputedModel))}
+\end{alltt}
+\begin{verbatim}
+## [1] 43.60396
+\end{verbatim}
+\begin{alltt}
+\hlkwd{mean}\hlstd{(}\hlkwd{parscores}\hlstd{(imputedFolds, imputedModel))}
+\end{alltt}
+\begin{verbatim}
+## [1] 72.82885
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
 The performance of the new model with imputed performance values is much better
 in terms of average PAR10 and number of solved instances, but this is to be
 expected -- all instances in the data are ``solvable'' after imputation, so no
 penalties will be imposed. However, we can compare the mean misclassification
-penalty for the old and new models. Without performance imputation, it is
-98.2668 and with 44.85309 -- a clear improvement.
+penalty for the old and new models -- there is a clear improvement there as
+well.
 
 \subsection{Portfolio analysis}
 
@@ -884,27 +1082,19 @@ contributions a single algorithm makes to a portfolio using techniques from game
 theory~\cite{rahwan_game_2013}. Running this on the example data distributed
 with the package gives the following result:
 
-\begin{lstlisting}
-sort(contributions(satsolvers))
-         kcnfs           rsat minisat_noelim 
-  -238407.9801   -180762.3266   -108837.5158 
-       minisat     cirminisat           riss 
-   -99151.8748    -89550.5715    -88360.4072 
-         sat4j      contrasat      lingeling 
-   -82804.3613    -78365.7487    -76489.3100 
-   glueminisat        picosat       precosat 
-   -67935.5264    -64197.8563    -54136.9820 
-   MPhaseSAT64       march_rw            mxc 
-   -44008.3382    -33521.0780    -28069.9128 
-       glucose       qutersat  cryptominisat 
-    -4678.7110      -740.2909      8854.7117 
-         clasp 
-    42499.1089 
-\end{lstlisting}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{sort}\hlstd{(}\hlkwd{contributions}\hlstd{(satsolvers))}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in .jfindClass(as.character(class)): class not found}}\end{kframe}
+\end{knitrout}
 
 The negative numbers designate solvers that do not contribute anything to the
-portfolio, but causes its performance to decrease. The solver \lstinline{clasp} makes
-the largest contribution.
+portfolio, but causes its performance to decrease. The solver \lstinline{clasp}
+makes the largest contribution.
 
 This analysis can be used to determine which algorithms should be included and
 which ones should be omitted from a portfolio. Note that it is entirely separate
@@ -937,32 +1127,76 @@ For the \lstinline{classify} model building functions, both ensemble learning
 and stacking have been implemented. To use an ensemble, the first argument
 becomes a list of classification algorithms instead of a single one. To use
 stacking, that list should have a member named \lstinline{.combine}.
-\begin{lstlisting}
-require(e1071)
-ensembleModel = classify(list(makeLearner("classif.J48"),
-        makeLearner("classif.ksvm"),
-        makeLearner("classif.knn")),
-    folds)
-stackedEnsembleModel = classify(list(makeLearner("classif.J48"),
-        makeLearner("classif.ksvm"),
-        makeLearner("classif.knn"),
-        .combine=makeLearner("classif.J48")),
-    folds)
-\end{lstlisting}
-We are using the \lstinline{svm} classifier from the e1071 package in addition
-to classifiers from RWeka here. The mean PAR10 scores for the ensemble and
-stacked ensemble models on the example data are 5725.875 and 6394.164,
-respectively. The numbers of solved instances are 2050 and 2006. Compared to the
-model based on the single \lstinline{J48} classifier, ensemble learning improves
-performance a bit, but stacking does not help.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{ensembleModel} \hlkwb{=} \hlkwd{classify}\hlstd{(}\hlkwd{list}\hlstd{(}\hlkwd{makeLearner}\hlstd{(}\hlstr{"classif.J48"}\hlstd{),}
+    \hlkwd{makeLearner}\hlstd{(}\hlstr{"classif.rpart"}\hlstd{),} \hlkwd{makeLearner}\hlstd{(}\hlstr{"classif.knn"}\hlstd{)),}
+    \hlstd{folds)}
+\hlstd{stackedEnsembleModel} \hlkwb{=} \hlkwd{classify}\hlstd{(}\hlkwd{list}\hlstd{(}\hlkwd{makeLearner}\hlstd{(}\hlstr{"classif.J48"}\hlstd{),}
+    \hlkwd{makeLearner}\hlstd{(}\hlstr{"classif.rpart"}\hlstd{),} \hlkwd{makeLearner}\hlstd{(}\hlstr{"classif.knn"}\hlstd{),}
+    \hlkwc{.combine} \hlstd{=} \hlkwd{makeLearner}\hlstd{(}\hlstr{"classif.J48"}\hlstd{)), folds)}
+\hlkwd{mean}\hlstd{(}\hlkwd{misclassificationPenalties}\hlstd{(folds, model))}
+\end{alltt}
+\begin{verbatim}
+## [1] 106.0375
+\end{verbatim}
+\begin{alltt}
+\hlkwd{mean}\hlstd{(}\hlkwd{parscores}\hlstd{(folds, model))}
+\end{alltt}
+\begin{verbatim}
+## [1] 5736.611
+\end{verbatim}
+\begin{alltt}
+\hlkwd{mean}\hlstd{(}\hlkwd{misclassificationPenalties}\hlstd{(folds, ensembleModel))}
+\end{alltt}
+\begin{verbatim}
+## [1] 102.371
+\end{verbatim}
+\begin{alltt}
+\hlkwd{mean}\hlstd{(}\hlkwd{parscores}\hlstd{(folds, ensembleModel))}
+\end{alltt}
+\begin{verbatim}
+## [1] 5826.159
+\end{verbatim}
+\begin{alltt}
+\hlkwd{mean}\hlstd{(}\hlkwd{misclassificationPenalties}\hlstd{(folds, stackedEnsembleModel))}
+\end{alltt}
+\begin{verbatim}
+## [1] 151.9736
+\end{verbatim}
+\begin{alltt}
+\hlkwd{mean}\hlstd{(}\hlkwd{parscores}\hlstd{(folds, stackedEnsembleModel))}
+\end{alltt}
+\begin{verbatim}
+## [1] 6208.669
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Compared to the model based on the single \lstinline{J48} classifier, ensemble
+learning improves performance a bit, but stacking does not help.
 
 The prediction data frame for ensemble models has the number of votes for each
-algorithm as score. Algorithms with no votes do not appear.
-\begin{lstlisting}
-ensembleModel|$\$$|predictions[[1]][[1]]
-  algorithm score
-1     clasp     3
-\end{lstlisting}
+algorithm as score.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{head}\hlstd{(ensembleModel}\hlopt{$}\hlstd{predictions)}
+\end{alltt}
+\begin{verbatim}
+##   benchmark_id      algorithm score iteration
+## 1           20          clasp     2         1
+## 2           20       march_rw     1         1
+## 3           20        minisat     0         1
+## 4           20  cryptominisat     0         1
+## 5           20        glucose     0         1
+## 6           20 minisat_noelim     0         1
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 \medskip
 
@@ -972,35 +1206,89 @@ them directly, a classifier is learned to predict, given the performance
 predictions, the best algorithm. To achieve this, a classification algorithm is
 given as the \lstinline{combine} argument.
 set to true.
-\begin{lstlisting}
-stackedModel = regression(makeLearner("regr.lm"), folds,
-    combine=makeLearner("classif.OneR"))
-\end{lstlisting}
-On the example data, this stacked model achieves a mean PAR10 score of 6103.86
-and 2026 solved instances. The performance is worse than for the non-stacked
-version with a mean PAR10 of 5612.517 and 2058 solved instances. The reason for
-this is that the non-stacked combination function, choosing the algorithm with
-the lowest predicted value, is very hard to learn when considering the
-performance values independently and not the relation between them.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{stackedModel} \hlkwb{=} \hlkwd{regression}\hlstd{(}\hlkwd{makeLearner}\hlstd{(}\hlstr{"regr.lm"}\hlstd{),}
+    \hlstd{folds,} \hlkwc{combine} \hlstd{=} \hlkwd{makeLearner}\hlstd{(}\hlstr{"classif.J48"}\hlstd{))}
+\hlkwd{mean}\hlstd{(}\hlkwd{misclassificationPenalties}\hlstd{(folds, model))}
+\end{alltt}
+\begin{verbatim}
+## [1] 106.0375
+\end{verbatim}
+\begin{alltt}
+\hlkwd{mean}\hlstd{(}\hlkwd{parscores}\hlstd{(folds, model))}
+\end{alltt}
+\begin{verbatim}
+## [1] 5736.611
+\end{verbatim}
+\begin{alltt}
+\hlkwd{mean}\hlstd{(}\hlkwd{misclassificationPenalties}\hlstd{(folds, stackedModel))}
+\end{alltt}
+\begin{verbatim}
+## [1] 123.1134
+\end{verbatim}
+\begin{alltt}
+\hlkwd{mean}\hlstd{(}\hlkwd{parscores}\hlstd{(folds, stackedModel))}
+\end{alltt}
+\begin{verbatim}
+## [1] 5966.749
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+On the example data, the performance of the stacked model is worse than for the
+non-stacked version.517 and 2058 solved instances. The reason for this is that
+the non-stacked combination function, choosing the algorithm with the lowest
+predicted value, is very hard to learn when considering the performance values
+independently and not the relation between them.
 
 LLAMA does provide an additional argument for \lstinline{regression} that allows
 to make this task easier. The \lstinline{expand} argument allows to specify a
 function that, given the performance predictions, can augment the inputs to the
 classifier. In this case, we want to add the pairwise absolute differences
 between the predicted performances of algorithms.
-\begin{lstlisting}
-stackedModel = regression(makeLearner("regr.lm"), folds,
-    combine=makeLearner("classif.OneR"),
-    expand=function(x) {
-        cbind(x, combn(c(1:ncol(x)), 2, function(y) {
-            abs(x[,y[1]] - x[,y[2]])
-        }))
-    })
-\end{lstlisting}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{stackedExpandedModel} \hlkwb{=} \hlkwd{regression}\hlstd{(}\hlkwd{makeLearner}\hlstd{(}\hlstr{"regr.lm"}\hlstd{),}
+    \hlstd{folds,} \hlkwc{combine} \hlstd{=} \hlkwd{makeLearner}\hlstd{(}\hlstr{"classif.J48"}\hlstd{),}
+    \hlkwc{expand} \hlstd{=} \hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{) \{}
+        \hlkwd{cbind}\hlstd{(x,} \hlkwd{combn}\hlstd{(}\hlkwd{c}\hlstd{(}\hlnum{1}\hlopt{:}\hlkwd{ncol}\hlstd{(x)),} \hlnum{2}\hlstd{,} \hlkwa{function}\hlstd{(}\hlkwc{y}\hlstd{) \{}
+            \hlkwd{abs}\hlstd{(x[, y[}\hlnum{1}\hlstd{]]} \hlopt{-} \hlstd{x[, y[}\hlnum{2}\hlstd{]])}
+        \hlstd{\}))}
+    \hlstd{\})}
+\hlkwd{mean}\hlstd{(}\hlkwd{misclassificationPenalties}\hlstd{(folds, stackedModel))}
+\end{alltt}
+\begin{verbatim}
+## [1] 123.1134
+\end{verbatim}
+\begin{alltt}
+\hlkwd{mean}\hlstd{(}\hlkwd{parscores}\hlstd{(folds, stackedModel))}
+\end{alltt}
+\begin{verbatim}
+## [1] 5966.749
+\end{verbatim}
+\begin{alltt}
+\hlkwd{mean}\hlstd{(}\hlkwd{misclassificationPenalties}\hlstd{(folds, stackedExpandedModel))}
+\end{alltt}
+\begin{verbatim}
+## [1] 147.3827
+\end{verbatim}
+\begin{alltt}
+\hlkwd{mean}\hlstd{(}\hlkwd{parscores}\hlstd{(folds, stackedExpandedModel))}
+\end{alltt}
+\begin{verbatim}
+## [1] 6124.182
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
 While the function given here may appear cryptic at first, it demonstrates one o
 the advantages of the implementation of LLAMA as an R package. It allows to use
-arbitrary R functions to process data. The mean PAR10 score achieved by this
-model is 5823.698 and the number of solved instances 2044. An improvement over
+arbitrary R functions to process data. This version achieves an improvement over
 the stacked model without expansion.
 
 For the \lstinline{classifyPairs} model builder, LLAMA supports ensembles and
@@ -1026,13 +1314,19 @@ suitable parallel backend is loaded. All the user has to do to enable parallel
 execution is to load a parallel backend, for example through
 \lstinline{parallelStartSocket()}. Libraries used in the spawned processes
 should be specified through \lstinline{parallelLibrary}.
-\begin{lstlisting}
-library(parallelMap)
-parallelStartSocket(2) # use 2 CPUs
-parallelLibrary("llama", "mlr")
-# LLAMA code
-parallelStop()
-\end{lstlisting}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(parallelMap)}
+\hlkwd{parallelStartSocket}\hlstd{(}\hlnum{2}\hlstd{)}  \hlcom{# use 2 CPUs}
+\hlkwd{parallelLibrary}\hlstd{(}\hlstr{"llama"}\hlstd{,} \hlstr{"mlr"}\hlstd{)}
+\hlcom{# LLAMA code}
+\hlkwd{parallelStop}\hlstd{()}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
 After running these commands, all subsequent calls to LLAMA model building
 functions will be parallelised across 2 CPUs.
 
@@ -1076,13 +1370,20 @@ however need to take into account that the problems that are solved by the
 presolver within its time limit do not require algorithms to be selected for
 them, so we should remove them from the data before training the model. This is
 done easily in R.
-\begin{lstlisting}
-performanceData = read.csv("performance.csv")
-presolveLimit = 1
-presolver = "minisat"
-newPerformanceData = subset(performanceData, performanceData[presolver] > presolveLimit)
-data = input(read.csv("features.csv"), newPerformanceData)
-\end{lstlisting}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{performanceData} \hlkwb{=} \hlkwd{read.csv}\hlstd{(}\hlstr{"performance.csv"}\hlstd{)}
+\hlstd{presolveLimit} \hlkwb{=} \hlnum{1}
+\hlstd{presolver} \hlkwb{=} \hlstr{"minisat"}
+\hlstd{newPerformanceData} \hlkwb{=} \hlkwd{subset}\hlstd{(performanceData, performanceData[presolver]} \hlopt{>}
+    \hlstd{presolveLimit)}
+\hlstd{data} \hlkwb{=} \hlkwd{input}\hlstd{(}\hlkwd{read.csv}\hlstd{(}\hlstr{"features.csv"}\hlstd{), newPerformanceData)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
 Assuming that our presolver is minisat with a time-out of 1 second, we can
 filter the data as above before passing it to \lstinline{input}. There is no
 need to filter the feature data, as LLAMA will discard any items it cannot
@@ -1100,16 +1401,27 @@ the satisfiable and unsatisfiable cases.
 
 To achieve this, we require additional data on whether an instance is
 satisfiable or not.
-\begin{lstlisting}
-performanceData = read.csv("performance.csv")
-featureData = read.csv("features.csv")
-featureNames = names(featureData)[-1]
-satisfiable = read.csv("satisfiable.csv")
-satisfiableTask = makeClassifTask("satisfiable", target="satisfiable", data=cbind(satisfiable, subset(featureData, T, featureNames)))
-satisfiableModel = train(makeLearner("classif.J48"), task=satisfiableTask)
-satisfiableData = input(featureData, subset(performanceData, satisfiable|$\$$|satisfiable))
-unsatisfiableData = input(featureData, subset(performanceData, !satisfiable|$\$$|satisfiable))
-\end{lstlisting}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{performanceData} \hlkwb{=} \hlkwd{read.csv}\hlstd{(}\hlstr{"performance.csv"}\hlstd{)}
+\hlstd{featureData} \hlkwb{=} \hlkwd{read.csv}\hlstd{(}\hlstr{"features.csv"}\hlstd{)}
+\hlstd{featureNames} \hlkwb{=} \hlkwd{names}\hlstd{(featureData)[}\hlopt{-}\hlnum{1}\hlstd{]}
+\hlstd{satisfiable} \hlkwb{=} \hlkwd{read.csv}\hlstd{(}\hlstr{"satisfiable.csv"}\hlstd{)}
+\hlstd{satisfiableTask} \hlkwb{=} \hlkwd{makeClassifTask}\hlstd{(}\hlstr{"satisfiable"}\hlstd{,}
+    \hlkwc{target} \hlstd{=} \hlstr{"satisfiable"}\hlstd{,} \hlkwc{data} \hlstd{=} \hlkwd{cbind}\hlstd{(satisfiable,}
+        \hlkwd{subset}\hlstd{(featureData, T, featureNames)))}
+\hlstd{satisfiableModel} \hlkwb{=} \hlkwd{train}\hlstd{(}\hlkwd{makeLearner}\hlstd{(}\hlstr{"classif.J48"}\hlstd{),}
+    \hlkwc{task} \hlstd{= satisfiableTask)}
+\hlstd{satisfiableData} \hlkwb{=} \hlkwd{input}\hlstd{(featureData,} \hlkwd{subset}\hlstd{(performanceData,}
+    \hlstd{satisfiable}\hlopt{$}\hlstd{satisfiable))}
+\hlstd{unsatisfiableData} \hlkwb{=} \hlkwd{input}\hlstd{(featureData,} \hlkwd{subset}\hlstd{(performanceData,}
+    \hlopt{!}\hlstd{satisfiable}\hlopt{$}\hlstd{satisfiable))}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
 For simplicity, we assume that the first column of the feature file is an ID and
 that the order of the instances in the feature, performance, and satisfiable
 files is the same. The \lstinline{satisfiableModel} can now be used to predict
@@ -1132,15 +1444,25 @@ small and cheaply computable subset of the features, predicts the time required
 to compute the remaining features. If the time is too high, we simply run a
 backup solver on the instance. Such instances should not be used in the training
 and evaluation of the algorithm selection model.
-\begin{lstlisting}
-featureTimes = read.csv("featureTimes.csv")
-reducedFeatureData = read.csv("reducedFeatures.csv")
-reducedFeatureNames = names(reducedFeatureData)[-1]
-featureTimeTask = makeRegrTask("featureTime", target="time", data=cbind(featureTimes, subset(reducedFeatureData, T, reducedFeatureNames)))
-featureTimeModel = train(makeLearner("regr.lm"), task=featureTimeTask)
-featureTimeLimit = 5
-data = subset(subset(read.csv("features.csv"), featureTimes|$\$$|time < featureTimeLimit), read.csv("performance.csv"))
-\end{lstlisting}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{featureTimes} \hlkwb{=} \hlkwd{read.csv}\hlstd{(}\hlstr{"featureTimes.csv"}\hlstd{)}
+\hlstd{reducedFeatureData} \hlkwb{=} \hlkwd{read.csv}\hlstd{(}\hlstr{"reducedFeatures.csv"}\hlstd{)}
+\hlstd{reducedFeatureNames} \hlkwb{=} \hlkwd{names}\hlstd{(reducedFeatureData)[}\hlopt{-}\hlnum{1}\hlstd{]}
+\hlstd{featureTimeTask} \hlkwb{=} \hlkwd{makeRegrTask}\hlstd{(}\hlstr{"featureTime"}\hlstd{,}
+    \hlkwc{target} \hlstd{=} \hlstr{"time"}\hlstd{,} \hlkwc{data} \hlstd{=} \hlkwd{cbind}\hlstd{(featureTimes,}
+        \hlkwd{subset}\hlstd{(reducedFeatureData, T, reducedFeatureNames)))}
+\hlstd{featureTimeModel} \hlkwb{=} \hlkwd{train}\hlstd{(}\hlkwd{makeLearner}\hlstd{(}\hlstr{"regr.lm"}\hlstd{),}
+    \hlkwc{task} \hlstd{= featureTimeTask)}
+\hlstd{featureTimeLimit} \hlkwb{=} \hlnum{5}
+\hlstd{data} \hlkwb{=} \hlkwd{subset}\hlstd{(}\hlkwd{subset}\hlstd{(}\hlkwd{read.csv}\hlstd{(}\hlstr{"features.csv"}\hlstd{),}
+    \hlstd{featureTimes}\hlopt{$}\hlstd{time} \hlopt{<} \hlstd{featureTimeLimit),} \hlkwd{read.csv}\hlstd{(}\hlstr{"performance.csv"}\hlstd{))}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
 Similar assumptions as in the section above are made. The LLAMA data frame can
 now again be used in the usual manner to train algorithm selection models.
 
@@ -1148,33 +1470,46 @@ now again be used in the usual manner to train algorithm selection models.
 
 The techniques outlined in the previous section can now be put together to
 implement a system similar to SATzilla.
-\begin{lstlisting}
-performanceData = read.csv("performance.csv")
-featureData = read.csv("features.csv")
-featureNames = names(featureData)[-1]
-reducedFeatureData = read.csv("reducedFeatures.csv")
-reducedFeatureNames = names(reducedFeatureData)[-1]
-featureTimes = read.csv("featureTimes.csv")
-satisfiable = read.csv("satisfiable.csv")
 
-presolveLimit = 1
-presolver = "minisat"
-featureTimeLimit = 5
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{performanceData} \hlkwb{=} \hlkwd{read.csv}\hlstd{(}\hlstr{"performance.csv"}\hlstd{)}
+\hlstd{featureData} \hlkwb{=} \hlkwd{read.csv}\hlstd{(}\hlstr{"features.csv"}\hlstd{)}
+\hlstd{featureNames} \hlkwb{=} \hlkwd{names}\hlstd{(featureData)[}\hlopt{-}\hlnum{1}\hlstd{]}
+\hlstd{reducedFeatureData} \hlkwb{=} \hlkwd{read.csv}\hlstd{(}\hlstr{"reducedFeatures.csv"}\hlstd{)}
+\hlstd{reducedFeatureNames} \hlkwb{=} \hlkwd{names}\hlstd{(reducedFeatureData)[}\hlopt{-}\hlnum{1}\hlstd{]}
+\hlstd{featureTimes} \hlkwb{=} \hlkwd{read.csv}\hlstd{(}\hlstr{"featureTimes.csv"}\hlstd{)}
+\hlstd{satisfiable} \hlkwb{=} \hlkwd{read.csv}\hlstd{(}\hlstr{"satisfiable.csv"}\hlstd{)}
+\hlstd{presolveLimit} \hlkwb{=} \hlnum{1}
+\hlstd{presolver} \hlkwb{=} \hlstr{"minisat"}
+\hlstd{featureTimeLimit} \hlkwb{=} \hlnum{5}
+\hlstd{toSolve} \hlkwb{=} \hlstd{(performanceData[presolver]} \hlopt{>} \hlstd{presolveLimit)} \hlopt{&}
+    \hlstd{(featureTimes}\hlopt{$}\hlstd{time} \hlopt{<} \hlstd{featureTimeLimit)}
+\hlstd{featureTimeTask} \hlkwb{=} \hlkwd{makeRegrTask}\hlstd{(}\hlstr{"featureTime"}\hlstd{,}
+    \hlkwc{target} \hlstd{=} \hlstr{"time"}\hlstd{,} \hlkwc{data} \hlstd{=} \hlkwd{cbind}\hlstd{(featureTimes,}
+        \hlkwd{subset}\hlstd{(reducedFeatureData, T, reducedFeatureNames)))}
+\hlstd{featureTimeModel} \hlkwb{=} \hlkwd{train}\hlstd{(}\hlkwd{makeLearner}\hlstd{(}\hlstr{"regr.lm"}\hlstd{),}
+    \hlkwc{task} \hlstd{= featureTimeTask)}
+\hlstd{satisfiableTask} \hlkwb{=} \hlkwd{makeClassifTask}\hlstd{(}\hlstr{"satisfiable"}\hlstd{,}
+    \hlkwc{target} \hlstd{=} \hlstr{"satisfiable"}\hlstd{,} \hlkwc{data} \hlstd{=} \hlkwd{cbind}\hlstd{(satisfiable,}
+        \hlkwd{subset}\hlstd{(featureData, T, featureNames)))}
+\hlstd{satisfiableModel} \hlkwb{=} \hlkwd{train}\hlstd{(}\hlkwd{makeLearner}\hlstd{(}\hlstr{"classif.J48"}\hlstd{),}
+    \hlkwc{task} \hlstd{= satisfiableTask)}
+\hlstd{satisfiableData} \hlkwb{=} \hlkwd{input}\hlstd{(featureData,} \hlkwd{subset}\hlstd{(performanceData,}
+    \hlstd{satisfiable}\hlopt{$}\hlstd{satisfiable} \hlopt{&} \hlstd{toSolve))}
+\hlstd{unsatisfiableData} \hlkwb{=} \hlkwd{input}\hlstd{(featureData,} \hlkwd{subset}\hlstd{(performanceData,}
+    \hlstd{(}\hlopt{!}\hlstd{satisfiable}\hlopt{$}\hlstd{satisfiable)} \hlopt{&} \hlstd{toSolve))}
+\hlstd{satisfiableFolds} \hlkwb{=} \hlkwd{cvFolds}\hlstd{(satisfiableData)}
+\hlstd{unsatisfiableFolds} \hlkwb{=} \hlkwd{cvFolds}\hlstd{(unsatisfiableData)}
+\hlstd{satisfiableModel} \hlkwb{=} \hlkwd{classifyPairs}\hlstd{(}\hlkwd{makeLearner}\hlstd{(}\hlstr{"classif.randomForest"}\hlstd{),}
+    \hlstd{satisfiableFolds)}
+\hlstd{unsatisfiableModel} \hlkwb{=} \hlkwd{classifyPairs}\hlstd{(}\hlkwd{makeLearner}\hlstd{(}\hlstr{"classif.randomForest"}\hlstd{),}
+    \hlstd{unsatisfiableFolds)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
 
-toSolve = (performanceData[presolver] > presolveLimit)&(featureTimes|$\$$|time < featureTimeLimit)
-featureTimeTask = makeRegrTask("featureTime", target="time", data=cbind(featureTimes, subset(reducedFeatureData, T, reducedFeatureNames)))
-featureTimeModel = train(makeLearner("regr.lm"), task=featureTimeTask)
-satisfiableTask = makeClassifTask("satisfiable", target="satisfiable", data=cbind(satisfiable, subset(featureData, T, featureNames)))
-satisfiableModel = train(makeLearner("classif.J48"), task=satisfiableTask)
-
-satisfiableData = input(featureData, subset(performanceData, satisfiable|$\$$|satisfiable&toSolve))
-unsatisfiableData = input(featureData, subset(performanceData, (!satisfiable|$\$$|satisfiable)&toSolve))
-
-satisfiableFolds = cvFolds(satisfiableData)
-unsatisfiableFolds = cvFolds(unsatisfiableData)
-satisfiableModel = classifyPairs(makeLearner("classif.randomForest"), satisfiableFolds)
-unsatisfiableModel = classifyPairs(makeLearner("classif.randomForest"), unsatisfiableFolds)
-\end{lstlisting}
 Let's walk through it step by step. First, we read all the relevant data, as in
 the individual steps above. Then we set our time limits and the presolver. The
 data we want to train algorithm selection models for comprises the instances
@@ -1200,34 +1535,40 @@ determine feature computation time and satisfiability and then the
 \lstinline{unsatisfiableModel}.
 
 Our SATzilla-style solver now looks something like this.
-\begin{lstlisting}
-function myPortfolioSolver(instance) {
-    presolver = "minisat"
-    presolveTimeout = 1
-    backupsolver = "clasp"
-    featureTimeout = 5
 
-    result = runSolver(instance, presolver, timeout=presolveTimeout)
-    if(!isSolved(result)) {
-        simpleFeatures = getSimpleFeatures(instance)
-        featureTime = predict(featureTimeMode, newdata=simpleFeatures)|$\$$|data|$\$$|response
-        if((featureTime > featureTimeLimit) {
-            return(runSolver(instance, backupsolver))
-        } else {
-            features = getFeatures(instance)
-            satisfiable = predict(satisfiableModel, newdata=features)|$\$$|data|$\$$|response
-            if(satisfiable) {
-                solver = satisfiableModel|$\$$|predictor(features)
-            } else {
-                solver = unsatisfiableModel|$\$$|predictor(features)
-            }
-            return(runSolver(instance, solver))
-        }
-    } else {
-        return(result)
-    }
-}
-\end{lstlisting}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{myPortfolioSolver} \hlkwb{=} \hlkwa{function}\hlstd{(}\hlkwc{instance}\hlstd{) \{}
+    \hlstd{presolver} \hlkwb{=} \hlstr{"minisat"}
+    \hlstd{presolveTimeout} \hlkwb{=} \hlnum{1}
+    \hlstd{backupsolver} \hlkwb{=} \hlstr{"clasp"}
+    \hlstd{featureTimeout} \hlkwb{=} \hlnum{5}
+    \hlstd{result} \hlkwb{=} \hlkwd{runSolver}\hlstd{(instance, presolver,} \hlkwc{timeout} \hlstd{= presolveTimeout)}
+    \hlkwa{if} \hlstd{(}\hlopt{!}\hlkwd{isSolved}\hlstd{(result)) \{}
+        \hlstd{simpleFeatures} \hlkwb{=} \hlkwd{getSimpleFeatures}\hlstd{(instance)}
+        \hlstd{featureTime} \hlkwb{=} \hlkwd{predict}\hlstd{(featureTimeMode,}
+            \hlkwc{newdata} \hlstd{= simpleFeatures)}\hlopt{$}\hlstd{data}\hlopt{$}\hlstd{response}
+        \hlkwa{if} \hlstd{((featureTime} \hlopt{>} \hlstd{featureTimeLimit)) \{}
+            \hlkwd{return}\hlstd{(}\hlkwd{runSolver}\hlstd{(instance, backupsolver))}
+        \hlstd{\}} \hlkwa{else} \hlstd{\{}
+            \hlstd{features} \hlkwb{=} \hlkwd{getFeatures}\hlstd{(instance)}
+            \hlstd{satisfiable} \hlkwb{=} \hlkwd{predict}\hlstd{(satisfiableModel,}
+                \hlkwc{newdata} \hlstd{= features)}\hlopt{$}\hlstd{data}\hlopt{$}\hlstd{response}
+            \hlkwa{if} \hlstd{(satisfiable) \{}
+                \hlstd{solver} \hlkwb{=} \hlstd{satisfiableModel}\hlopt{$}\hlkwd{predictor}\hlstd{(features)}
+            \hlstd{\}} \hlkwa{else} \hlstd{\{}
+                \hlstd{solver} \hlkwb{=} \hlstd{unsatisfiableModel}\hlopt{$}\hlkwd{predictor}\hlstd{(features)}
+            \hlstd{\}}
+            \hlkwd{return}\hlstd{(}\hlkwd{runSolver}\hlstd{(instance, solver))}
+        \hlstd{\}}
+    \hlstd{\}} \hlkwa{else} \hlstd{\{}
+        \hlkwd{return}\hlstd{(result)}
+    \hlstd{\}}
+\hlstd{\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
 
 
 \section{Case study: Visualising the data}\label{sec:case:vis}
@@ -1244,68 +1585,96 @@ features. Let's have a look at the performance values first. Throughout this
 section, we will be using the example SAT data, but the same methodology applies
 to any other data in LLAMA format. As we have a large amount of data to
 visualise, we are going to use heatmaps.
-\begin{lstlisting}
-data(satsolvers)
-times = subset(satsolvers|$\$$|data, T, satsolvers|$\$$|performance)
-par(mar=c(7,1,3,1))
-cols = gray(seq(1, 0, length.out=255))
-image(t(as.matrix(times)), axes=F, col=cols)
-axis(1, labels=satsolvers|$\$$|performance, at=seq(0, 1, 1/(length(satsolvers|$\$$|performance)-1)), las=2)
-legend("top", legend=c(min(times), max(times)), fill=c("white", "black"), bty="n", inset=-0.12, xpd=NA)
-\end{lstlisting}
-The graph created by this code is shown in Figure~\ref{fig:times}. After
-extracting the performance values (runtimes in this case) from the LLAMA data
-frame, setting some plot parameters and creating a black and white colour scale,
-we plot the heatmap, axis, and legend. The map shows the time each solver takes
-on each instance.
 
-\begin{figure}[htb]
-\begin{center}
-\includegraphics[width=.9\textwidth]{times}
-\caption{Runtimes by solver and instance from almost instantaneous solve (white)
-to timeout (black).}
-\label{fig:times}
-\end{center}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{data}\hlstd{(satsolvers)}
+\hlstd{times} \hlkwb{=} \hlkwd{subset}\hlstd{(satsolvers}\hlopt{$}\hlstd{data, T, satsolvers}\hlopt{$}\hlstd{performance)}
+\hlkwd{par}\hlstd{(}\hlkwc{mar} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{7}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{3}\hlstd{,} \hlnum{1}\hlstd{))}
+\hlstd{cols} \hlkwb{=} \hlkwd{gray}\hlstd{(}\hlkwd{seq}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{0}\hlstd{,} \hlkwc{length.out} \hlstd{=} \hlnum{255}\hlstd{))}
+\hlkwd{image}\hlstd{(}\hlkwd{t}\hlstd{(}\hlkwd{as.matrix}\hlstd{(times)),} \hlkwc{axes} \hlstd{= F,} \hlkwc{col} \hlstd{= cols)}
+\hlkwd{axis}\hlstd{(}\hlnum{1}\hlstd{,} \hlkwc{labels} \hlstd{= satsolvers}\hlopt{$}\hlstd{performance,} \hlkwc{at} \hlstd{=} \hlkwd{seq}\hlstd{(}\hlnum{0}\hlstd{,}
+    \hlnum{1}\hlstd{,} \hlnum{1}\hlopt{/}\hlstd{(}\hlkwd{length}\hlstd{(satsolvers}\hlopt{$}\hlstd{performance)} \hlopt{-} \hlnum{1}\hlstd{)),}
+    \hlkwc{las} \hlstd{=} \hlnum{2}\hlstd{)}
+\hlkwd{legend}\hlstd{(}\hlstr{"top"}\hlstd{,} \hlkwc{legend} \hlstd{=} \hlkwd{c}\hlstd{(}\hlkwd{min}\hlstd{(times),} \hlkwd{max}\hlstd{(times)),}
+    \hlkwc{fill} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"white"}\hlstd{,} \hlstr{"black"}\hlstd{),} \hlkwc{bty} \hlstd{=} \hlstr{"n"}\hlstd{,} \hlkwc{inset} \hlstd{=} \hlopt{-}\hlnum{0.12}\hlstd{,}
+    \hlkwc{xpd} \hlstd{=} \hlnum{NA}\hlstd{)}
+\end{alltt}
+\end{kframe}\begin{figure}
+
+{\centering \includegraphics[width=.9\textwidth]{figure/runtimes-1} 
+
+}
+
+\caption[Runtimes by solver and instance from almost instantaneous solve (white) to timeout (black)]{Runtimes by solver and instance from almost instantaneous solve (white) to timeout (black).\label{fig:runtimes}}
 \end{figure}
+
+
+\end{knitrout}
+
+The resulting plot is shown in Figure~\ref{fig:runtimes}. After extracting the
+performance values (runtimes in this case) from the LLAMA data frame, setting
+some plot parameters and creating a black and white colour scale, we plot the
+heatmap, axis, and legend. The map shows the time each solver takes on each
+instance.
 
 There is a large spread of runtimes in our data, with most instances being
 solved either instantaneously or timing out. The figure looks accordingly, with
 most colours being either white or black and very little grey in between.
 Plotting the log of the runtime is more informative
-(Figure~\ref{fig:times-log}).
-\begin{lstlisting}
-image(log10(t(as.matrix(times))), axes=F, col=cols)
-axis(1, labels=satsolvers|$\$$|performance, at=seq(0, 1, 1/(length(satsolvers|$\$$|performance)-1)), las=2)
-legend("top", legend=c(min(times), max(times)), fill=c("white", "black"), bty="n", inset=-0.12, xpd=NA)
-\end{lstlisting}
+(Figure~\ref{fig:runtimes-log}).
 
-\begin{figure}[htb]
-\begin{center}
-\includegraphics[width=.9\textwidth]{times-log}
-\caption{Log runtimes by solver and instance from almost instantaneous solve
-(white) to timeout (black).}
-\label{fig:times-log}
-\end{center}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{image}\hlstd{(}\hlkwd{log10}\hlstd{(}\hlkwd{t}\hlstd{(}\hlkwd{as.matrix}\hlstd{(times))),} \hlkwc{axes} \hlstd{= F,} \hlkwc{col} \hlstd{= cols)}
+\hlkwd{axis}\hlstd{(}\hlnum{1}\hlstd{,} \hlkwc{labels} \hlstd{= satsolvers}\hlopt{$}\hlstd{performance,} \hlkwc{at} \hlstd{=} \hlkwd{seq}\hlstd{(}\hlnum{0}\hlstd{,}
+    \hlnum{1}\hlstd{,} \hlnum{1}\hlopt{/}\hlstd{(}\hlkwd{length}\hlstd{(satsolvers}\hlopt{$}\hlstd{performance)} \hlopt{-} \hlnum{1}\hlstd{)),}
+    \hlkwc{las} \hlstd{=} \hlnum{2}\hlstd{)}
+\hlkwd{legend}\hlstd{(}\hlstr{"top"}\hlstd{,} \hlkwc{legend} \hlstd{=} \hlkwd{c}\hlstd{(}\hlkwd{min}\hlstd{(times),} \hlkwd{max}\hlstd{(times)),}
+    \hlkwc{fill} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"white"}\hlstd{,} \hlstr{"black"}\hlstd{),} \hlkwc{bty} \hlstd{=} \hlstr{"n"}\hlstd{,} \hlkwc{inset} \hlstd{=} \hlopt{-}\hlnum{0.12}\hlstd{,}
+    \hlkwc{xpd} \hlstd{=} \hlnum{NA}\hlstd{)}
+\end{alltt}
+\end{kframe}\begin{figure}
+
+{\centering \includegraphics[width=.9\textwidth]{figure/runtimes-log-1} 
+
+}
+
+\caption[Log runtimes by solver and instance from almost instantaneous solve (white) to timeout (black)]{Log runtimes by solver and instance from almost instantaneous solve (white) to timeout (black).\label{fig:runtimes-log}}
 \end{figure}
+
+
+\end{knitrout}
 
 When doing algorithm selection, we are usually more interested in how the
 performance of a solver compares to the other solvers in the portfolio rather
 than the absolute value. We can plot the rank of each solver on each instance in
-a similar fashion to before. The resulting plot is shown in
-Figure~\ref{fig:rank}.
-\begin{lstlisting}
-image(apply(times, 1, order), axes=F, col=cols)
-axis(1, labels=satsolvers|$\$$|performance, at=seq(0, 1, 1/(length(satsolvers|$\$$|performance)-1)), las=2)
-legend("top", legend=c(1, length(satsolvers|$\$$|performance)), fill=c("white", "black"), bty="n", inset=-0.12, xpd=NA)
-\end{lstlisting}
+a similar fashion to before (Figure~\ref{fig:ranks}).
 
-\begin{figure}[htb]
-\begin{center}
-\includegraphics[width=.9\textwidth]{rank}
-\caption{Solver ranks on each instance from first (white) to last (black).}
-\label{fig:rank}
-\end{center}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{image}\hlstd{(}\hlkwd{apply}\hlstd{(times,} \hlnum{1}\hlstd{, order),} \hlkwc{axes} \hlstd{= F,} \hlkwc{col} \hlstd{= cols)}
+\hlkwd{axis}\hlstd{(}\hlnum{1}\hlstd{,} \hlkwc{labels} \hlstd{= satsolvers}\hlopt{$}\hlstd{performance,} \hlkwc{at} \hlstd{=} \hlkwd{seq}\hlstd{(}\hlnum{0}\hlstd{,}
+    \hlnum{1}\hlstd{,} \hlnum{1}\hlopt{/}\hlstd{(}\hlkwd{length}\hlstd{(satsolvers}\hlopt{$}\hlstd{performance)} \hlopt{-} \hlnum{1}\hlstd{)),}
+    \hlkwc{las} \hlstd{=} \hlnum{2}\hlstd{)}
+\hlkwd{legend}\hlstd{(}\hlstr{"top"}\hlstd{,} \hlkwc{legend} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlkwd{length}\hlstd{(satsolvers}\hlopt{$}\hlstd{performance)),}
+    \hlkwc{fill} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"white"}\hlstd{,} \hlstr{"black"}\hlstd{),} \hlkwc{bty} \hlstd{=} \hlstr{"n"}\hlstd{,} \hlkwc{inset} \hlstd{=} \hlopt{-}\hlnum{0.12}\hlstd{,}
+    \hlkwc{xpd} \hlstd{=} \hlnum{NA}\hlstd{)}
+\end{alltt}
+\end{kframe}\begin{figure}
+
+{\centering \includegraphics[width=.9\textwidth]{figure/ranks-1} 
+
+}
+
+\caption[Solver ranks on each instance from first (white) to last (black)]{Solver ranks on each instance from first (white) to last (black).\label{fig:ranks}}
 \end{figure}
+
+
+\end{knitrout}
 
 % TODO: scatter plots
 
@@ -1316,46 +1685,63 @@ probably even more important that analysing the performance data, as the
 features are used to create the models we are going to use for algorithm
 selection. If the features are bad, the models will not be good either. Let's do
 the same kind of plot we did for the solvers for the features.
-\begin{lstlisting}
-features = subset(satsolvers|$\$$|data, T, satsolvers|$\$$|features)
-par(mar=c(10,1,3,1))
-image(t(as.matrix(features)), axes=F, col=cols)
-axis(1, labels=satsolvers|$\$$|features, at=seq(0, 1, 1/(length(satsolvers|$\$$|features)-1)), las=2)
-legend("top", legend=c(min(features), max(features)), fill=c("white", "black"), bty="n", inset=-0.12, xpd=NA)
-\end{lstlisting}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{features} \hlkwb{=} \hlkwd{subset}\hlstd{(satsolvers}\hlopt{$}\hlstd{data, T, satsolvers}\hlopt{$}\hlstd{features)}
+\hlkwd{par}\hlstd{(}\hlkwc{mar} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{10}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{3}\hlstd{,} \hlnum{1}\hlstd{))}
+\hlkwd{image}\hlstd{(}\hlkwd{t}\hlstd{(}\hlkwd{as.matrix}\hlstd{(features)),} \hlkwc{axes} \hlstd{= F,} \hlkwc{col} \hlstd{= cols)}
+\hlkwd{axis}\hlstd{(}\hlnum{1}\hlstd{,} \hlkwc{labels} \hlstd{= satsolvers}\hlopt{$}\hlstd{features,} \hlkwc{at} \hlstd{=} \hlkwd{seq}\hlstd{(}\hlnum{0}\hlstd{,}
+    \hlnum{1}\hlstd{,} \hlnum{1}\hlopt{/}\hlstd{(}\hlkwd{length}\hlstd{(satsolvers}\hlopt{$}\hlstd{features)} \hlopt{-} \hlnum{1}\hlstd{)),} \hlkwc{las} \hlstd{=} \hlnum{2}\hlstd{)}
+\hlkwd{legend}\hlstd{(}\hlstr{"top"}\hlstd{,} \hlkwc{legend} \hlstd{=} \hlkwd{c}\hlstd{(}\hlkwd{min}\hlstd{(features),} \hlkwd{max}\hlstd{(features)),}
+    \hlkwc{fill} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"white"}\hlstd{,} \hlstr{"black"}\hlstd{),} \hlkwc{bty} \hlstd{=} \hlstr{"n"}\hlstd{,} \hlkwc{inset} \hlstd{=} \hlopt{-}\hlnum{0.12}\hlstd{,}
+    \hlkwc{xpd} \hlstd{=} \hlnum{NA}\hlstd{)}
+\end{alltt}
+\end{kframe}\begin{figure}
+
+{\centering \includegraphics[width=.9\textwidth]{figure/features-1} 
+
+}
+
+\caption[Feature values on each instance from lowest (white) to highest (black)]{Feature values on each instance from lowest (white) to highest (black).\label{fig:features}}
+\end{figure}
+
+
+\end{knitrout}
+
 The resulting plot is shown in Figure~\ref{fig:features}. The values for four of
 the features are much higher than the rest. It is hard to see the variance of
 the feature values for a particular feature over the set of instances because of
 this.
 
-\begin{figure}[htb]
-\begin{center}
-\includegraphics[width=.9\textwidth]{features}
-\caption{Feature values on each instance from lowest (white) to highest
-(black).}
-\label{fig:features}
-\end{center}
-\end{figure}
-
 We get a better plot from the normalised feature values
 (Figure~\ref{fig:features-norm}).
-\begin{lstlisting}
-nFeatures = normalize(features)
-par(mar=c(10,1,1,1))
-image(t(as.matrix(nFeatures|$\$$|features)), axes=F, col=cols)
-axis(1, labels=satsolvers|$\$$|features, at=seq(0, 1, 1/(length(satsolvers|$\$$|features)-1)), las=2)
-\end{lstlisting}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{nFeatures} \hlkwb{=} \hlkwd{normalize}\hlstd{(features)}
+\hlkwd{par}\hlstd{(}\hlkwc{mar} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{10}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{1}\hlstd{))}
+\hlkwd{image}\hlstd{(}\hlkwd{t}\hlstd{(}\hlkwd{as.matrix}\hlstd{(nFeatures}\hlopt{$}\hlstd{features)),} \hlkwc{axes} \hlstd{= F,}
+    \hlkwc{col} \hlstd{= cols)}
+\hlkwd{axis}\hlstd{(}\hlnum{1}\hlstd{,} \hlkwc{labels} \hlstd{= satsolvers}\hlopt{$}\hlstd{features,} \hlkwc{at} \hlstd{=} \hlkwd{seq}\hlstd{(}\hlnum{0}\hlstd{,}
+    \hlnum{1}\hlstd{,} \hlnum{1}\hlopt{/}\hlstd{(}\hlkwd{length}\hlstd{(satsolvers}\hlopt{$}\hlstd{features)} \hlopt{-} \hlnum{1}\hlstd{)),} \hlkwc{las} \hlstd{=} \hlnum{2}\hlstd{)}
+\end{alltt}
+\end{kframe}\begin{figure}
+
+{\centering \includegraphics[width=.9\textwidth]{figure/features-norm-1} 
+
+}
+
+\caption[Normalised feature values on each instance from -1 (white) to 1 (black)]{Normalised feature values on each instance from -1 (white) to 1 (black).\label{fig:features-norm}}
+\end{figure}
+
+
+\end{knitrout}
+
 The features for the example data are not very good. For quite a lot of them,
 there is almost no variation and others have only two different values.
-
-\begin{figure}[htb]
-\begin{center}
-\includegraphics[width=.9\textwidth]{features-norm}
-\caption{Normalised feature values on each instance from -1 (white) to 1
-(black).}
-\label{fig:features-norm}
-\end{center}
-\end{figure}
 
 %\afterpage{\clearpage}
 
@@ -1364,86 +1750,128 @@ to get an idea of what the machine learning algorithms are doing, where they
 work well and where things could be improved. The following code creates a
 heatmap of the PAR10 scores of a classification model on all instances. We are
 using the log of the PAR10 scores to get more shades of grey.
-\begin{lstlisting}
-folds = cvFolds(satsolvers)
-model = classify(makeLearner("classif.J48"), folds)
-scores = parscores(folds, model)
-par(mar=c(1,1,1,10))
-image(log10(t(as.matrix(scores))), axes=F, col=cols)
-legend("right", legend=quantile(scores), fill=gray(seq(1, 0, length.out=5)), bty="n", inset=-0.3, xpd=NA)
-\end{lstlisting}
-The resulting plot is shown in Figure~\ref{fig:classification}. It gives us some
-idea of what's going on, but looks more like a bar code than anything else.
 
-\begin{figure}[htb]
-\begin{center}
-\includegraphics[width=.9\textwidth]{classification}
-\caption{PAR10 scores for a \texttt{J48} classification model.}
-\label{fig:classification}
-\end{center}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{folds} \hlkwb{=} \hlkwd{cvFolds}\hlstd{(satsolvers)}
+\hlstd{model} \hlkwb{=} \hlkwd{classify}\hlstd{(}\hlkwd{makeLearner}\hlstd{(}\hlstr{"classif.J48"}\hlstd{), folds)}
+\hlstd{scores} \hlkwb{=} \hlkwd{parscores}\hlstd{(folds, model)}
+\hlkwd{par}\hlstd{(}\hlkwc{mar} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{10}\hlstd{))}
+\hlkwd{image}\hlstd{(}\hlkwd{log10}\hlstd{(}\hlkwd{t}\hlstd{(}\hlkwd{as.matrix}\hlstd{(scores))),} \hlkwc{axes} \hlstd{= F,} \hlkwc{col} \hlstd{= cols)}
+\hlkwd{legend}\hlstd{(}\hlstr{"right"}\hlstd{,} \hlkwc{legend} \hlstd{=} \hlkwd{quantile}\hlstd{(scores),} \hlkwc{fill} \hlstd{=} \hlkwd{gray}\hlstd{(}\hlkwd{seq}\hlstd{(}\hlnum{1}\hlstd{,}
+    \hlnum{0}\hlstd{,} \hlkwc{length.out} \hlstd{=} \hlnum{5}\hlstd{)),} \hlkwc{bty} \hlstd{=} \hlstr{"n"}\hlstd{,} \hlkwc{inset} \hlstd{=} \hlopt{-}\hlnum{0.3}\hlstd{,}
+    \hlkwc{xpd} \hlstd{=} \hlnum{NA}\hlstd{)}
+\end{alltt}
+\end{kframe}\begin{figure}
+
+{\centering \includegraphics[width=.9\textwidth]{figure/par-1} 
+
+}
+
+\caption[PAR10 scores for a 	exttt{J48} classification model]{PAR10 scores for a 	exttt{J48} classification model.\label{fig:par}}
 \end{figure}
+
+
+\end{knitrout}
+
+The resulting plot (Figure~\ref{fig:par}) gives us some idea of what's going on,
+but looks more like a bar code than anything else.
 
 The power of heatmaps comes from being able to compare multiple entities. A more
 useful plot compares the performance of the classification model to the
 performance of other models. The following code can be used to generate such a
-plot (Figure~\ref{fig:comparison}).
-\begin{lstlisting}
-folds = cvFolds(satsolvers)
-model1 = classify(makeLearner("classif.J48"), folds)
-model2 = regression(makeLearner("regr.lm"), folds)
-model3 = classifyPairs(makeLearner("classif.J48"), folds)
-model4 = regressionPairs(makeLearner("regr.lm"), folds)
-model5 = cluster(makeLearner("cluster.XMeans"), folds)
-scores1 = parscores(folds, model1)
-scores2 = parscores(folds, model2)
-scores3 = parscores(folds, model3)
-scores4 = parscores(folds, model4)
-scores5 = parscores(folds, model5)
-par(mar=c(10,1,1,1))
-names = c(paste("classify", "J48", mean(scores1), sep="\n"), paste("regression", "lm", mean(scores2), sep="\n"), paste("classifyPairs", "J48", mean(scores3), sep="\n"), paste("regressionPairs", "lm", mean(scores4), sep="\n"), paste("cluster", "XMeans", mean(scores5), sep="\n"))
-scores = c(scores1, scores2, scores3, scores4, scores5)
-image(log10(t(matrix(scores, ncol=5))), axes=F, col=cols)
-axis(1, labels=names, at=seq(0, 1, 1/(length(names)-1)), las=1, tick=F, line=1)
-legend("bottom", legend=quantile(scores), fill=gray(seq(1, 0, length.out=5)), bty="n", inset=-0.4, xpd=NA)
-\end{lstlisting}
+plot (Figure~\ref{fig:par-cmp}).
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{folds} \hlkwb{=} \hlkwd{cvFolds}\hlstd{(satsolvers)}
+\hlstd{model1} \hlkwb{=} \hlkwd{classify}\hlstd{(}\hlkwd{makeLearner}\hlstd{(}\hlstr{"classif.J48"}\hlstd{),}
+    \hlstd{folds)}
+\hlstd{model2} \hlkwb{=} \hlkwd{regression}\hlstd{(}\hlkwd{makeLearner}\hlstd{(}\hlstr{"regr.lm"}\hlstd{), folds)}
+\hlstd{model3} \hlkwb{=} \hlkwd{classifyPairs}\hlstd{(}\hlkwd{makeLearner}\hlstd{(}\hlstr{"classif.J48"}\hlstd{),}
+    \hlstd{folds)}
+\hlstd{model4} \hlkwb{=} \hlkwd{regressionPairs}\hlstd{(}\hlkwd{makeLearner}\hlstd{(}\hlstr{"regr.lm"}\hlstd{),}
+    \hlstd{folds)}
+\hlstd{model5} \hlkwb{=} \hlkwd{cluster}\hlstd{(}\hlkwd{makeLearner}\hlstd{(}\hlstr{"cluster.XMeans"}\hlstd{),}
+    \hlstd{folds)}
+\hlstd{scores1} \hlkwb{=} \hlkwd{parscores}\hlstd{(folds, model1)}
+\hlstd{scores2} \hlkwb{=} \hlkwd{parscores}\hlstd{(folds, model2)}
+\hlstd{scores3} \hlkwb{=} \hlkwd{parscores}\hlstd{(folds, model3)}
+\hlstd{scores4} \hlkwb{=} \hlkwd{parscores}\hlstd{(folds, model4)}
+\hlstd{scores5} \hlkwb{=} \hlkwd{parscores}\hlstd{(folds, model5)}
+\hlkwd{par}\hlstd{(}\hlkwc{mar} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{10}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{1}\hlstd{))}
+\hlstd{names} \hlkwb{=} \hlkwd{c}\hlstd{(}\hlkwd{paste}\hlstd{(}\hlstr{"classify"}\hlstd{,} \hlstr{"J48"}\hlstd{,} \hlkwd{mean}\hlstd{(scores1),}
+    \hlkwc{sep} \hlstd{=} \hlstr{"\textbackslash{}n"}\hlstd{),} \hlkwd{paste}\hlstd{(}\hlstr{"regression"}\hlstd{,} \hlstr{"lm"}\hlstd{,} \hlkwd{mean}\hlstd{(scores2),}
+    \hlkwc{sep} \hlstd{=} \hlstr{"\textbackslash{}n"}\hlstd{),} \hlkwd{paste}\hlstd{(}\hlstr{"classifyPairs"}\hlstd{,} \hlstr{"J48"}\hlstd{,}
+    \hlkwd{mean}\hlstd{(scores3),} \hlkwc{sep} \hlstd{=} \hlstr{"\textbackslash{}n"}\hlstd{),} \hlkwd{paste}\hlstd{(}\hlstr{"regressionPairs"}\hlstd{,}
+    \hlstr{"lm"}\hlstd{,} \hlkwd{mean}\hlstd{(scores4),} \hlkwc{sep} \hlstd{=} \hlstr{"\textbackslash{}n"}\hlstd{),} \hlkwd{paste}\hlstd{(}\hlstr{"cluster"}\hlstd{,}
+    \hlstr{"XMeans"}\hlstd{,} \hlkwd{mean}\hlstd{(scores5),} \hlkwc{sep} \hlstd{=} \hlstr{"\textbackslash{}n"}\hlstd{))}
+\hlstd{scores} \hlkwb{=} \hlkwd{c}\hlstd{(scores1, scores2, scores3, scores4,}
+    \hlstd{scores5)}
+\hlkwd{image}\hlstd{(}\hlkwd{log10}\hlstd{(}\hlkwd{t}\hlstd{(}\hlkwd{matrix}\hlstd{(scores,} \hlkwc{ncol} \hlstd{=} \hlnum{5}\hlstd{))),} \hlkwc{axes} \hlstd{= F,}
+    \hlkwc{col} \hlstd{= cols)}
+\hlkwd{axis}\hlstd{(}\hlnum{1}\hlstd{,} \hlkwc{labels} \hlstd{= names,} \hlkwc{at} \hlstd{=} \hlkwd{seq}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{1}\hlopt{/}\hlstd{(}\hlkwd{length}\hlstd{(names)} \hlopt{-}
+    \hlnum{1}\hlstd{)),} \hlkwc{las} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{tick} \hlstd{= F,} \hlkwc{line} \hlstd{=} \hlnum{1}\hlstd{)}
+\hlkwd{legend}\hlstd{(}\hlstr{"bottom"}\hlstd{,} \hlkwc{legend} \hlstd{=} \hlkwd{quantile}\hlstd{(scores),} \hlkwc{fill} \hlstd{=} \hlkwd{gray}\hlstd{(}\hlkwd{seq}\hlstd{(}\hlnum{1}\hlstd{,}
+    \hlnum{0}\hlstd{,} \hlkwc{length.out} \hlstd{=} \hlnum{5}\hlstd{)),} \hlkwc{bty} \hlstd{=} \hlstr{"n"}\hlstd{,} \hlkwc{inset} \hlstd{=} \hlopt{-}\hlnum{0.4}\hlstd{,}
+    \hlkwc{xpd} \hlstd{=} \hlnum{NA}\hlstd{)}
+\end{alltt}
+\end{kframe}\begin{figure}
+
+{\centering \includegraphics[width=.9\textwidth]{figure/par-cmp-1} 
+
+}
+
+\caption[PAR10 scores for five different models]{PAR10 scores for five different models. The number in each label shows the mean PAR10 score across all instances.\label{fig:par-cmp}}
+\end{figure}
+
+
+\end{knitrout}
+
 This comparison is actually quite insightful. The predictions of the regression
 model usually incur a higher PAR10 score (overall, the column is darker than the
 others), but its mean PAR10 score is lower than for the other models. It also
 shows us that for this specific scenario, there is almost no difference between
 the single and pairwise classification models.
 
-\begin{figure}[htb]
-\begin{center}
-\includegraphics[width=.9\textwidth]{comparison}
-\caption{PAR10 scores for five different models. The number in each label shows
-the mean PAR10 score across all instances.}
-\label{fig:comparison}
-\end{center}
-\end{figure}
-
 As a final example, we will plot the differences in predicted and actual rank
-for the regression model. The heatmap resulting from the code below is shown in
-Figure~\ref{fig:rank-diff}.
-\begin{lstlisting}
-par(mar=c(7,1,1,5))
-ranks = apply(sapply(unlist(model2|$\$$|predictions, recursive=F), function(x) { x|$\$$|algorithm }), 2, function(y) { as.vector(sapply(y, function(z) { which(z == satsolvers|$\$$|performance) })) })
-diffs = apply(times, 1, order)-ranks
-cols = c(colorRampPalette(c("red", "white"))(128), colorRampPalette(c("white", "blue"))(128))
-breaks = c(seq(min(diffs), -1/128, length.out=128), 0, seq(1/128, max(diffs), length.out=128))
-image(diffs, axes=F, col=cols, breaks=breaks)
-axis(1, labels=satsolvers|$\$$|performance, at=seq(0, 1, 1/(length(satsolvers|$\$$|performance)-1)), las=2)
-legend("right", legend=quantile(diffs), fill=cols[quantile(1:length(cols))], bty="n", inset=-0.15, xpd=NA)
-\end{lstlisting}
+for the regression model (Figure~\ref{fig:rank-diff}).
 
-\begin{figure}[htb]
-\begin{center}
-\includegraphics[width=.9\textwidth]{rank-diff}
-\caption{Difference between actual and predicted rank for the regression model.
-Red means that an algorithm was predicted to be worse than it actually was, blue
-that it was predicted to be better. Predicted and actual rank agree for white.}
-\label{fig:rank-diff}
-\end{center}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{par}\hlstd{(}\hlkwc{mar} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{7}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{5}\hlstd{))}
+\hlstd{ranks} \hlkwb{=} \hlkwd{t}\hlstd{(}\hlkwd{ddply}\hlstd{(model}\hlopt{$}\hlstd{predictions,} \hlkwd{.}\hlstd{(benchmark_id),}
+    \hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{) \{}
+        \hlkwd{as.vector}\hlstd{(}\hlkwd{sapply}\hlstd{(x}\hlopt{$}\hlstd{algorithm,} \hlkwa{function}\hlstd{(}\hlkwc{z}\hlstd{) \{}
+            \hlkwd{which}\hlstd{(z} \hlopt{==} \hlstd{satsolvers}\hlopt{$}\hlstd{performance)}
+        \hlstd{\}))}
+    \hlstd{\})[}\hlopt{-}\hlnum{1}\hlstd{])}
+\hlstd{diffs} \hlkwb{=} \hlkwd{apply}\hlstd{(times,} \hlnum{1}\hlstd{, order)} \hlopt{-} \hlstd{ranks}
+\hlstd{cols} \hlkwb{=} \hlkwd{c}\hlstd{(}\hlkwd{colorRampPalette}\hlstd{(}\hlkwd{c}\hlstd{(}\hlstr{"red"}\hlstd{,} \hlstr{"white"}\hlstd{))(}\hlnum{128}\hlstd{),}
+    \hlkwd{colorRampPalette}\hlstd{(}\hlkwd{c}\hlstd{(}\hlstr{"white"}\hlstd{,} \hlstr{"blue"}\hlstd{))(}\hlnum{128}\hlstd{))}
+\hlstd{breaks} \hlkwb{=} \hlkwd{c}\hlstd{(}\hlkwd{seq}\hlstd{(}\hlkwd{min}\hlstd{(diffs),} \hlopt{-}\hlnum{1}\hlopt{/}\hlnum{128}\hlstd{,} \hlkwc{length.out} \hlstd{=} \hlnum{128}\hlstd{),}
+    \hlnum{0}\hlstd{,} \hlkwd{seq}\hlstd{(}\hlnum{1}\hlopt{/}\hlnum{128}\hlstd{,} \hlkwd{max}\hlstd{(diffs),} \hlkwc{length.out} \hlstd{=} \hlnum{128}\hlstd{))}
+\hlkwd{image}\hlstd{(diffs,} \hlkwc{axes} \hlstd{= F,} \hlkwc{col} \hlstd{= cols,} \hlkwc{breaks} \hlstd{= breaks)}
+\hlkwd{axis}\hlstd{(}\hlnum{1}\hlstd{,} \hlkwc{labels} \hlstd{= satsolvers}\hlopt{$}\hlstd{performance,} \hlkwc{at} \hlstd{=} \hlkwd{seq}\hlstd{(}\hlnum{0}\hlstd{,}
+    \hlnum{1}\hlstd{,} \hlnum{1}\hlopt{/}\hlstd{(}\hlkwd{length}\hlstd{(satsolvers}\hlopt{$}\hlstd{performance)} \hlopt{-} \hlnum{1}\hlstd{)),}
+    \hlkwc{las} \hlstd{=} \hlnum{2}\hlstd{)}
+\hlkwd{legend}\hlstd{(}\hlstr{"right"}\hlstd{,} \hlkwc{legend} \hlstd{=} \hlkwd{quantile}\hlstd{(diffs),} \hlkwc{fill} \hlstd{= cols[}\hlkwd{quantile}\hlstd{(}\hlnum{1}\hlopt{:}\hlkwd{length}\hlstd{(cols))],}
+    \hlkwc{bty} \hlstd{=} \hlstr{"n"}\hlstd{,} \hlkwc{inset} \hlstd{=} \hlopt{-}\hlnum{0.15}\hlstd{,} \hlkwc{xpd} \hlstd{=} \hlnum{NA}\hlstd{)}
+\end{alltt}
+\end{kframe}\begin{figure}
+
+{\centering \includegraphics[width=.9\textwidth]{figure/rank-diff-1} 
+
+}
+
+\caption[Difference between actual and predicted rank for the regression model]{Difference between actual and predicted rank for the regression model. Red means that an algorithm was predicted to be worse than it actually was, blue that it was predicted to be better. Predicted and actual rank agree for white.\label{fig:rank-diff}}
 \end{figure}
+
+
+\end{knitrout}
 
 The plot is a bit messy, but there are some insights to be gained. Looking at
 the solvers that perform well overall (e.g.\ minisat, leftmost column), we can
