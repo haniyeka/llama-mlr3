@@ -10,7 +10,7 @@ determine the best overall algorithm.
 }
 \usage{
 classifyPairs(classifier = NULL, data = NULL,
-    pre = function(x, y=NULL) { list(features=x) }, combinator = NULL,
+    pre = function(x, y=NULL) { list(features=x) }, combine = NULL,
     save.models = NA, use.weights = TRUE)
 }
 \arguments{
@@ -25,7 +25,7 @@ classifyPairs(classifier = NULL, data = NULL,
   a function to preprocess the data. Currently only \code{normalize}.
   Optional. Does nothing by default.
 }
-  \item{combinator}{
+  \item{combine}{
   The classifier function to predict the overall best algorithm given the
   predictions for pairs of algorithms. Optional. By default, the overall best
   algorithm is determined by majority vote.
@@ -42,7 +42,7 @@ classifyPairs(classifier = NULL, data = NULL,
 \code{classifyPairs} takes the training and test sets in \code{data} and
 processes it using \code{pre} (if supplied). \code{classifier} is called to
 induce a classifier for each pair of algorithms to predict which one is better.
-If \code{combinator} is not supplied, the best overall algorithm is determined
+If \code{combine} is not supplied, the best overall algorithm is determined
 by majority vote. If it is supplied, it is assumed to be a classifier with the
 same properties as the other one. This classifier is passed the original
 features and the predictions for each pair of algorithms.
@@ -120,7 +120,7 @@ res$predictor(satsolvers$data[satsolvers$features])
 # combine predictions using J48 induced classifier instead of majority vote
 res = classifyPairs(classifier=makeLearner("classif.J48"),
                     data=folds,
-                    combinator=makeLearner("classif.J48"))
+                    combine=makeLearner("classif.J48"))
 }
 }
 \keyword{ ~models }

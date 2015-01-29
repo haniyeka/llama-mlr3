@@ -59,7 +59,7 @@ test_that("classifyPairs respects minimize", {
 })
 
 test_that("classifyPairs allows combination function", {
-    res = classifyPairs(classifier=idtestclassifier, e, combinator=othertestclassifier)
+    res = classifyPairs(classifier=idtestclassifier, e, combine=othertestclassifier)
     expect_equal(unique(res$predictions$id), 11:20)
     by(res$predictions, res$predictions$id, function(ss) {
         expect_equal(ss$algorithm, factor(c("a", "b")))
@@ -90,7 +90,7 @@ test_that("classifyPairs works with NA predictions", {
         expect_equal(ss$score, -Inf)
     })
 
-    res = classifyPairs(classifier=natestclassifier, combinator=natestclassifier, d)
+    res = classifyPairs(classifier=natestclassifier, combine=natestclassifier, d)
     expect_equal(unique(res$predictions$id), 11:20)
     by(res$predictions, res$predictions$id, function(ss) {
         expect_equal(ss$algorithm, NA)
