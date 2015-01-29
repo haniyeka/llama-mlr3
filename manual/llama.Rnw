@@ -51,7 +51,7 @@ This document corresponds to LLAMA version 0.8.
 <<setup, include=FALSE, cache=FALSE>>=
 library(knitr)
 # set global chunk options
-opts_chunk$set(fig.align='center', fig.show='hold', out.width=".9\\textwidth", tidy=TRUE, tidy.opts=list(blank=FALSE, width.cutoff=43))
+opts_chunk$set(fig.align='center', fig.show='hold', out.width=".9\\textwidth", tidy=TRUE, tidy.opts=list(blank=FALSE, width.cutoff=45))
 
 library(plyr)
 library(devtools)
@@ -513,12 +513,13 @@ cross-validation splits the data into $n$ disjunctive sets. To partition the
 entire data into 10 folds, run
 
 <<>>=
-folds = bsFolds(satsolvers)
-folds = cvFolds(satsolvers)
+folds = bsFolds(satsolvers) # bootstrap sampling
+folds = cvFolds(satsolvers) # cross-validation
 @
 
 The optional second argument \lstinline{nfolds} allows to specify the number of
-folds for both functions.
+folds for both functions. LLAMA transparently takes care of training and
+evaluating models regardless of how many splits or folds you have.
 
 \subsection{Training and evaluating models}
 
@@ -541,71 +542,87 @@ The call to \lstinline{classify} trains and tests models on each
 cross-validation fold. That is, for $n$ folds it trains $n$ models using $n-1$
 partitions for training and the remaining partition for testing. The predictions
 on these testing partitions are returned along with a prediction function that
-uses a model that was trained on the \emph{entire} data set. While the
+uses a model that was trained on the \emph{entire}, unsplit data set. While the
 cross-validation predictions allow to assess the expected performance of the
 model, the returned prediction function can be used as a building block for a
 portfolio system to obtain predictions on new data. For full details on the
 returned data structure, see the on-line help.
 
 LLAMA provides several functions to evaluate the performance of an approach
-based on the predictions made. A common performance measure in the SAT community
-is the PAR (penalized average runtime) score. The score is equal to the time it
-took the algorithm to solve the instance or, if the algorithm was unable to
-solve it, a constant factor times the time-out value. Usually, PAR10 is used,
-meaning that time-outs are penalized by a factor of 10. To compute the average
-PAR10 score and the total number of solved instances of the approach using the
-C4.5 decision tree, we can run the following code.
+based on the predictions made. The misclassification penalty quantifies how much
+performance we lose because of prediction mistakes. If the performance is e.g.\
+runtime, it measures how much additional time we need, i.e.\ the difference in
+runtime between the algorithm chosen by the model and the best possible choice
+for each problem instance. Another common performance measure for runtime
+performances is the PAR (penalized average runtime) score. The score is equal to
+the time it took the algorithm to solve the instance or, if the algorithm was
+unable to solve it, a constant factor times the time-out value. Usually, PAR10
+is used, meaning that time-outs are penalized by a factor of 10. To compute the
+average PAR10 score and the total number of solved instances of the approach
+using the C4.5 decision tree, we can run the following code.
 
 <<>>=
+# mean misclassification penalty
+mean(misclassificationPenalties(folds, model))
 # mean PAR10 score
 mean(parscores(folds, model))
 # number of successes (solved instances)
 sum(successes(folds, model))
 @
 
-The \lstinline{parscores} and \lstinline{successes} evaluation functions, along
-with their cousin \lstinline{misclassificationPenalties}, take the data for
-which the predictions were made as their first argument and the model that
-contains the predictions or the function that returns predictions (in the case
-of virtual best and single best algorithms) as the second. Optional arguments
-can be given to specify the penalty factor or the time-out value. By default,
-the performance value given for an unsuccessful run is assumed to be the
-time-out.
+The evaluation functions take the data for which the predictions were made as
+their first argument and the model that contains the predictions or the function
+that returns predictions (in the case of virtual best and single best
+algorithms) as the second. Optional arguments can be given to specify penalty
+factors and time-out values where applicable. By default, the performance value
+given for an unsuccessful run is assumed to be the time-out if the performance
+is runtime.
 
 All evaluation functions return a list of the respective values for the chosen
 algorithm for each instance. That is, if there are 100 instances in the data,
-\lstinline{parscores} will return a list with 100 values. The predictions
-LLAMA computes are actually not just simple labels. It is a data frame that
-contains information on the predictions on every instance; the score. The number
-of algorithms in the data frame and the meaning of the score value depend on the
-model-building function that is used and are explained in the respective on-line
-help pages. In this case, the score for only a single algorithm per instance
-will be 1, meaning that this is the algorithm that was predicted by the one
-classifier.
+\lstinline{misclassificationPenalties} will return a vector of 100 values.
+
+<<>>=
+head(misclassificationPenalties(folds, model))
+@
+
+The predictions LLAMA models computes are actually not just simple labels. The
+prediction object is a data frame that contains information on the predictions
+on every instance and algorithm -- the score. The meaning of the score value
+depend on the model-building function that is used and are explained in the
+respective on-line help pages. In this case, the score for only a single
+algorithm per instance will be 1, meaning that this is the algorithm that was
+predicted by the one classifier.
 
 <<>>=
 head(model$predictions)
 @
 
+The \lstinline{iteration} column specifies in which iteration of the
+cross-validation the prediction was obtained.
+
 \medskip
 
-Computing metrics like the PAR10 score or the number of successes doesn't give
-us a very good idea of how good the approach actually is. In the algorithm
-selection community, two common approaches to compare against are the virtual
-best solver and the single best solver. The virtual best solver assumes that we
-have a perfect predictor that will always choose the best algorithm for a
-particular instance. The single best solver is the algorithm in the portfolio
-that has overall the best performance, i.e.\ on the largest number of instances
-in the data set.
+Computing metrics like the misclassification penalty or the number of successes
+doesn't give us a very good idea of how good the approach actually is. In the
+algorithm selection community, two common approaches to compare against are the
+virtual best solver and the single best solver. The virtual best solver assumes
+that we have a perfect predictor that will always choose the best algorithm for
+a particular instance. It determines the best possible performance a selector
+can achieve. The single best solver is the algorithm in the portfolio that has
+overall the best performance, e.g.\ on the largest number of instances in the
+data set or with respect to another evaluation criterion.
 
 LLAMA provides convenience functions that allow to compare to both virtual best
 and single best solver. They are used in the same way as the predictions from a
 model are.
 
 <<>>=
+mean(misclassificationPenalties(data, vbs))
 mean(parscores(data, vbs))
 sum(successes(data, vbs))
 
+mean(misclassificationPenalties(data, singleBest))
 mean(parscores(data, singleBest))
 sum(successes(data, singleBest))
 @
@@ -668,20 +685,19 @@ classification example. This is because instead of a single classification
 model, we now need to train one regression model for each algorithm in the
 portfolio (if you're using the example SAT data, 19 different models).
 
-The structure returned by the call is the same as for classification and PAR10
-scores and similar are calculated in the same way. LLAMA offers a unified
-interface for all its model-building functions that makes it easy to quickly try
-different approaches. The difference is that the prediction data frame now
-contain a row for each algorithm in the portfolio and the score denotes the
-predicted performance value.
+The structure returned by the call is the same as for classification and
+performance scores and similar are calculated in the same way. LLAMA offers a
+unified interface for all its model-building functions that makes it easy to
+quickly try different approaches. The difference is that the score in the
+prediction data frame now denotes the predicted performance value.
 
 <<>>=
 head(model$predictions)
 @
 
 Apart from the fact that the regression model is predicting negative runtimes,
-it appears to work quite well. Negative runtimes do not matter here, as we only
-use them to rank the algorithms.
+it appears to work quite well. It does not really matter that the values are
+negative in this case, as we only use them to rank the algorithms.
 
 The \lstinline{regression} function determines whether the lowest
 performance value denotes the best algorithm by what has been specified when
@@ -721,15 +737,16 @@ head(model$predictions)
 
 The model-building function \lstinline{regressionPairs} follows the same idea,
 but uses regression models to predict the performance difference between pairs
-of algorithms instead of simply whether one is faster than the other.
+of algorithms instead of simply whether one is better than the other.
 
 \medskip
 
 A different approach to algorithm selection that is used for example in
-ISAC~\cite{kadioglu_isac_2010} is to cluster the training problems and assign
-the best algorithm to each cluster based on the algorithm performances on the
-instances in the cluster. Again the only change is to call a different function,
-this time the \lstinline{XMeans} clustering algorithm.
+ISAC~\cite{kadioglu_isac_2010} is to cluster the training problem instances and
+assign the best algorithm to each cluster based on the algorithm performances on
+the instances in the cluster. Again the only change is to call a different
+function, this time the \lstinline{cluster} function with the \lstinline{XMeans}
+clustering algorithm.
 
 <<>>=
 model = cluster(makeLearner("cluster.XMeans"), folds)
@@ -770,18 +787,17 @@ this.
 \subsubsection{Normalising feature values}
 
 For some types of models, it may be desirable to normalise the feature values
-such that they cover the same range over all features. If, for example, we
-compute the distance between two instances based on the feature values in
-Euclidean space and the values for a particular feature happen to be 1000 times
-larger than the other ones, this feature will have the highest impact on the
-result, even though it may not be important.
+such that they cover the same range over all features. If, for example to
+cluster the instances, we compute the distance between two instances based on
+the feature values in Euclidean space and the values for a particular feature
+happen to be 1000 times larger than the other ones, this feature will have the
+highest impact on the result, even though it may not be important.
 
 LLAMA provides a function that allows to normalise the values of features before
-they are passed to the model learner. This functionality is different from the
-feature filtering, which is independent from any further operations. To
-normalise the feature values, scaling factors need to be computed. These same
-scaling factors need to be applied when working with new data, i.e.\ when using
-the predictor function returned by the model builders.
+they are passed to the model learner. To normalise the feature values, scaling
+factors need to be computed. These same scaling factors need to be applied when
+working with new data, i.e.\ when using the predictor function returned by the
+model builders.
 
 This is why normalisation is implemented as an optional argument to the
 model-building functions instead of a standalone functions. The scaling factors
@@ -795,18 +811,15 @@ the range for all features is -1 to 1. It is specified through the
 
 <<>>=
 model = cluster(makeLearner("cluster.XMeans"), folds, pre=normalize)
-mean(parscores(folds, model))
 mean(misclassificationPenalties(folds, model))
+mean(parscores(folds, model))
+sum(successes(folds, model))
 @
 
 We are using the cluster model builder here, as clustering is an application
 that intrinsically relies on distance measures and is likely to be most affected
 by large differences in the range of feature values. The feature values can be
 normalized for all of the other model-building functions in the same way.
-
-On the example data, the mean PAR10 score is 5736.518 and the number of solved
-instances 2050 -- the same as the model without normalisation. In this
-particular case, normalisation does not improve the performance.
 
 \subsubsection{Imputing censored runtimes}
 
@@ -815,8 +828,8 @@ instances are challenging, some of the algorithms may take a very long time to
 solve them -- longer than one is prepared to wait. Usually, algorithms are run
 with a time-out. That is, if the algorithm did not find a solution after a
 certain amount of time, it is terminated -- its runtime is \emph{censored}.
-While allows to gather data in more reasonable amounts of time, the result makes
-machine learning more difficult -- if an algorithm timed out, the recorded
+While this allows to gather data in more reasonable amounts of time, the result
+makes machine learning more difficult -- if an algorithm timed out, the recorded
 runtime is not actually the value we want to predict.
 
 One way of addressing this issue is to impute the censored runtimes by learning
@@ -837,8 +850,11 @@ imputedFolds = cvFolds(imputed)
 imputedModel = regression(makeLearner("regr.lm"), imputedFolds)
 mean(misclassificationPenalties(folds, model))
 mean(parscores(folds, model))
+sum(successes(folds, model))
+
 mean(misclassificationPenalties(imputedFolds, imputedModel))
 mean(parscores(imputedFolds, imputedModel))
+sum(successes(imputedFolds, imputedModel))
 @
 
 The performance of the new model with imputed performance values is much better
@@ -873,11 +889,12 @@ the combination of portfolio and algorithm selection model has to be evaluated.
 
 \subsection{Ensembles and stacking}
 
-One of the main strengths of LLAMA is that ensembles and stacking can be
-applied to all of the model building functions easily. The idea behind
-these techniques is similar to that of algorithm portfolios -- instead of
-relying on a single machine learning algorithm and the model it learns to
-deliver good predictions, we use several that (hopefully) complement each other.
+One of the main strengths of LLAMA is that meta-learning methods, for example
+ensembles and stacking, can be applied to all of the model building functions
+easily. The idea behind these techniques is similar to that of algorithm
+portfolios -- instead of relying on a single machine learning algorithm and the
+model it learns to deliver good predictions, we use several that (hopefully)
+complement each other.
 
 The two implemented concepts are ensembles~\cite{dietterich_ensemble_2000} and
 stacking~\cite{wolpert_stacked_1992}. In ensemble learning, multiple machine
@@ -895,6 +912,11 @@ and stacking have been implemented. To use an ensemble, the first argument
 becomes a list of classification algorithms instead of a single one. To use
 stacking, that list should have a member named \lstinline{.combine}.
 
+Here's an example with an ensemble that contains a \lstinline{J48} decision
+tree, a CART tree, and a nearest neighbour classifier. In the second example,
+the predictions of these classifiers are combined using another \lstinline{J48}
+decision tree.
+
 <<warning=FALSE, message=FALSE>>=
 ensembleModel = classify(list(makeLearner("classif.J48"),
         makeLearner("classif.rpart"),
@@ -908,10 +930,15 @@ stackedEnsembleModel = classify(list(makeLearner("classif.J48"),
 
 mean(misclassificationPenalties(folds, model))
 mean(parscores(folds, model))
+sum(successes(folds, model))
+
 mean(misclassificationPenalties(folds, ensembleModel))
 mean(parscores(folds, ensembleModel))
+sum(successes(folds, ensembleModel))
+
 mean(misclassificationPenalties(folds, stackedEnsembleModel))
 mean(parscores(folds, stackedEnsembleModel))
+sum(successes(folds, stackedEnsembleModel))
 @
 
 Compared to the model based on the single \lstinline{J48} classifier, ensemble
@@ -931,24 +958,26 @@ implemented. Instead of aggregating the predicted performance values by ranking
 them directly, a classifier is learned to predict, given the performance
 predictions, the best algorithm. To achieve this, a classification algorithm is
 given as the \lstinline{combine} argument.
-set to true.
 
 <<warning=FALSE>>=
 stackedModel = regression(makeLearner("regr.lm"), folds,
     combine=makeLearner("classif.J48"))
 mean(misclassificationPenalties(folds, model))
 mean(parscores(folds, model))
+sum(successes(folds, model))
+
 mean(misclassificationPenalties(folds, stackedModel))
 mean(parscores(folds, stackedModel))
+sum(successes(folds, stackedModel))
 @
 
 On the example data, the performance of the stacked model is worse than for the
-non-stacked version.517 and 2058 solved instances. The reason for this is that
-the non-stacked combination function, choosing the algorithm with the lowest
-predicted value, is very hard to learn when considering the performance values
-independently and not the relation between them.
+non-stacked version. The reason for this is that for the combination function,
+choosing the algorithm with the lowest predicted value is very hard to learn
+when considering only the performance values independently and not the relation
+between them.
 
-LLAMA does provide an additional argument for \lstinline{regression} that allows
+LLAMA does support an additional argument for \lstinline{regression} that allows
 to make this task easier. The \lstinline{expand} argument allows to specify a
 function that, given the performance predictions, can augment the inputs to the
 classifier. In this case, we want to add the pairwise absolute differences
@@ -964,8 +993,11 @@ stackedExpandedModel = regression(makeLearner("regr.lm"), folds,
     })
 mean(misclassificationPenalties(folds, stackedModel))
 mean(parscores(folds, stackedModel))
+sum(successes(folds, stackedModel))
+
 mean(misclassificationPenalties(folds, stackedExpandedModel))
 mean(parscores(folds, stackedExpandedModel))
+sum(successes(folds, stackedExpandedModel))
 @
 
 While the function given here may appear cryptic at first, it demonstrates one o
@@ -973,11 +1005,12 @@ the advantages of the implementation of LLAMA as an R package. It allows to use
 arbitrary R functions to process data. This version achieves an improvement over
 the stacked model without expansion.
 
-For the \lstinline{classifyPairs} model builder, LLAMA supports ensembles and
-stacking in the same way as for \lstinline{regression}. Stacking can be used to
-provide a classification algorithm in the \lstinline{combinator} argument that
-learns to predict the best algorithm, given the votes by the classifiers for
-pairs of algorithms.
+For the \lstinline{classifyPairs} and \lstinline{regressionPairs} model
+builders, LLAMA supports stacking in the same way as for \lstinline{regression}.
+Stacking can be used to provide a classification algorithm in the
+\lstinline{combine} argument that learns to predict the best algorithm, given
+the predictions of the underlying machine learning models for pairs of
+algorithms.
 
 The \lstinline{cluster} model builder supports these techniques in the same way
 as \lstinline{classify}. More details and examples can be found in the on-line
@@ -989,13 +1022,13 @@ Some of the models can take a very long time to train. Most of the operations
 are independent though and can be parallelised easily. LLAMA uses the
 \lstinline{parallelMap} construct from the parallelMap
 package\footnote{\url{https://github.com/berndbischl/parallelMap}} to
-parallelise execution across cross-validation folds. That is, the model for each
-iteration will be trained and tested in parallel. The \lstinline{parallelMap}
-construct provides transparent parallelisation that executes sequentially if no
-suitable parallel backend is loaded. All the user has to do to enable parallel
-execution is to load a parallel backend, for example through
-\lstinline{parallelStartSocket}. Libraries used in the spawned processes
-should be specified through \lstinline{parallelLibrary}.
+parallelise execution across cross-validation folds. That is, the models for
+each iteration will be trained and tested in parallel. The
+\lstinline{parallelMap} construct provides transparent parallelisation that
+executes sequentially if no suitable parallel backend is loaded. All the user
+has to do to enable parallel execution is to load a parallel backend, for
+example through \lstinline{parallelStartSocket}. Libraries used in the spawned
+processes should be specified through \lstinline{parallelLibrary}.
 
 <<eval=FALSE>>=
 library(parallelMap)
@@ -1169,7 +1202,7 @@ for the prediction of satisfiability we only need the instances that we want
 algorithm selection models for.
 
 Then, we partition the data based on satisfiability and pass them to
-\lstinline{include}, filtering the instances that we do not require algorithm
+\lstinline{input}, filtering the instances that we do not require algorithm
 selection for. Finally, we proceed in the usual LLAMA manner by partitioning the
 data into folds and learning a SATzilla 2012-style pairwise classification
 model.
@@ -1398,10 +1431,12 @@ scientifically rigorous way. Researchers wishing to improve algorithm portfolio
 selection do not need to concern themselves with the infrastructure, but can
 concentrate on the actual research.
 
-LLAMA is still at an early stage of development and bugs may occur. In the end,
+LLAMA is maturing rapidly and has a comprehensive test suite. Nevertheless,
 the responsibility of interpreting and validating the results lies with the
-user. However, we have used LLAMA for a number of applications, found and fixed
-a few bugs and are reasonably confident that it will useful to other people.
+user.
+
+It has an issue tracker at \url{https://bitbucket.org/lkotthoff/llama/issues}
+for bug reports and feature requests.
 
 
 \subsection*{Acknowledgements}
