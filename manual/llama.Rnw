@@ -51,7 +51,7 @@ This document corresponds to LLAMA version 0.8.
 <<setup, include=FALSE, cache=FALSE>>=
 library(knitr)
 # set global chunk options
-opts_chunk$set(fig.align='center', fig.show='hold', out.width=".9\\textwidth", tidy=TRUE, tidy.opts=list(blank=FALSE, width.cutoff=42))
+opts_chunk$set(fig.align='center', fig.show='hold', out.width=".9\\textwidth", tidy=TRUE, tidy.opts=list(blank=FALSE, width.cutoff=43))
 
 library(plyr)
 library(devtools)
@@ -72,8 +72,8 @@ require(llama)
 
 to install and load LLAMA. We're going to assume that you have two input CSV
 files for your data -- features and times. The rows designate problem instances
-and the columns feature and solver names. All files have an 'ID' column that
-allows to link them. Load them into the data structure required by LLAMA as
+and the columns feature and solver names. All files must have an 'ID' column
+that allows to link them. Load them into the data structure required by LLAMA as
 follows.
 
 <<eval=FALSE>>=
@@ -300,16 +300,16 @@ The large number of machine learning approaches and algorithms available in R
 makes it possible to use LLAMA to quickly evaluate a range of different
 techniques for algorithm selection on given data, such as presented
 in~\cite{kotthoff_evaluation_2012}. Being able to do so is crucial for achieving
-good performance in practice. LLAMA has minimal requirements for machine
-learning algorithm implementations it can use, allowing the user to take full
-advantage of the functionality R and third-party packages provide.
+good performance in practice. LLAMA requires that machine learning algorithms
+are available through the mlr package~\cite{mlr}.
 
 
 \section{LLAMA for domestic use}
 
-LLAMA is implemented as an R package and can be found at
+LLAMA is implemented as an R package and can be found at\\
 \url{http://cran.r-project.org/web/packages/llama/}, the development repository
-is at \url{https://bitbucket.org/lkotthoff/llama}. One of the main advantages of
+is at\\
+\url{https://bitbucket.org/lkotthoff/llama}. One of the main advantages of
 the R package implementation is that all the functionality available in R
 can be used to build performance model. This is not limited to the functionality
 that is implemented in R itself -- there are interfaces to many other packages,
@@ -350,8 +350,11 @@ install.packages("llama")
 Alternatively, you can use the graphical package manager your R distribution
 provides, or download the package file yourself and install it manually.
 
-Once the package is installed, you can load it by typing
-\lstinline{library(llama)}.
+Once the package is installed, you can load it with
+
+<<eval=FALSE>>=
+library(llama)
+@
 
 \subsection{Reading data}
 
@@ -442,6 +445,12 @@ The \lstinline{input} function automatically computes all the meta data
 required by LLAMA -- the return value can be used right away. Full details on
 the returned structure can be found in the on-line documentation.
 
+\subsubsection{ASlib data format}
+
+LLAMA supports the ASlib data format\footnote{\url{http://aslib.net}} through
+the conversion functions provided by the \lstinline{aslib}
+package\footnote{\url{https://github.com/coseal/aslib-r}}.
+
 \subsubsection{Example data}
 
 LLAMA comes with some example data that you can play around with as a start. The
@@ -455,7 +464,8 @@ To use this data, type
 <<>>=
 data(satsolvers)
 @
-If you want to run the following commands with this data, run
+If you want to run the examples in the remainder of this document with this
+data, run
 <<>>=
 data = satsolvers
 @
@@ -465,11 +475,12 @@ data = satsolvers
 Machine learning models are usually trained and tested on separate data. This is
 to avoid so-called overfitting, where the model learned is so specific to the
 data it was trained on that the predictions on anything else are very
-inaccurate. LLAMA provides functions to split a data set into training and test
-sets. This is one of the tedious and error-prone steps that researchers have to
-deal with in practice and that LLAMA aims to make less painful. To split the
-data into 60\% training and 40\% test sets, we can run the following command,
-assuming that your data is available in the \lstinline{data} variable.
+inaccurate, and to provide a realistic estimate of generalisation performance.
+LLAMA provides functions to split a data set into training and test sets. This
+is one of the tedious and error-prone steps that researchers have to deal with
+in practice and that LLAMA aims to make less painful. To split the data into
+60\% training and 40\% test sets, we can run the following command, assuming
+that your data is available in the \lstinline{data} variable.
 
 <<>>=
 split = trainTest(data)
@@ -483,25 +494,31 @@ total data should be used for training. If, instead of a 60-40 split, we want a
 split = trainTest(data, 0.7)
 @
 
-By default, the training and test partitions are \emph{stratified}. That is, the
-distribution of best-algorithm labels in both partitions is approximately equal.
-If, for example, solver A is the best on 90\% of the instances and solver B on
-the remaining 10\% in the training set, the same will be the case in the test
-set. To turn off this behaviour, give the additional argument
-\lstinline{stratify = F}.
+By default, the training and test partitions are not stratified. This means that
+the data is split randomly regardless of the performance characteristics in the
+data. To turn stratification on, give the additional argument
+\lstinline{stratify = TRUE}. Then, the distribution of best-algorithm labels in
+the partitions will be approximately equal. If, for example, solver A is the
+best on 90\% of the instances and solver B on the remaining 10\% in the training
+set, the same will be the case in the test set.
 
-In addition to a simple train-test split, LLAMA also provides a function to
-create data folds for cross-validation~\cite{kohavi_study_1995}, which is in
-general seen as a more reliable way of evaluating the performance of a learning
-algorithm. To partition the entire data into 10 stratified folds, run
+In addition to a simple train-test split, LLAMA also provides function to
+create data folds for cross-validation using bootstrap sampling and cross-fold
+partitioning~\cite{kohavi_study_1995}. These methods are in general seen as more
+reliable ways of evaluating the performance of a learning algorithm. The main
+difference between bootstrap and cross-validation sampling is that in the former
+case, there is no guarantee on the distribution of the instances (in particular
+individual instances may appear multiple times across several folds), while
+cross-validation splits the data into $n$ disjunctive sets. To partition the
+entire data into 10 folds, run
 
 <<>>=
+folds = bsFolds(satsolvers)
 folds = cvFolds(satsolvers)
 @
 
-The optional argument \lstinline{nfolds} allows to specify the number of folds.
-The default behaviour is again to stratify the folds; this can be turned of in
-the same way as for \lstinline{trainTest()}.
+The optional second argument \lstinline{nfolds} allows to specify the number of
+folds for both functions.
 
 \subsection{Training and evaluating models}
 
