@@ -8,7 +8,7 @@ Functions to plot the performance of selectors and compare them to others.
 }
 \usage{
 perfScatterPlot(metric, modelx, modely, datax, datay=datax,
-    addCostsx=NULL, addCostsy=NULL, pargs=NULL, ...)
+    addCostsx=NULL, addCostsy=NULL, pargs=NULL, \dots)
 }
 \arguments{
   \item{metric}{the metric used to evaluate the model. Can be one of
@@ -36,7 +36,7 @@ perfScatterPlot(metric, modelx, modely, datax, datay=datax,
       not. This should always be true (the default) except for comparison
       algorithms (i.e. single best and virtual best).}
   \item{pargs}{any arguments to be passed to \code{geom_points}.}
-  \item{...}{any additional arguments to be passed to the metrics. For example
+  \item{\dots}{any additional arguments to be passed to the metrics. For example
       the penalisation factor for \code{parscores}.}
 }
 \details{
@@ -78,4 +78,4 @@ perfScatterPlot(parscores,
     xlab("J48") + ylab("single best")
 }
 }
-\keyword{ ~models }
+\keyword{ models }

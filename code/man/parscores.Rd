@@ -73,4 +73,4 @@ sum(parscores(folds, model, 5))
 sum(parscores(folds, model, timeout = 3600))
 }
 }
-\keyword{ ~models }
+\keyword{ models }

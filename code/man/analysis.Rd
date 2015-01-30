@@ -44,4 +44,4 @@ data(satsolvers)
 contributions(satsolvers)
 }
 }
-\keyword{ ~models }
+\keyword{ models }

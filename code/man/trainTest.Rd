@@ -30,7 +30,7 @@ test set is approximately the same, i.e. the sets are stratified.
 \value{
 \item{train}{a (one-element) list of index sets for training.}
 \item{test}{a (one-element) list of index sets for testing.}
-\item{...}{the original members of \code{data}. See \code{\link{input}}.}
+\item{\dots}{the original members of \code{data}. See \code{\link{input}}.}
 }
 \author{
 Lars Kotthoff
@@ -48,4 +48,4 @@ trainTest1 = trainTest(satsolvers, 0.5)
 # stratify
 trainTestU = trainTest(satsolvers, stratify=TRUE)
 }
-\keyword{ ~models }
+\keyword{ models }

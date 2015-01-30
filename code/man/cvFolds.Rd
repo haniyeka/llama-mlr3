@@ -34,7 +34,7 @@ original data set and returned.
 \value{
 \item{train}{a list of index sets for training.}
 \item{test}{a list of index sets for testing.}
-\item{...}{the original members of \code{data}. See \code{\link{input}}.}
+\item{\dots}{the original members of \code{data}. See \code{\link{input}}.}
 }
 \author{
 Lars Kotthoff
@@ -52,4 +52,4 @@ folds5 = cvFolds(satsolvers, 5)
 # stratify
 foldsU = cvFolds(satsolvers, stratify=TRUE)
 }
-\keyword{ ~models }
+\keyword{ models }

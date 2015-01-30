@@ -118,4 +118,4 @@ input(read.csv("features.csv"), read.csv("performance.csv"),
                values=read.csv("costGroups.csv")))
 }
 }
-\keyword{ ~models }
+\keyword{ models }

@@ -126,4 +126,4 @@ rese = classify(classifier=list(makeLearner("classif.J48"),
                 data=folds)
 }
 }
-\keyword{ ~models }
+\keyword{ models }

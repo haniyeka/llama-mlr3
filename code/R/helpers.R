@@ -1,25 +1,25 @@
 print.llama.data <-
-function(data) {
+function(x, ...) {
     cat(
-      nrow(data$data), " instances\n",
-      length(data$performance), " algorithms\n",
-      "ID columns: ", collapse(data$ids, sep=", "), "\n",
-      "Features: ", collapse(data$features, sep=", "), "\n",
-      "Performances: ", collapse(data$performance, sep=", "), "\n",
-      "Successes: ", collapse(data$success, sep=", "), "\n",
-      "Cost groups: ", printList(data$costGroups), "\n",
-      "Extra: ", collapse(data$extra, sep=", "), "\n",
-      "Minimize: ", data$minimize, "\n",
-      "Has splits: ", attr(data, "hasSplits"), "\n",
+      nrow(x$data), " instances\n",
+      length(x$performance), " algorithms\n",
+      "ID columns: ", collapse(x$ids, sep=", "), "\n",
+      "Features: ", collapse(x$features, sep=", "), "\n",
+      "Performances: ", collapse(x$performance, sep=", "), "\n",
+      "Successes: ", collapse(x$success, sep=", "), "\n",
+      "Cost groups: ", printList(x$costGroups), "\n",
+      "Extra: ", collapse(x$extra, sep=", "), "\n",
+      "Minimize: ", x$minimize, "\n",
+      "Has splits: ", attr(x, "hasSplits"), "\n",
       sep = "")
 }
 
 print.llama.model <-
-function(model) {
+function(x, ...) {
     cat(
-      "Type: ", attr(model, "type"), "\n",
-      "Has predictions: ", attr(model, "hasPredictions"), "\n",
-      "Add costs: ", attr(model, "addCosts"), "\n",
+      "Type: ", attr(x, "type"), "\n",
+      "Has predictions: ", attr(x, "hasPredictions"), "\n",
+      "Add costs: ", attr(x, "addCosts"), "\n",
       sep = "")
 }
 

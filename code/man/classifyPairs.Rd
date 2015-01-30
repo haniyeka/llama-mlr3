@@ -123,4 +123,4 @@ res = classifyPairs(classifier=makeLearner("classif.J48"),
                     combine=makeLearner("classif.J48"))
 }
 }
-\keyword{ ~models }
+\keyword{ models }

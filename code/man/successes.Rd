@@ -66,4 +66,4 @@ model = classify(classifier=makeLearner("classif.J48"), data=folds)
 sum(successes(folds, model))
 }
 }
-\keyword{ ~models }
+\keyword{ models }

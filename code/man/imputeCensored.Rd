@@ -54,4 +54,4 @@ data(satsolvers)
 imputed = imputeCensored(satsolvers)
 }
 }
-\keyword{ ~imputation }
+\keyword{ imputation }

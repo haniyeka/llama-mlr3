@@ -131,4 +131,4 @@ ress = regression(regressor=makeLearner("regr.ksvm"),
                          function(y) { abs(x[,y[1]] - x[,y[2]]) })) })
 }
 }
-\keyword{ ~regression }
+\keyword{ regression }

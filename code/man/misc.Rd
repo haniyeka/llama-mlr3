@@ -88,4 +88,4 @@ print(sum(successes(satsolvers, singleBestBySuccesses)))
 print(predTable(vbs(satsolvers)))
 }
 }
-\keyword{ ~models }
+\keyword{ models }

@@ -43,4 +43,4 @@ folds = cvFolds(satsolvers)
 cluster(clusterer=makeLearner("cluster.XMeans"), data=folds, pre=normalize)
 }
 }
-\keyword{ ~models }
+\keyword{ models }

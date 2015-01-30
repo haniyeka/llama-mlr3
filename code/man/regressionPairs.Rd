@@ -120,4 +120,4 @@ model = regressionPairs(regressor=makeLearner("regr.lm"), data=folds,
     combine=makeLearner("classif.J48"))
 }
 }
-\keyword{ ~models }
+\keyword{ models }

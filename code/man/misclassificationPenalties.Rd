@@ -56,4 +56,4 @@ model = classify(classifier=makeLearner("classif.J48"), data=folds)
 sum(misclassificationPenalties(folds, model))
 }
 }
-\keyword{ ~models }
+\keyword{ models }

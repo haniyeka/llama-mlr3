@@ -132,4 +132,4 @@ rese = cluster(clusterer=list(makeLearner("cluster.XMeans"),
     .combine=makeLearner("classif.J48")), data=folds, pre=normalize)
 }
 }
-\keyword{ ~cluster }
+\keyword{ cluster }
