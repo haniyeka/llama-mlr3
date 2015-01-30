@@ -51,10 +51,11 @@ This document corresponds to LLAMA version 0.8.
 <<setup, include=FALSE, cache=FALSE>>=
 library(knitr)
 # set global chunk options
-opts_chunk$set(fig.align='center', fig.show='hold', out.width=".9\\textwidth", tidy=TRUE, tidy.opts=list(blank=FALSE, width.cutoff=44))
+opts_chunk$set(fig.align='center', fig.show='hold', out.width=".7\\textwidth", tidy=TRUE, tidy.opts=list(blank=FALSE, width.cutoff=44), cache=TRUE)
 
 library(plyr)
 library(devtools)
+library(ggplot2)
 load_all("../code")
 @
 \renewenvironment{knitrout}{\setlength{\topsep}{0mm}}{}
@@ -99,7 +100,7 @@ our first model. To do that, we'll need some machine learning algorithms --
 we're going to use a random forest classifier. Now train a simple classification
 model that predicts the best algorithm.
 
-<<>>=
+<<message=FALSE>>=
 model = classify(makeLearner("classif.randomForest"), folds)
 @
 
@@ -445,11 +446,33 @@ The \lstinline{input} function automatically computes all the meta data
 required by LLAMA -- the return value can be used right away. Full details on
 the returned structure can be found in the on-line documentation.
 
-\subsubsection{ASlib data format}
+\subsubsection{Algorithm Selection Benchmark Library}
 
-LLAMA supports the ASlib data format\footnote{\url{http://aslib.net}} through
-the conversion functions provided by the \lstinline{aslib}
-package\footnote{\url{https://github.com/coseal/aslib-r}}.
+The Algorithm Selection Benchmark Library ASlib\footnote{\url{http://aslib.net}}
+offers, at the time of writing, 14 different scenarios that have been used in
+algorithm selection publications. It defines a data format for these scenarios
+as well.
+% TODO: add citation
+
+LLAMA supports the ASlib data format through the conversion functions provided
+by the \lstinline{aslib}
+package\footnote{\url{https://github.com/coseal/aslib-r}} and is used to run the
+benchmark experiments whose results are presented on the ASlib website.
+
+<<eval=FALSE>>=
+library(aslib)
+
+scenario = parseASScenario("/path/to/scenario/dir")
+
+# convert data format
+ldf = convertToLlama(scenario)
+folds = cvFolds(ldf)
+model = classify(makeLearner("classif.J48"), folds)
+
+# convert data format including specified cross-validation splits
+folds = convertToLlamaCVFolds(scenario)
+model = classify(makeLearner("classif.J48"), folds)
+@
 
 \subsubsection{Example data}
 
@@ -531,7 +554,7 @@ using the C4.5 decision tree learner~\cite{quinlan_c4.5_1993}.
 For this, we call \lstinline{classify} with the name of the machine learning
 algorithm and the data folds created above.
 
-<<>>=
+<<message=FALSE>>=
 model = classify(makeLearner("classif.J48"), folds)
 @
 
@@ -1046,6 +1069,245 @@ thread-safe. The Weka machine learning algorithms can still be used with
 parallel execution though if a backend is used that runs separate processes,
 such as the sockets backend used above.
 
+\subsection{Instance weights}\label{sec:weights}
+
+In algorithm selection, not all problem instances are equal. On some of them, it
+doesn't really matter which algorithm we choose, either because the performance
+difference is small, or because the performance is so good (e.g.\ the runtime is
+so low) that in practice making a wrong decision won't matter that much. On the
+other hand, there are instance that we really do want to get right because of
+massive differences in performance that matter a lot in practice.
+
+LLAMA supports instance weights for all selection model building functions
+except \lstinline{cluster}, where such weights cannot be incorporated in a
+meaningful way. If the underlying machine learning algorithm supports case
+weights, each instance has the performance difference between the best and the
+worst algorithm attached to it. This happens by default, but you can explicitly
+disable weights with the \lstinline{use.weights = FALSE} argument to the model
+building functions.
+
+
+\section{Visualising the data}\label{sec:vis}
+
+This part is going to be a bit more graphic than the previous rather dry
+sections -- we are going to have a look at visualising the data we have been
+working with. R offers many possibilities for doing so and surveying them all is
+far beyond the scope of this manual. We only give a flavour of what
+visualisations can be done.
+
+\subsection{LLAMA's plotting functions}
+
+LLAMA provides visualisation functionality that is tailored for algorithm
+selection, but this is by no means the only to plot and try to make sense of the
+data. In particular, it provides the function \lstinline{perfScatterPlot}, which
+allows you to plot a scatter plot that compares the performance of two
+selectors. What is does is best illustrated through an example.
+
+<<perf-scatter-sb, fig.cap="PAR10 performance comparison between J48 decision tree selection model and single best.">>=
+model = classify(makeLearner("classif.J48"), folds)
+perfScatterPlot(parscores, model, singleBest, folds, satsolvers) + scale_x_log10() + scale_y_log10() + xlab("J48") + ylab("single best")
+@
+
+The first argument to \lstinline{perfScatterPlot} is the metric to use for
+evaluation, the second and third the models to compare (which may be functions
+such as \lstinline{singleBest}), and the last two arguments the data to evaluate
+the respective models on. Here, we need two different data sets as the learned
+model should be evaluated on the split data, while the single best is computed
+on the entire data. If both models are of the same type and should be evaluated
+on the same data, it needs to be given only once.
+
+The resulting plot can be seen in Figure~\ref{fig:perf-scatter-sb}. Each point
+corresponds to a problem instance in the dataset. Points on the line mean that
+both selectors (the \lstinline{J48} decision tree classifier selection model and
+the single best algorithm) achieved the same performance. Points below the
+diagonal mean that our trained selector was better and above the diagonal the
+single best algorithm.
+
+Scatter plots like this are useful for inspecting what a selection model does
+and where its weaknesses lie. LLAMA allows to pass additional information that
+can be used to e.g.\ change the shape or colour of the points according to the
+group the problem instance belongs to. Internally, \lstinline{ggplot2} is used
+for plotting and its power is available for customising the plot. The
+\lstinline{ggplot} object is returned from the function to allow further
+modifications.
+
+Figure~\ref{fig:perf-scatter-models} shows another scatter plot that compares
+the performance of two ``real'' models instead of a model and a baseline.
+
+<<perf-scatter-models, fig.cap="PAR10 performance comparison between J48 decision tree and random forest selection models.">>=
+model1 = classify(makeLearner("classif.J48"), folds)
+model2 = classify(makeLearner("classif.randomForest"), folds)
+perfScatterPlot(parscores, model1, model2, folds) + scale_x_log10() + scale_y_log10() + xlab("J48") + ylab("random forest")
+@
+
+
+\subsection{Other ways of plotting data}
+
+It is always useful to have a look at the data one will be working with. LLAMA
+does not provide any functions for visualisation of the raw data, but it is easy
+enough to do in R. In our case, there are two main groups of data -- the
+performance values and the features. Let's have a look at the performance values
+first. Throughout this section, we will be using the example SAT data, but the
+same methodology applies to any other data in LLAMA format. As we have a large
+amount of data to visualise, we are going to use heatmaps.
+
+<<runtimes, fig.cap="Runtimes by solver and instance from almost instantaneous solve (white) to timeout (black).">>=
+data(satsolvers)
+times = subset(satsolvers$data, T, satsolvers$performance)
+par(mar=c(7,1,3,1))
+cols = gray(seq(1, 0, length.out=255))
+image(t(as.matrix(times)), axes=F, col=cols)
+axis(1, labels=satsolvers$performance, at=seq(0, 1, 1/(length(satsolvers$performance)-1)), las=2)
+legend("top", legend=c(min(times), max(times)), fill=c("white", "black"), bty="n", inset=-0.12, xpd=NA)
+@
+
+The resulting plot is shown in Figure~\ref{fig:runtimes}. After extracting the
+performance values (runtimes in this case) from the LLAMA data frame, setting
+some plot parameters and creating a black and white colour scale, we plot the
+heatmap, axis, and legend. The map shows the time each solver takes on each
+instance.
+
+There is a large spread of runtimes in our data, with most instances being
+solved either instantaneously or timing out. The figure looks accordingly, with
+most colours being either white or black and very little grey in between.
+Plotting the log of the runtime is more informative
+(Figure~\ref{fig:runtimes-log}).
+
+<<runtimes-log, fig.cap="Log runtimes by solver and instance from almost instantaneous solve (white) to timeout (black).">>=
+image(log10(t(as.matrix(times))), axes=F, col=cols)
+axis(1, labels=satsolvers$performance, at=seq(0, 1, 1/(length(satsolvers$performance)-1)), las=2)
+legend("top", legend=c(min(times), max(times)), fill=c("white", "black"), bty="n", inset=-0.12, xpd=NA)
+@
+
+When doing algorithm selection, we are usually more interested in how the
+performance of a solver compares to the other solvers in the portfolio rather
+than the absolute value. We can plot the rank of each solver on each instance in
+a similar fashion to before (Figure~\ref{fig:ranks}).
+
+<<ranks, fig.cap="Solver ranks on each instance from first (white) to last (black).">>=
+image(apply(times, 1, order), axes=F, col=cols)
+axis(1, labels=satsolvers$performance, at=seq(0, 1, 1/(length(satsolvers$performance)-1)), las=2)
+legend("top", legend=c(1, length(satsolvers$performance)), fill=c("white", "black"), bty="n", inset=-0.12, xpd=NA)
+@
+
+\medskip
+
+The same kind of visual analysis can be applied to the features. This is
+probably even more important that analysing the performance data, as the
+features are used to create the models we are going to use for algorithm
+selection. If the features are bad, the models will not be good either. Let's do
+the same kind of plot we did for the solvers for the features.
+
+<<features, fig.cap="Feature values on each instance from lowest (white) to highest (black).">>=
+features = subset(satsolvers$data, T, satsolvers$features)
+par(mar=c(10,1,3,1))
+image(t(as.matrix(features)), axes=F, col=cols)
+axis(1, labels=satsolvers$features, at=seq(0, 1, 1/(length(satsolvers$features)-1)), las=2)
+legend("top", legend=c(min(features), max(features)), fill=c("white", "black"), bty="n", inset=-0.12, xpd=NA)
+@
+
+The resulting plot is shown in Figure~\ref{fig:features}. The values for four of
+the features are much higher than the rest. It is hard to see the variance of
+the feature values for a particular feature over the set of instances because of
+this.
+
+We get a better plot from the normalised feature values
+(Figure~\ref{fig:features-norm}).
+
+<<features-norm, fig.cap="Normalised feature values on each instance from -1 (white) to 1 (black).">>=
+nFeatures = normalize(features)
+par(mar=c(10,1,1,1))
+image(t(as.matrix(nFeatures$features)), axes=F, col=cols)
+axis(1, labels=satsolvers$features, at=seq(0, 1, 1/(length(satsolvers$features)-1)), las=2)
+@
+
+The features for the example data are not very good. For quite a lot of them,
+there is almost no variation and others have only two different values.
+
+%\afterpage{\clearpage}
+
+We can apply the same kind of analysis to the prediction results. This allows us
+to get an idea of what the machine learning algorithms are doing, where they
+work well and where things could be improved. The following code creates a
+heatmap of the PAR10 scores of a classification model on all instances. We are
+using the log of the PAR10 scores to get more shades of grey.
+
+<<par, fig.cap="PAR10 scores for a \texttt{J48} classification model.">>=
+folds = cvFolds(satsolvers)
+model = classify(makeLearner("classif.J48"), folds)
+scores = parscores(folds, model)
+par(mar=c(1,1,1,10))
+image(log10(t(as.matrix(scores))), axes=F, col=cols)
+legend("right", legend=quantile(scores), fill=gray(seq(1, 0, length.out=5)), bty="n", inset=-0.3, xpd=NA)
+@
+
+The resulting plot (Figure~\ref{fig:par}) gives us some idea of what's going on,
+but looks more like a bar code than anything else.
+
+The power of heatmaps comes from being able to compare multiple entities. A more
+useful plot compares the performance of the classification model to the
+performance of other models. The following code can be used to generate such a
+plot (Figure~\ref{fig:par-cmp}).
+
+<<par-cmp, warning=FALSE, fig.cap="PAR10 scores for five different models. The number in each label shows the mean PAR10 score across all instances.">>=
+folds = cvFolds(satsolvers)
+model1 = classify(makeLearner("classif.J48"), folds)
+model2 = regression(makeLearner("regr.lm"), folds)
+model3 = classifyPairs(makeLearner("classif.J48"), folds)
+model4 = regressionPairs(makeLearner("regr.lm"), folds)
+model5 = cluster(makeLearner("cluster.XMeans"), folds)
+scores1 = parscores(folds, model1)
+scores2 = parscores(folds, model2)
+scores3 = parscores(folds, model3)
+scores4 = parscores(folds, model4)
+scores5 = parscores(folds, model5)
+par(mar=c(10,1,1,1))
+names = c(paste("classify", "J48", mean(scores1), sep="\n"),
+    paste("regression", "lm", mean(scores2), sep="\n"),
+    paste("classifyPairs", "J48", mean(scores3), sep="\n"),
+    paste("regressionPairs", "lm", mean(scores4), sep="\n"),
+    paste("cluster", "XMeans", mean(scores5), sep="\n"))
+scores = c(scores1, scores2, scores3, scores4, scores5)
+image(log10(t(matrix(scores, ncol=5))), axes=F, col=cols)
+axis(1, labels=names, at=seq(0, 1, 1/(length(names)-1)), las=1, tick=F, line=1)
+legend("bottom", legend=quantile(scores), fill=gray(seq(1, 0, length.out=5)), bty="n", inset=-0.4, xpd=NA)
+@
+
+This comparison is actually quite insightful. The predictions of the regression
+model usually incur a higher PAR10 score (overall, the column is darker than the
+others), but its mean PAR10 score is lower than for the other models. It also
+shows us that for this specific scenario, there is almost no difference between
+the single and pairwise classification models.
+
+As a final example, we will plot the differences in predicted and actual rank
+for the regression model (Figure~\ref{fig:rank-diff}).
+
+<<rank-diff, fig.cap="Difference between actual and predicted rank for the regression model. Red means that an algorithm was predicted to be worse than it actually was, blue that it was predicted to be better. Predicted and actual rank agree for white.">>=
+par(mar=c(7,1,1,5))
+ranks = t(ddply(model$predictions, .(benchmark_id), function(x) { as.vector(sapply(x$algorithm, function(z) { which(z == satsolvers$performance) })) })[-1])
+diffs = apply(times, 1, order)-ranks
+cols = c(colorRampPalette(c("red", "white"))(128), colorRampPalette(c("white", "blue"))(128))
+breaks = c(seq(min(diffs), -1/128, length.out=128), 0, seq(1/128, max(diffs), length.out=128))
+image(diffs, axes=F, col=cols, breaks=breaks)
+axis(1, labels=satsolvers$performance, at=seq(0, 1, 1/(length(satsolvers$performance)-1)), las=2)
+legend("right", legend=quantile(diffs), fill=cols[quantile(1:length(cols))], bty="n", inset=-0.15, xpd=NA)
+@
+
+The plot is a bit messy, but there are some insights to be gained. Looking at
+the solvers that perform well overall (e.g.\ minisat, leftmost column), we can
+see that they are predominantly red, i.e.\ most of the time they are predicted
+to be worse than they actually are. For the solvers that exhibit bad performance
+(e.g.\ rsat, rightmost column), we observe that they are predominantly blue,
+meaning that they are usually predicted to be better than they actually are.
+This indicates that improvements are to be had by training better machine
+learning models in this particular scenario.
+
+\medskip
+
+The examples above only scratch the surface of the visualisations that are
+possible in R. While none of the examples shown depends on LLAMA, the data
+structures it provides facilitate the creation of such plots to some extent.
+
 
 \section{Case study: SATzilla}\label{sec:case:satzilla}
 
@@ -1242,181 +1504,6 @@ myPortfolioSolver = function(instance) {
     }
 }
 @
-
-
-\section{Case study: Visualising the data}\label{sec:case:vis}
-
-Our final case study is going to be a bit more graphic than the previous rather
-dry sections -- we are going to have a look at visualising the data we have been
-working with. R offers many possibilities for doing so and surveying them all
-is far beyond the scope of this manual. We only give a flavour of what
-visualisations can be done.
-
-It is always useful to have a look at the data one will be working with. In our
-case, there are two main groups of data -- the performance values and the
-features. Let's have a look at the performance values first. Throughout this
-section, we will be using the example SAT data, but the same methodology applies
-to any other data in LLAMA format. As we have a large amount of data to
-visualise, we are going to use heatmaps.
-
-<<runtimes, fig.cap="Runtimes by solver and instance from almost instantaneous solve (white) to timeout (black).">>=
-data(satsolvers)
-times = subset(satsolvers$data, T, satsolvers$performance)
-par(mar=c(7,1,3,1))
-cols = gray(seq(1, 0, length.out=255))
-image(t(as.matrix(times)), axes=F, col=cols)
-axis(1, labels=satsolvers$performance, at=seq(0, 1, 1/(length(satsolvers$performance)-1)), las=2)
-legend("top", legend=c(min(times), max(times)), fill=c("white", "black"), bty="n", inset=-0.12, xpd=NA)
-@
-
-The resulting plot is shown in Figure~\ref{fig:runtimes}. After extracting the
-performance values (runtimes in this case) from the LLAMA data frame, setting
-some plot parameters and creating a black and white colour scale, we plot the
-heatmap, axis, and legend. The map shows the time each solver takes on each
-instance.
-
-There is a large spread of runtimes in our data, with most instances being
-solved either instantaneously or timing out. The figure looks accordingly, with
-most colours being either white or black and very little grey in between.
-Plotting the log of the runtime is more informative
-(Figure~\ref{fig:runtimes-log}).
-
-<<runtimes-log, fig.cap="Log runtimes by solver and instance from almost instantaneous solve (white) to timeout (black).">>=
-image(log10(t(as.matrix(times))), axes=F, col=cols)
-axis(1, labels=satsolvers$performance, at=seq(0, 1, 1/(length(satsolvers$performance)-1)), las=2)
-legend("top", legend=c(min(times), max(times)), fill=c("white", "black"), bty="n", inset=-0.12, xpd=NA)
-@
-
-When doing algorithm selection, we are usually more interested in how the
-performance of a solver compares to the other solvers in the portfolio rather
-than the absolute value. We can plot the rank of each solver on each instance in
-a similar fashion to before (Figure~\ref{fig:ranks}).
-
-<<ranks, fig.cap="Solver ranks on each instance from first (white) to last (black).">>=
-image(apply(times, 1, order), axes=F, col=cols)
-axis(1, labels=satsolvers$performance, at=seq(0, 1, 1/(length(satsolvers$performance)-1)), las=2)
-legend("top", legend=c(1, length(satsolvers$performance)), fill=c("white", "black"), bty="n", inset=-0.12, xpd=NA)
-@
-
-% TODO: scatter plots
-
-\medskip
-
-The same kind of visual analysis can be applied to the features. This is
-probably even more important that analysing the performance data, as the
-features are used to create the models we are going to use for algorithm
-selection. If the features are bad, the models will not be good either. Let's do
-the same kind of plot we did for the solvers for the features.
-
-<<features, fig.cap="Feature values on each instance from lowest (white) to highest (black).">>=
-features = subset(satsolvers$data, T, satsolvers$features)
-par(mar=c(10,1,3,1))
-image(t(as.matrix(features)), axes=F, col=cols)
-axis(1, labels=satsolvers$features, at=seq(0, 1, 1/(length(satsolvers$features)-1)), las=2)
-legend("top", legend=c(min(features), max(features)), fill=c("white", "black"), bty="n", inset=-0.12, xpd=NA)
-@
-
-The resulting plot is shown in Figure~\ref{fig:features}. The values for four of
-the features are much higher than the rest. It is hard to see the variance of
-the feature values for a particular feature over the set of instances because of
-this.
-
-We get a better plot from the normalised feature values
-(Figure~\ref{fig:features-norm}).
-
-<<features-norm, fig.cap="Normalised feature values on each instance from -1 (white) to 1 (black).">>=
-nFeatures = normalize(features)
-par(mar=c(10,1,1,1))
-image(t(as.matrix(nFeatures$features)), axes=F, col=cols)
-axis(1, labels=satsolvers$features, at=seq(0, 1, 1/(length(satsolvers$features)-1)), las=2)
-@
-
-The features for the example data are not very good. For quite a lot of them,
-there is almost no variation and others have only two different values.
-
-%\afterpage{\clearpage}
-
-We can apply the same kind of analysis to the prediction results. This allows us
-to get an idea of what the machine learning algorithms are doing, where they
-work well and where things could be improved. The following code creates a
-heatmap of the PAR10 scores of a classification model on all instances. We are
-using the log of the PAR10 scores to get more shades of grey.
-
-<<par, fig.cap="PAR10 scores for a \texttt{J48} classification model.">>=
-folds = cvFolds(satsolvers)
-model = classify(makeLearner("classif.J48"), folds)
-scores = parscores(folds, model)
-par(mar=c(1,1,1,10))
-image(log10(t(as.matrix(scores))), axes=F, col=cols)
-legend("right", legend=quantile(scores), fill=gray(seq(1, 0, length.out=5)), bty="n", inset=-0.3, xpd=NA)
-@
-
-The resulting plot (Figure~\ref{fig:par}) gives us some idea of what's going on,
-but looks more like a bar code than anything else.
-
-The power of heatmaps comes from being able to compare multiple entities. A more
-useful plot compares the performance of the classification model to the
-performance of other models. The following code can be used to generate such a
-plot (Figure~\ref{fig:par-cmp}).
-
-<<par-cmp, warning=FALSE, fig.cap="PAR10 scores for five different models. The number in each label shows the mean PAR10 score across all instances.">>=
-folds = cvFolds(satsolvers)
-model1 = classify(makeLearner("classif.J48"), folds)
-model2 = regression(makeLearner("regr.lm"), folds)
-model3 = classifyPairs(makeLearner("classif.J48"), folds)
-model4 = regressionPairs(makeLearner("regr.lm"), folds)
-model5 = cluster(makeLearner("cluster.XMeans"), folds)
-scores1 = parscores(folds, model1)
-scores2 = parscores(folds, model2)
-scores3 = parscores(folds, model3)
-scores4 = parscores(folds, model4)
-scores5 = parscores(folds, model5)
-par(mar=c(10,1,1,1))
-names = c(paste("classify", "J48", mean(scores1), sep="\n"),
-    paste("regression", "lm", mean(scores2), sep="\n"),
-    paste("classifyPairs", "J48", mean(scores3), sep="\n"),
-    paste("regressionPairs", "lm", mean(scores4), sep="\n"),
-    paste("cluster", "XMeans", mean(scores5), sep="\n"))
-scores = c(scores1, scores2, scores3, scores4, scores5)
-image(log10(t(matrix(scores, ncol=5))), axes=F, col=cols)
-axis(1, labels=names, at=seq(0, 1, 1/(length(names)-1)), las=1, tick=F, line=1)
-legend("bottom", legend=quantile(scores), fill=gray(seq(1, 0, length.out=5)), bty="n", inset=-0.4, xpd=NA)
-@
-
-This comparison is actually quite insightful. The predictions of the regression
-model usually incur a higher PAR10 score (overall, the column is darker than the
-others), but its mean PAR10 score is lower than for the other models. It also
-shows us that for this specific scenario, there is almost no difference between
-the single and pairwise classification models.
-
-As a final example, we will plot the differences in predicted and actual rank
-for the regression model (Figure~\ref{fig:rank-diff}).
-
-<<rank-diff, fig.cap="Difference between actual and predicted rank for the regression model. Red means that an algorithm was predicted to be worse than it actually was, blue that it was predicted to be better. Predicted and actual rank agree for white.">>=
-par(mar=c(7,1,1,5))
-ranks = t(ddply(model$predictions, .(benchmark_id), function(x) { as.vector(sapply(x$algorithm, function(z) { which(z == satsolvers$performance) })) })[-1])
-diffs = apply(times, 1, order)-ranks
-cols = c(colorRampPalette(c("red", "white"))(128), colorRampPalette(c("white", "blue"))(128))
-breaks = c(seq(min(diffs), -1/128, length.out=128), 0, seq(1/128, max(diffs), length.out=128))
-image(diffs, axes=F, col=cols, breaks=breaks)
-axis(1, labels=satsolvers$performance, at=seq(0, 1, 1/(length(satsolvers$performance)-1)), las=2)
-legend("right", legend=quantile(diffs), fill=cols[quantile(1:length(cols))], bty="n", inset=-0.15, xpd=NA)
-@
-
-The plot is a bit messy, but there are some insights to be gained. Looking at
-the solvers that perform well overall (e.g.\ minisat, leftmost column), we can
-see that they are predominantly red, i.e.\ most of the time they are predicted
-to be worse than they actually are. For the solvers that exhibit bad performance
-(e.g.\ rsat, rightmost column), we observe that they are predominantly blue,
-meaning that they are usually predicted to be better than they actually are.
-This indicates that improvements are to be had by training better machine
-learning models in this particular scenario.
-
-\medskip
-
-The examples above only scratch the surface of the visualisations that are
-possible in R. While none of the examples shown depends on LLAMA, the data
-structures it provides facilitate the creation of such plots to some extent.
 
 
 \section{The further domestication of LLAMA}
