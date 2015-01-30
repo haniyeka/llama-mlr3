@@ -81,7 +81,7 @@ test_that("classifyPairs", {
 
     res = classifyPairs(classifier=makeLearner("classif.OneR"),
                         data=folds,
-                        combinator=makeLearner("classif.OneR"))
+                        combine=makeLearner("classif.OneR"))
     expect_true(sum(parscores(folds, res)) > vbsp)
     expect_true(sum(misclassificationPenalties(folds, res)) > vbsm)
     expect_true(sum(successes(folds, res)) < vbss)
