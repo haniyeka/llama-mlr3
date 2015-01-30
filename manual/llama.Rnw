@@ -53,6 +53,8 @@ library(knitr)
 # set global chunk options
 opts_chunk$set(fig.align='center', fig.show='hold', out.width=".7\\textwidth", tidy=TRUE, tidy.opts=list(blank=FALSE, width.cutoff=44), cache=TRUE)
 
+options(width=60)
+
 library(plyr)
 library(devtools)
 library(ggplot2)
@@ -1094,6 +1096,16 @@ sections -- we are going to have a look at visualising the data we have been
 working with. R offers many possibilities for doing so and surveying them all is
 far beyond the scope of this manual. We only give a flavour of what
 visualisations can be done.
+
+A simple way of ``visualising'' predictions is to simply print a table of how
+many times each algorithm was predicted. LLAMA provides the function
+\lstinline{predTable} for this purpose. It takes the list of predictions as
+argument.
+
+<<>>=
+predTable(vbs(satsolvers))
+predTable(model$predictions)
+@
 
 \subsection{LLAMA's plotting functions}
 
