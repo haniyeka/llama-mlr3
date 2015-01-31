@@ -51,14 +51,15 @@ This document corresponds to LLAMA version 0.8.
 <<setup, include=FALSE, cache=FALSE>>=
 library(knitr)
 # set global chunk options
-opts_chunk$set(fig.align='center', fig.show='hold', out.width=".7\\textwidth", tidy=TRUE, tidy.opts=list(blank=FALSE, width.cutoff=44), cache=TRUE)
+opts_chunk$set(fig.align='center', fig.show='hold', out.width=".7\\textwidth", tidy=TRUE, tidy.opts=list(blank=FALSE, width.cutoff=45), cache=TRUE)
 
 options(width=60)
 
 library(plyr)
-library(devtools)
 library(ggplot2)
-load_all("../code")
+#library(devtools)
+#load_all("../code")
+library(llama)
 @
 \renewenvironment{knitrout}{\setlength{\topsep}{0mm}}{}
 
@@ -70,7 +71,7 @@ started. Here we go. In your R shell, type
 
 <<eval=FALSE>>=
 install.packages("llama")
-require(llama)
+library(llama)
 @
 
 to install and load LLAMA. We're going to assume that you have two input CSV
@@ -193,8 +194,7 @@ these involving ensembles and stacking.
 A lot more background information can be found
 in~\cite{kotthoff_algorithm_2014} (even more in the extended
 version~\cite{kotthoff_algorithm_2012}) and the overview table of the relevant
-literature at\\
-\url{http://larskotthoff.github.io/assurvey/}.
+literature at \url{http://larskotthoff.github.io/assurvey/}.
 
 \medskip
 
@@ -309,10 +309,9 @@ are available through the mlr package~\cite{mlr}.
 
 \section{LLAMA for domestic use}
 
-LLAMA is implemented as an R package and can be found at\\
+LLAMA is implemented as an R package and can be found at
 \url{http://cran.r-project.org/web/packages/llama/}, the development repository
-is at\\
-\url{https://bitbucket.org/lkotthoff/llama}. One of the main advantages of
+is at \url{https://bitbucket.org/lkotthoff/llama}. One of the main advantages of
 the R package implementation is that all the functionality available in R
 can be used to build performance model. This is not limited to the functionality
 that is implemented in R itself -- there are interfaces to many other packages,
@@ -897,7 +896,7 @@ theory~\cite{rahwan_game_2013}. Running this on the example data distributed
 with the package gives the following result:
 
 <<>>=
-sort(contributions(satsolvers))
+sort(contributions(satsolvers), decreasing = TRUE)
 @
 
 The negative numbers designate solvers that do not contribute anything to the
