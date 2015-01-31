@@ -3,12 +3,12 @@ function(x, ...) {
     cat(
       nrow(x$data), " instances\n",
       length(x$performance), " algorithms\n",
-      "ID columns: ", collapse(x$ids, sep=", "), "\n",
-      "Features: ", collapse(x$features, sep=", "), "\n",
-      "Performances: ", collapse(x$performance, sep=", "), "\n",
-      "Successes: ", collapse(x$success, sep=", "), "\n",
+      "ID columns: ", paste(x$ids, collapse=", "), "\n",
+      "Features: ", paste(x$features, collapse=", "), "\n",
+      "Performances: ", paste(x$performance, collapse=", "), "\n",
+      "Successes: ", paste(x$success, collapse=", "), "\n",
       "Cost groups: ", printList(x$costGroups), "\n",
-      "Extra: ", collapse(x$extra, sep=", "), "\n",
+      "Extra: ", paste(x$extra, collapse=", "), "\n",
       "Minimize: ", x$minimize, "\n",
       "Has splits: ", attr(x, "hasSplits"), "\n",
       sep = "")
@@ -25,7 +25,7 @@ function(x, ...) {
 
 printList <-
 function(l) {
-    collapse(sapply(names(l), function(x) {
-        paste(x, " = [", collapse(l[[x]], sep=", "), "]", sep="")
-    }))
+    paste(sapply(names(l), function(x) {
+        paste(x, " = [", paste(l[[x]], collapse=", "), "]", sep="")
+    }), collapse="")
 }

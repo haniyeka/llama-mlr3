@@ -24,6 +24,8 @@ export(
     trainTest,
     vbs
 )
+S3method(print, llama.data)
+S3method(print, llama.model)
 importFrom(rJava, J, .jpackage, .jarray)
 importFrom(parallelMap, parallelMap, parallelRegisterLevels)
 import(ggplot2)
