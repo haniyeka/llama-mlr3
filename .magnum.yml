@@ -1,4 +1,4 @@
-env: NOT_CRAN="false"
+env: RUN_EXPENSIVE="false"
      R_LIBS_SITE="/usr/lib/R/library"
 
 before_install:
