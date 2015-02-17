@@ -21,7 +21,7 @@ test_that("cvFolds splits with best list", {
     d$best = list(0, 0, 0, c(0,1), 0, 0, c(0,1), 0, 0, 0)
     class(d) = "llama.data"
 
-    dfs = cvFolds(d, nfolds=2)
+    dfs = cvFolds(d, nfolds=2L)
     expect_equal(length(dfs$train), 2)
     expect_equal(length(dfs$test), 2)
     expect_true(all(sapply(dfs$train, length) == 5))
@@ -32,7 +32,7 @@ test_that("cvFolds allows to specify number of folds", {
     d = list(data=data.frame(a=rep.int(0, 10)), best=rep.int(0, 10))
     class(d) = "llama.data"
 
-    dfs = cvFolds(d, nfolds=2)
+    dfs = cvFolds(d, nfolds=2L)
     expect_equal(length(dfs$train), 2)
     expect_equal(length(dfs$test), 2)
     expect_true(all(sapply(dfs$train, length) == 5))
@@ -43,7 +43,7 @@ test_that("cvFolds allows -1 for leave-one-out", {
     d = list(data=data.frame(a=rep.int(0, 10)), best=rep.int(0, 10))
     class(d) = "llama.data"
 
-    dfs = cvFolds(d, nfolds=-1)
+    dfs = cvFolds(d, nfolds=-1L)
     expect_equal(length(dfs$train), 10)
     expect_equal(length(dfs$test), 10)
     expect_true(all(sapply(dfs$train, length) == 9))
@@ -54,7 +54,7 @@ test_that("cvFolds stratifies", {
     d = list(data=data.frame(a=rep.int(0, 10)), best=c(rep.int(0, 5), rep.int(1, 5)))
     class(d) = "llama.data"
 
-    dfs = cvFolds(d, nfolds=5, T)
+    dfs = cvFolds(d, nfolds=5L, T)
     expect_equal(length(dfs$train), 5)
     expect_equal(length(dfs$test), 5)
     expect_true(all(sapply(dfs$train, length) == 8))

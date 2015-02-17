@@ -190,3 +190,4 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
 
     return(retval)
 }
+class(cluster) = "llama.modelFunction"

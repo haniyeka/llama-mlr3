@@ -1,9 +1,12 @@
 bsFolds <-
-function(data, nfolds = 10, stratify = FALSE) {
+function(data, nfolds = 10L, stratify = FALSE) {
+    assertClass(data, "llama.data")
+    assertInteger(nfolds)
+
     if(stratify) {
         stratifier = sapply(data$best, paste, collapse="-")
     } else {
-        stratifier = rep.int(T, nrow(data$data))
+        stratifier = rep.int(TRUE, nrow(data$data))
     }
 
     trainIdxs = lapply(1:nfolds, function(i) {

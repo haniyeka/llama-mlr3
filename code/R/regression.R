@@ -137,3 +137,4 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
 
     return(retval)
 }
+class(regression) = "llama.modelFunction"

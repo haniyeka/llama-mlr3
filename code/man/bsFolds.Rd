@@ -8,7 +8,7 @@ Take data produced by \code{input} and amend it with (optionally)
 stratified folds determined through bootstrapping.
 }
 \usage{
-bsFolds(data, nfolds = 10, stratify = FALSE)
+bsFolds(data, nfolds = 10L, stratify = FALSE)
 }
 \arguments{
   \item{data}{
@@ -48,7 +48,7 @@ data(satsolvers)
 folds = bsFolds(satsolvers)
 
 # use 5 folds instead of the default 10
-folds5 = bsFolds(satsolvers, 5)
+folds5 = bsFolds(satsolvers, 5L)
 
 # stratify
 foldsU = bsFolds(satsolvers, stratify=TRUE)

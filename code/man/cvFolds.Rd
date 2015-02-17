@@ -8,7 +8,7 @@ Take data produced by \code{input} and amend it with (optionally)
 stratified folds for cross-validation.
 }
 \usage{
-cvFolds(data, nfolds = 10, stratify = FALSE)
+cvFolds(data, nfolds = 10L, stratify = FALSE)
 }
 \arguments{
   \item{data}{
@@ -49,7 +49,7 @@ data(satsolvers)
 folds = cvFolds(satsolvers)
 
 # use 5 folds instead of the default 10
-folds5 = cvFolds(satsolvers, 5)
+folds5 = cvFolds(satsolvers, 5L)
 
 # stratify
 foldsU = cvFolds(satsolvers, stratify=TRUE)

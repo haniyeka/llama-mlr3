@@ -1,9 +1,12 @@
 trainTest <-
 function(data, trainpart = 0.6, stratify = FALSE) {
+    assertClass(data, "llama.data")
+    assertNumeric(trainpart)
+
     if(stratify) {
         stratifier = sapply(data$best, paste, collapse="-")
     } else {
-        stratifier = rep.int(T, nrow(data$data))
+        stratifier = rep.int(TRUE, nrow(data$data))
     }
 
     tmp = do.call(c, by(1:nrow(data$data), stratifier, function(x) {
