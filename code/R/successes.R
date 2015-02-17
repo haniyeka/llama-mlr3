@@ -70,5 +70,5 @@ function(data=NULL, model=NULL, timeout=NULL, addCosts=NULL) {
     agg = aggregate(as.formula(paste("score~", paste(c(data$ids, "iteration"), sep="+", collapse="+"))), predictions, function(ss) { ss[1] })
     agg$score
 }
-class(successes) = "llama.measure"
+class(successes) = "llama.metric"
 attr(successes, "minimize") = FALSE

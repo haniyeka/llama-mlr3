@@ -22,12 +22,14 @@ export(
     singleBestBySuccesses,
     successes,
     trainTest,
+    tuneModel,
     vbs
 )
 S3method(print, llama.data)
 S3method(print, llama.model)
 importFrom(rJava, J, .jpackage, .jarray)
 importFrom(parallelMap, parallelMap, parallelRegisterLevels)
+import(checkmate)
 import(ggplot2)
 import(mlr)
-import(checkmate)
+import(ParamHelpers)

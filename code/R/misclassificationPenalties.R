@@ -35,5 +35,5 @@ function(data=NULL, model=NULL, addCosts=NULL) {
     agg = aggregate(as.formula(paste("score~", paste(c(data$ids, "iteration"), sep="+", collapse="+"))), predictions, function(ss) { ss[1] })
     agg$score
 }
-class(misclassificationPenalties) = "llama.measure"
+class(misclassificationPenalties) = "llama.metric"
 attr(misclassificationPenalties, "minimize") = TRUE

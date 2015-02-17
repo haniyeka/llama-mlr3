@@ -1,5 +1,7 @@
 makeRLearner.classif.test = function() {
-    makeRLearnerClassif(cl = "classif.test", package="llama", par.set=makeParamSet(), properties=c("numerics", "factors", "oneclass", "twoclass", "multiclass", "prob", "weights"))
+    makeRLearnerClassif(cl = "classif.test", package="llama",
+        par.set=makeParamSet(makeIntegerLearnerParam(id = "test")),
+        properties=c("numerics", "factors", "oneclass", "twoclass", "multiclass", "prob", "weights"))
 }
 trainLearner.classif.test = function(.learner, .task, .subset, .weights, ...) { }
 predictLearner.classif.test = function(learner, model, newdata) {
