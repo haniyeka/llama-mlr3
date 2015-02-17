@@ -12,7 +12,7 @@ install:
   - sudo R CMD javareconf
   - sudo ./travis-tool.sh install_deps
   - sudo ./travis-tool.sh install_r e1071 kernlab RWeka
-  - find / -name 'weka.jar'
+  - find / -iname 'weka.jar'
   - java -cp /usr/local/lib/R/site-library/RWeka/java/weka.jar weka.core.WekaPackageManager -install-package XMeans
   - sudo mv /usr/lib/R/site-library/* /usr/lib/R/library || true
   - sudo mv /usr/local/lib/R/site-library/* /usr/lib/R/library || true
