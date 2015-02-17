@@ -29,6 +29,8 @@ best algorithms in each fold will be approximately the same. For each fold, the
 training index set is assembled through .632 boostrap. The remaining indices are
 used for testing. There is no guarantee on the sizes of either sets. The sets of
 indices are added to the original data set and returned.
+
+If the data set has train and test partitions already, they are overwritten.
 }
 \value{
 \item{train}{a list of index sets for training.}

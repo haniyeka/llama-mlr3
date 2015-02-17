@@ -69,3 +69,4 @@ function(data=NULL, model=NULL, factor=10, timeout=NULL, addCosts=NULL) {
     agg = aggregate(as.formula(paste("score~", paste(c(data$ids, "iteration"), sep="+", collapse="+"))), predictions, function(ss) { ss[1] })
     agg$score
 }
+attr(parscores, "minimize") = TRUE

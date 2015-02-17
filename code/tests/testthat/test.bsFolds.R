@@ -48,3 +48,14 @@ test_that("bsFolds stratifies", {
     #expect_true(all(sapply(dfs$test,
     #    function(x) { abs(sum(d$best[x]==0) - sum(d$best[x]==1)) < 1 })))
 })
+
+test_that("bsFolds replaces existing splits", {
+    d = list(data=data.frame(a=rep.int(0, 10)), best=rep.int(0, 10), train=1, test=2)
+    class(d) = "llama.data"
+
+    dfs = bsFolds(d)
+    expect_equal(length(dfs$train), 10)
+    expect_equal(length(dfs$test), 10)
+    expect_true(all(length(sapply(1:10,
+        function(x) { intersect(dfs$train[[x]], dfs$test[[x]]) }) == 0)))
+})

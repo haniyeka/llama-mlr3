@@ -12,8 +12,9 @@ function(data, trainpart = 0.6, stratify = FALSE) {
     }))
     parts = split(1:nrow(data$data), tmp)
 
-    newdata = c(data, list(train = list(parts[[1]]), test = list(parts[[2]])))
-    class(newdata) = "llama.data"
+    newdata = data
+    newdata$train = list(parts[[1]])
+    newdata$test = list(parts[[2]])
     attr(newdata, "hasSplits") = TRUE
     return(newdata)
 }

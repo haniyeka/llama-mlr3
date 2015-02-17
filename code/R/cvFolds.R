@@ -19,10 +19,9 @@ function(data, nfolds = 10, stratify = FALSE) {
     }
     parts = split(1:nrow(data$data), tmp)
 
-    newdata = c(data,
-            list(train = lapply(1:nfolds, function(x) { return(unsplit(parts[-x], tmp[tmp!=x])) }),
-                 test = lapply(1:nfolds, function(x) { return(parts[[x]]) })))
-    class(newdata) = "llama.data"
+    newdata = data
+    newdata$train = lapply(1:nfolds, function(x) { return(unsplit(parts[-x], tmp[tmp!=x])) })
+    newdata$test = lapply(1:nfolds, function(x) { return(parts[[x]]) })
     attr(newdata, "hasSplits") = TRUE
     return(newdata)
 }

@@ -13,10 +13,9 @@ function(data, nfolds = 10, stratify = FALSE) {
         as.integer(unlist(tmp))
     })
 
-    newdata = c(data,
-            list(train = trainIdxs,
-                 test = lapply(trainIdxs, function(x) { setdiff(1:nrow(data$data), x) })))
-    class(newdata) = "llama.data"
+    newdata = data
+    newdata$train = trainIdxs
+    newdata$test = lapply(trainIdxs, function(x) { setdiff(1:nrow(data$data), x) })
     attr(newdata, "hasSplits") = TRUE
     return(newdata)
 }

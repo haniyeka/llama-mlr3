@@ -30,6 +30,8 @@ best algorithms in each fold will be approximately the same. The folds are
 assembled into training and test sets by combining $n-1$ folds for training and
 using the remaining fold for testing. The sets of indices are added to the
 original data set and returned.
+
+If the data set has train and test partitions already, they are overwritten.
 }
 \value{
 \item{train}{a list of index sets for training.}
