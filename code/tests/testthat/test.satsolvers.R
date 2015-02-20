@@ -192,10 +192,8 @@ test_that("tune", {
 
     ps = makeParamSet(makeIntegerParam("M", lower = 1, upper = 100))
     design = generateRandomDesign(10, ps)
-    res = tuneModel(folds, classify, makeLearner("classif.J48"), design, parscores, nfolds = 3L)
+    res = tuneModel(folds, classify, makeLearner("classif.J48"), design, parscores, nfolds = 3L, quiet = TRUE)
 
-    expect_equal(length(res), 10)
-    expect_true(all(sapply(res, function(x) { class(x$model) == "llama.model" })))
-    expect_true(all(sapply(res, function(x) { is.data.frame(x$parameters) })))
-    expect_true(all(sapply(res, function(x) { is.numeric(x$score) })))
+    expect_true(is.data.frame(res))
+    expect_equal(dim(res), c(100, 4))
 })

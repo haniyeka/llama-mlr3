@@ -107,7 +107,7 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
             }))
         }
         return(combinedpredictions)
-    }, 1:length(data$train), level = "llama.llama-fold"))
+    }, 1:length(data$train), level = "llama.fold"))
 
     fs = pre(data$data[data$features])
     models = lapply(1:length(clusterer), function(i) {

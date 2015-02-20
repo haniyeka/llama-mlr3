@@ -1,10 +1,10 @@
 \name{tune}
 \alias{tuneModel}
 \title{
-Tune the hyperparameters of the machine learning algorithm underlying a model
+Evaluate the hyperparameters of the machine learning algorithm underlying a model
 }
 \description{
-Functions to tune the hyperparameters of the machine learning algorithm
+Functions to evaluate the hyperparameters of the machine learning algorithm
 underlying a model with respect to a performance measure.
 }
 \usage{
@@ -25,28 +25,39 @@ tuneModel(ldf, llama.fun, learner, design, metric = parscores, nfolds = 10L,
     progress during tuning.}
 }
 \details{
-\code{tuneModel} finds the hyperparameters from the set denoted by \code{design}
-of the machine learning algorithm \code{learner} that give the best performance
-with respect to the measure \code{metric} for the LLAMA model type
-\code{llama.fun} on data \code{ldf}. It uses a nested cross-validation
-internally; the number of inner folds is given through \code{nfolds}, the number
-of outer folds is either determined by any existing partitions of \code{ldf} or,
-if none are present, by \code{nfolds} as well.
+\code{tuneModel} evaluates the hyperparameters from the set denoted by
+\code{design} of the machine learning algorithm \code{learner} with respect to
+the measure \code{metric} for the LLAMA model type \code{llama.fun} on data
+\code{ldf}. It uses a nested cross-validation internally; the number of inner
+folds is given through \code{nfolds}, the number of outer folds is either
+determined by any existing partitions of \code{ldf} or, if none are present, by
+\code{nfolds} as well.
 
-During each iteration of the inner cross-validation, all parameter sets
-specified in \code{design} are evaluated and the one with the best performance
-value chosen. The mean performance over all instances in the data is logged for
-all evaluations. This parameter set is then used to build and evaluate a model
-in the outer cross-validation.
+During each iteration of the inner and outer cross-validations, all parameter
+sets specified in \code{design} are evaluated The mean performance over all
+instances in the data is logged and returned. The evaluation across the folds
+sets will be parallelized automatically if a suitable backend for parallel
+computation is loaded. The \code{parallelMap} level is "llama.tune".
 
-The best parameter set, corresponding mean performance, and LLAMA model for each
-fold of the outer cross-validation are returned.
+The performance value with respect to the metric is normalised by the
+performance with respect to the metric of the single best solver. This is done
+to facilitate comparison of the numbers across folds.
+
+The return value is a data frame that contains all the information gathered
+during the evaluation run. For each parameter set and outer fold, the score on
+the inner cross-validation and the outer train/test split (denoted by the
+particular fold of the outer cross-validation) is reported. This allows to
+compare the performance of the parameter sets and the generalisation
+performance. That is, if the (normalised) scores for the inner cross-validation
+and the outer train/test split are significantly different, it may denote an
+unstable parameter set.
+
+The choice of the \emph{best} parameter set is left up to the user, based on the
+information provided.
 }
 \value{
-A list with one element for each outer fold. Each item has members
-\code{parameters}, which contains the parameter set that achieved the best
-performance, \code{score}, which contains the corresponding performance, and
-\code{model}, which contains the LLAMA model trained during this fold.
+A data frame with the parameter values, the fold, and the performance achieved
+in the outer and inner cross-validations.
 }
 \author{
 Lars Kotthoff
