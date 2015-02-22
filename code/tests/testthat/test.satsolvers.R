@@ -194,6 +194,9 @@ test_that("tune", {
     design = generateRandomDesign(10, ps)
     res = tuneModel(folds, classify, makeLearner("classif.J48"), design, parscores, nfolds = 3L, quiet = TRUE)
 
-    expect_true(is.data.frame(res))
-    expect_equal(dim(res), c(100, 4))
+    expect_equal(class(res), "llama.model")
+    expect_equal(attr(res, "type"), "classify")
+
+    expect_true(res$parvals$M >= 1 && res$parvals$M <= 100)
+    expect_true(all(sapply(res$inner.parvals, function(x) (x$M >= 1 && x$M <= 100))))
 })

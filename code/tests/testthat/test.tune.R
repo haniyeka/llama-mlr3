@@ -3,8 +3,10 @@ test_that("tuneModel tunes", {
     design = generateRandomDesign(10, ps)
     res = tuneModel(d, classify, testclassifier, design, misclassificationPenalties, nfolds = 2L, quiet = TRUE)
 
-    expect_true(is.data.frame(res))
-    expect_equal(dim(res), c(10, 4))
-    #expect_true(all(res$inner.score == 1.25))
-    expect_true(all(res$outer.score == 1))
+    expect_equal(class(res), "llama.model")
+    expect_equal(attr(res, "type"), "classify")
+
+    expect_equal(dim(res$predictions), c(20, 4))
+    expect_true(res$parvals$test >= 1 && res$parvals$test <= 100)
+    expect_true(all(sapply(res$inner.parvals, function(x) (x$test >= 1 && x$test <= 100))))
 })

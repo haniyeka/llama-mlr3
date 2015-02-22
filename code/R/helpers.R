@@ -20,6 +20,7 @@ function(x, ...) {
       "Type: ", attr(x, "type"), "\n",
       "Has predictions: ", attr(x, "hasPredictions"), "\n",
       "Add costs: ", attr(x, "addCosts"), "\n",
+      "Tuned: ", (length(x$parvals) > 0), "\n",
       sep = "")
 }
 

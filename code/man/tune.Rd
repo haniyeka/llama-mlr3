@@ -1,10 +1,10 @@
 \name{tune}
 \alias{tuneModel}
 \title{
-Evaluate the hyperparameters of the machine learning algorithm underlying a model
+Tune the hyperparameters of the machine learning algorithm underlying a model
 }
 \description{
-Functions to evaluate the hyperparameters of the machine learning algorithm
+Functions to tune the hyperparameters of the machine learning algorithm
 underlying a model with respect to a performance measure.
 }
 \usage{
@@ -25,39 +25,48 @@ tuneModel(ldf, llama.fun, learner, design, metric = parscores, nfolds = 10L,
     progress during tuning.}
 }
 \details{
-\code{tuneModel} evaluates the hyperparameters from the set denoted by
-\code{design} of the machine learning algorithm \code{learner} with respect to
-the measure \code{metric} for the LLAMA model type \code{llama.fun} on data
-\code{ldf}. It uses a nested cross-validation internally; the number of inner
-folds is given through \code{nfolds}, the number of outer folds is either
-determined by any existing partitions of \code{ldf} or, if none are present, by
-\code{nfolds} as well.
+\code{tuneModel} finds the hyperparameters from the set denoted by \code{design}
+of the machine learning algorithm \code{learner} that give the best performance
+with respect to the measure \code{metric} for the LLAMA model type
+\code{llama.fun} on data \code{ldf}. It uses a nested cross-validation
+internally; the number of inner folds is given through \code{nfolds}, the number
+of outer folds is either determined by any existing partitions of \code{ldf} or,
+if none are present, by \code{nfolds} as well.
 
-During each iteration of the inner and outer cross-validations, all parameter
-sets specified in \code{design} are evaluated The mean performance over all
-instances in the data is logged and returned. The evaluation across the folds
-sets will be parallelized automatically if a suitable backend for parallel
-computation is loaded. The \code{parallelMap} level is "llama.tune".
+During each iteration of the inner cross-validation, all parameter sets
+specified in \code{design} are evaluated and the one with the best performance
+value chosen. The mean performance over all instances in the data is logged for
+all evaluations. This parameter set is then used to build and evaluate a model
+in the outer cross-validation. The predictions made by this model along with the
+parameter values used to train it are returned.
 
-The performance value with respect to the metric is normalised by the
-performance with respect to the metric of the single best solver. This is done
-to facilitate comparison of the numbers across folds.
+Finally, a normal (not-nested) cross-validation is performed to find the best
+parameter values on the \emph{entire} data set. The predictor of this model
+along with the parameter values used to train it is returned. The interface
+corresponds to the normal LLAMA model-building functions in that respect -- the
+returned data structure is the same with a few additional values.
 
-The return value is a data frame that contains all the information gathered
-during the evaluation run. For each parameter set and outer fold, the score on
-the inner cross-validation and the outer train/test split (denoted by the
-particular fold of the outer cross-validation) is reported. This allows to
-compare the performance of the parameter sets and the generalisation
-performance. That is, if the (normalised) scores for the inner cross-validation
-and the outer train/test split are significantly different, it may denote an
-unstable parameter set.
-
-The choice of the \emph{best} parameter set is left up to the user, based on the
-information provided.
+The evaluation across the folds sets will be parallelized automatically if a
+suitable backend for parallel computation is loaded. The \code{parallelMap}
+level is "llama.tune".
 }
 \value{
-A data frame with the parameter values, the fold, and the performance achieved
-in the outer and inner cross-validations.
+ \item{predictions}{a data frame with the predictions for each instance and test
+ set. The structure is the same as for the underlying model building function
+ and the predictions are the ones made by the models trained with the best
+ parameter values for the respective fold.}
+ \item{predictor}{a function that encapsulates the classifier learned on the
+ \emph{entire} data set with the best parameter values determined on the
+ \emph{entire} data set. Can be called with data for the same features with the
+ same feature names as the training data to obtain predictions in the same
+ format as the \code{predictions} member.}
+ \item{models}{the list of models trained on the \emph{entire} data set. This is
+ meant for debugging/inspection purposes.}
+ \item{parvals}{the best parameter values on the entire data set used for
+ training the \code{predictor} model.}
+ \item{inner.parvals}{the best parameter values during each iteration of the
+ outer cross-validation. These parameters were used to train the models that
+ made the predictions in \code{predictions}.}
 }
 \author{
 Lars Kotthoff

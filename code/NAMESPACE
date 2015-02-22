@@ -27,6 +27,7 @@ export(
 )
 S3method(print, llama.data)
 S3method(print, llama.model)
+importFrom(BBmisc, getMinIndex, getMaxIndex)
 importFrom(rJava, J, .jpackage, .jarray)
 importFrom(parallelMap, parallelMap, parallelRegisterLevels)
 import(checkmate)
