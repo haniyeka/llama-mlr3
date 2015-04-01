@@ -60,7 +60,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
                 if(all(is.na(performancePredictions[j,]))) {
                     data.frame(ids[j,,drop=F], algorithm=NA, score=worstScore, iteration=i, row.names = NULL)
                 } else {
-                    x = sort(performancePredictions[j,], decreasing = !data$minimize)
+                    x = sort(performancePredictions[j,,drop=F], decreasing = !data$minimize)
                     data.frame(ids[j,,drop=F], algorithm=names(x), score=unlist(x), iteration=i, row.names = NULL)
                 }
             }))
