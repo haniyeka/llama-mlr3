@@ -52,7 +52,7 @@ Lars Kotthoff, Bernd Bischl
 
 contributions by Barry Hurley, Talal Rahwan
 
-Maintainer: Lars Kotthoff <lars.kotthoff@insight-centre.org>
+Maintainer: Lars Kotthoff <larsko@cs.ubc.ca>
 }
 \references{
 Kotthoff, L. (2013)

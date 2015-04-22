@@ -9,7 +9,7 @@ create the most common types of algorithm selection models used in the
 literature.
 
 If you have any questions or feedback, please contact Lars Kotthoff
-<lars.kotthoff@insight-centre.org>.
+<larsko@cs.ubc.ca>.
 
 Quick start
 ===========
