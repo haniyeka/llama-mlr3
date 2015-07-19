@@ -31,9 +31,9 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
             }
             labels = data.frame(target=factor(cmp(combns[1,j], combns[2,j]), levels=data$performance))
             if(hasProperties(classifier, "weights") && use.weights) {
-                task = makeClassifTask(id="classifyPairs", target="target", weights=abs(data$data[data$train[[i]],][combns[1,j]] - data$data[data$train[[i]],][combns[2,j]]), data=cbind(labels, trf$features), fixup.data="quiet")
+                task = makeClassifTask(id="classifyPairs", target="target", weights=abs(data$data[data$train[[i]],][combns[1,j]] - data$data[data$train[[i]],][combns[2,j]]), data=cbind(labels, trf$features), fixup.data="quiet", check.data=FALSE)
             } else {
-                task = makeClassifTask(id="classifyPairs", target="target", data=cbind(labels, trf$features), fixup.data="quiet")
+                task = makeClassifTask(id="classifyPairs", target="target", data=cbind(labels, trf$features), fixup.data="quiet", check.data=FALSE)
             }
             model = train(classifier, task = task)
             if(!is.na(save.models)) {
@@ -49,9 +49,9 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
             trainBests = data.frame(target=factor(breakBestTies(data, i), levels=data$performance))
             if(hasProperties(combine, "weights") && use.weights) {
                 trw = abs(apply(trp, 1, max) - apply(trp, 1, min))
-                task = makeClassifTask(id="classifyPairs", target="target", weights=trw, data=cbind(trainBests, trf$features, lapply(data.frame(trainpredictions), factor, levels=data$performance)), fixup.data="quiet")
+                task = makeClassifTask(id="classifyPairs", target="target", weights=trw, data=cbind(trainBests, trf$features, lapply(data.frame(trainpredictions), factor, levels=data$performance)), fixup.data="quiet", check.data=FALSE)
             } else {
-                task = makeClassifTask(id="classifyPairs", target="target", data=cbind(trainBests, trf$features, lapply(data.frame(trainpredictions), factor, levels=data$performance)), fixup.data="quiet")
+                task = makeClassifTask(id="classifyPairs", target="target", data=cbind(trainBests, trf$features, lapply(data.frame(trainpredictions), factor, levels=data$performance)), fixup.data="quiet", check.data=FALSE)
             }
             combinedmodel = train(combine, task = task)
             if(!is.na(save.models)) {
@@ -94,9 +94,9 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
         }
         labels = data.frame(target=factor(cmp(combns[1,i], combns[2,i]), levels=data$performance))
         if(hasProperties(classifier, "weights") && use.weights) {
-            task = makeClassifTask(id="classifyPairs", target="target", weights=abs(data$data[[combns[1,i]]] - data$data[[combns[2,i]]]), data=cbind(labels, fs$features), fixup.data="quiet")
+            task = makeClassifTask(id="classifyPairs", target="target", weights=abs(data$data[[combns[1,i]]] - data$data[[combns[2,i]]]), data=cbind(labels, fs$features), fixup.data="quiet", check.data=FALSE)
         } else {
-            task = makeClassifTask(id="classifyPairs", target="target", data=cbind(labels, fs$features), fixup.data="quiet")
+            task = makeClassifTask(id="classifyPairs", target="target", data=cbind(labels, fs$features), fixup.data="quiet", check.data=FALSE)
         }
         return(train(classifier, task = task))
     })
@@ -106,9 +106,9 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
             trainpredictions[,i] = predict(models[[i]], newdata=fs$features)$data$response
         }
         if(hasProperties(combine, "weights") && use.weights) {
-            task = makeClassifTask(id="classifyPairs", target="target", weights=fw, data=cbind(totalBests, fs$features, lapply(data.frame(trainpredictions), factor, levels=data$performance)), fixup.data="quiet")
+            task = makeClassifTask(id="classifyPairs", target="target", weights=fw, data=cbind(totalBests, fs$features, lapply(data.frame(trainpredictions), factor, levels=data$performance)), fixup.data="quiet", check.data=FALSE)
         } else {
-            task = makeClassifTask(id="classifyPairs", target="target", data=cbind(totalBests, fs$features, lapply(data.frame(trainpredictions), factor, levels=data$performance)), fixup.data="quiet")
+            task = makeClassifTask(id="classifyPairs", target="target", data=cbind(totalBests, fs$features, lapply(data.frame(trainpredictions), factor, levels=data$performance)), fixup.data="quiet", check.data=FALSE)
         }
         combinedmodel = train(combine, task = task)
     }
