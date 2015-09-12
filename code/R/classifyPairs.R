@@ -30,7 +30,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
                 }
             }
             labels = data.frame(target=factor(cmp(combns[1,j], combns[2,j]), levels=data$performance))
-            if(hasProperties(classifier, "weights") && use.weights) {
+            if(hasLearnerProperties(classifier, "weights") && use.weights) {
                 task = makeClassifTask(id="classifyPairs", target="target", weights=abs(data$data[data$train[[i]],][combns[1,j]] - data$data[data$train[[i]],][combns[2,j]]), data=cbind(labels, trf$features), fixup.data="quiet", check.data=FALSE)
             } else {
                 task = makeClassifTask(id="classifyPairs", target="target", data=cbind(labels, trf$features), fixup.data="quiet", check.data=FALSE)
@@ -47,7 +47,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
 
         if(!is.null(combine)) {
             trainBests = data.frame(target=factor(breakBestTies(data, i), levels=data$performance))
-            if(hasProperties(combine, "weights") && use.weights) {
+            if(hasLearnerProperties(combine, "weights") && use.weights) {
                 trw = abs(apply(trp, 1, max) - apply(trp, 1, min))
                 task = makeClassifTask(id="classifyPairs", target="target", weights=trw, data=cbind(trainBests, trf$features, lapply(data.frame(trainpredictions), factor, levels=data$performance)), fixup.data="quiet", check.data=FALSE)
             } else {
@@ -93,7 +93,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
             }
         }
         labels = data.frame(target=factor(cmp(combns[1,i], combns[2,i]), levels=data$performance))
-        if(hasProperties(classifier, "weights") && use.weights) {
+        if(hasLearnerProperties(classifier, "weights") && use.weights) {
             task = makeClassifTask(id="classifyPairs", target="target", weights=abs(data$data[[combns[1,i]]] - data$data[[combns[2,i]]]), data=cbind(labels, fs$features), fixup.data="quiet", check.data=FALSE)
         } else {
             task = makeClassifTask(id="classifyPairs", target="target", data=cbind(labels, fs$features), fixup.data="quiet", check.data=FALSE)
@@ -105,7 +105,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
         for(i in 1:ncol(combns)) {
             trainpredictions[,i] = predict(models[[i]], newdata=fs$features)$data$response
         }
-        if(hasProperties(combine, "weights") && use.weights) {
+        if(hasLearnerProperties(combine, "weights") && use.weights) {
             task = makeClassifTask(id="classifyPairs", target="target", weights=fw, data=cbind(totalBests, fs$features, lapply(data.frame(trainpredictions), factor, levels=data$performance)), fixup.data="quiet", check.data=FALSE)
         } else {
             task = makeClassifTask(id="classifyPairs", target="target", data=cbind(totalBests, fs$features, lapply(data.frame(trainpredictions), factor, levels=data$performance)), fixup.data="quiet", check.data=FALSE)

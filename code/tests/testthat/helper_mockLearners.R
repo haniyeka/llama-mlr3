@@ -128,7 +128,7 @@ trainLearner.cluster.test = function(.learner, .task, .subset, .weights, ...) {
     .task
 }
 predictLearner.cluster.test = function(learner, model, newdata) {
-    return(rep.int(1, nrow(newdata)))
+    return(as.integer(rep.int(1, nrow(newdata))))
 }
 registerS3method("makeRLearner", "cluster.test", makeRLearner.cluster.test)
 registerS3method("trainLearner", "cluster.test", trainLearner.cluster.test)
@@ -142,7 +142,7 @@ trainLearner.cluster.natest = function(.learner, .task, .subset, .weights, ...) 
     .task
 }
 predictLearner.cluster.natest = function(learner, model, newdata) {
-    return(rep.int(NA, nrow(newdata)))
+    return(as.integer(rep.int(NA, nrow(newdata))))
 }
 registerS3method("makeRLearner", "cluster.natest", makeRLearner.cluster.natest)
 registerS3method("trainLearner", "cluster.natest", trainLearner.cluster.natest)

@@ -36,7 +36,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         if(!is.null(combine)) {
             colnames(trainpredictions) = data$performance
             trainBests = data.frame(target=factor(breakBestTies(data, i), levels=data$performance))
-            if(hasProperties(combine, "weights") && use.weights) {
+            if(hasLearnerProperties(combine, "weights") && use.weights) {
                 trw = abs(apply(trp, 1, max) - apply(trp, 1, min))
                 task = makeClassifTask(id="regression", target="target", weights=trw, data=cbind(trainBests, trf$features, data.frame(expand(trainpredictions))))
             } else {
@@ -81,7 +81,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             trainpredictions[,i] = predict(models[[i]], newdata=fs$features)$data$response
         }
         colnames(trainpredictions) = data$performance
-        if(hasProperties(combine, "weights") && use.weights) {
+        if(hasLearnerProperties(combine, "weights") && use.weights) {
             task = makeClassifTask(id="regression", target="target", weights=fw, data=cbind(totalBests, fs$features, data.frame(expand(trainpredictions))))
         } else {
             task = makeClassifTask(id="regression", target="target", data=cbind(totalBests, fs$features, data.frame(expand(trainpredictions))))
