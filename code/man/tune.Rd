@@ -69,7 +69,7 @@ level is "llama.tune".
  made the predictions in \code{predictions}.}
 }
 \author{
-Lars Kotthoff
+Bernd Bischl, Lars Kotthoff
 }
 \examples{
 if(Sys.getenv("RUN_EXPENSIVE") == "true") {
