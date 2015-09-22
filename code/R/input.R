@@ -85,6 +85,9 @@ function(features, performances, successes=NULL, costs=NULL, extra=NULL, minimiz
             retval$costGroups = costs$groups
             commonCosts = intersect(names(costs$values), common)
             cnames = setdiff(names(costs$values), common)
+            if(length(cnames) == 0) {
+                stop("Cost groups have the same names as features!")
+            }
             if(length(commonCosts) == 0) {
                 stop("Costs can't be linked to rest of data -- no common columns!")
             }
