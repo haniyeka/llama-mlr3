@@ -34,7 +34,12 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
             } else {
                 task = makeClassifTask(id="classify", target="target", data=cbind(trainBests, trf$features))
             }
-            model = train(classifier[[j]], task = task)
+            if(length(unique(trainBests$target)) == 1) {
+                # one-class problem
+                model = train(constantClassifier, task = task)
+            } else {
+                model = train(classifier[[j]], task = task)
+            }
             if(!is.na(save.models)) {
                 saveRDS(list(model=model, train.data=task, test.data=tsf$features), file = paste(save.models, classifier[[j]]$id, i, "rds", sep="."))
             }
@@ -49,7 +54,12 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
             } else {
                 task = makeClassifTask(id="classify", target="target", data=cbind(trainBests, trf$features, lapply(trainpredictions, factor, levels=data$performance)))
             }
-            combinedmodel = train(combinator, task = task)
+            if(length(unique(trainBests$target)) == 1) {
+                # one-class problem
+                combinedmodel = train(constantClassifier, task = task)
+            } else {
+                combinedmodel = train(combinator, task = task)
+            }
             if(!is.na(save.models)) {
                 saveRDS(list(model=combinedmodel, train.data=task, test.data=cbind(tsf$features, lapply(ensemblepredictions, factor, levels=data$performance))), file = paste(save.models, combinator$id, "combined", i, "rds", sep="."))
             }
@@ -84,7 +94,13 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
         } else {
             task = task=makeClassifTask(id="classify", target="target", data=cbind(totalBests, fs$features))
         }
-        return(train(classifier[[i]], task = task))
+        if(length(unique(totalBests$target)) == 1) {
+            # one-class problem
+            model = train(constantClassifier, task = task)
+        } else {
+            model = train(classifier[[i]], task = task)
+        }
+        return(model)
     })
     if(inherits(combinator, "Learner")) {
         trainpredictions = data.frame(row.names=1:nrow(fs$features))
@@ -96,7 +112,12 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
         } else {
             task = makeClassifTask(id="classify", target="target", data=cbind(totalBests, fs$features, lapply(trainpredictions, factor, levels=data$performance)))
         }
-        combinedmodel = train(combinator, task = task)
+        if(length(unique(totalBests$target)) == 1) {
+            # one-class problem
+            combinedmodel = train(constantClassifier, task = task)
+        } else {
+            combinedmodel = train(combinator, task = task)
+        }
     }
 
     predictor = function(x) {

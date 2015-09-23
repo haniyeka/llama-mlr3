@@ -135,3 +135,12 @@ test_that("classify works with NA predictions", {
         expect_equal(ss$score, -Inf)
     })
 })
+
+test_that("classify works with one class train data", {
+    res = classify(classifier=makeLearner("classif.knn"), one)
+    expect_equal(unique(res$predictions$id), 11:20)
+    by(res$predictions, res$predictions$id, function(ss) {
+        expect_equal(ss$algorithm, factor(c("a")))
+        expect_equal(ss$score, c(1))
+    })
+})
