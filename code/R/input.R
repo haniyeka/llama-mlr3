@@ -82,12 +82,13 @@ function(features, performances, successes=NULL, costs=NULL, extra=NULL, minimiz
             combined = merge(combined, costs, by=common)
         } else if(is.list(costs)) {
             # cost groups
+            dups = intersect(names(costs$groups), retval$features)
+            if(length(dups) > 0) {
+                stop(paste("Some cost groups have the same names as features:", dups))
+            }
             retval$costGroups = costs$groups
             commonCosts = intersect(names(costs$values), common)
             cnames = setdiff(names(costs$values), common)
-            if(length(cnames) == 0) {
-                stop("Cost groups have the same names as features!")
-            }
             if(length(commonCosts) == 0) {
                 stop("Costs can't be linked to rest of data -- no common columns!")
             }
