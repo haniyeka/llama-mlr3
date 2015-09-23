@@ -35,7 +35,12 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
             } else {
                 task = makeClassifTask(id="classifyPairs", target="target", data=cbind(labels, trf$features), fixup.data="quiet", check.data=FALSE)
             }
-            model = train(classifier, task = task)
+            if(length(unique(labels$target)) == 1) {
+                # one-class problem
+                model = train(constantClassifier, task = task)
+            } else {
+                model = train(classifier, task = task)
+            }
             if(!is.na(save.models)) {
                 saveRDS(list(model=model, train.data=task, test.data=tsf$features), file = paste(save.models, classifier$id, combns[1,j], combns[2,j], i, "rds", sep="."))
             }
@@ -53,7 +58,12 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
             } else {
                 task = makeClassifTask(id="classifyPairs", target="target", data=cbind(trainBests, trf$features, lapply(data.frame(trainpredictions), factor, levels=data$performance)), fixup.data="quiet", check.data=FALSE)
             }
-            combinedmodel = train(combine, task = task)
+            if(length(unique(trainBests$target)) == 1) {
+                # one-class problem
+                combinedmodel = train(constantClassifier, task = task)
+            } else {
+                combinedmodel = train(combine, task = task)
+            }
             if(!is.na(save.models)) {
                 saveRDS(list(model=combinedmodel, train.data=task, test.data=cbind(tsf$features, lapply(data.frame(pairpredictions), factor, levels=data$performance))), file = paste(save.models, combine$id, "combined", i, "rds", sep="."))
             }
@@ -98,7 +108,13 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
         } else {
             task = makeClassifTask(id="classifyPairs", target="target", data=cbind(labels, fs$features), fixup.data="quiet", check.data=FALSE)
         }
-        return(train(classifier, task = task))
+        if(length(unique(labels$target)) == 1) {
+            # one-class problem
+            model = train(constantClassifier, task = task)
+        } else {
+            model = train(classifier, task = task)
+        }
+        return(model)
     })
     if(!is.null(combine)) {
         trainpredictions = data.frame(row.names=1:nrow(fs$features))
@@ -110,7 +126,12 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
         } else {
             task = makeClassifTask(id="classifyPairs", target="target", data=cbind(totalBests, fs$features, lapply(data.frame(trainpredictions), factor, levels=data$performance)), fixup.data="quiet", check.data=FALSE)
         }
-        combinedmodel = train(combine, task = task)
+        if(length(unique(totalBests$target)) == 1) {
+            # one-class problem
+            combinedmodel = train(constantClassifier, task = task)
+        } else {
+            combinedmodel = train(combine, task = task)
+        }
     }
 
     predictor = function(x) {
