@@ -84,7 +84,7 @@ function(features, performances, successes=NULL, costs=NULL, extra=NULL, minimiz
             # cost groups
             dups = intersect(names(costs$groups), retval$features)
             if(length(dups) > 0) {
-                stop(paste("Some cost groups have the same names as features:", dups))
+                stop(paste("Some cost groups have the same names as features:", paste(dups, collapse=", ")))
             }
             retval$costGroups = costs$groups
             commonCosts = intersect(names(costs$values), common)
