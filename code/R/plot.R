@@ -20,24 +20,22 @@ function(metric, modelx, modely, datax, datay=datax, addCostsx=NULL, addCostsy=N
             datax$data[x,idCols,drop=F]
         }))
     } else {
-        if(!is.null(datax$extra)) {
-            sel = c(idCols, datax$extra)
-        } else {
-            sel = idCols
-        }
-        edatax = datax$data[sel]
+        edatax = datax$data[idCols]
+    }
+    if(!is.null(datax$extra)) {
+        edatax[datax$extra] = datax$data[datax$extra]
+        idCols = c(idCols, datax$extra)
     }
     if(length(datay$test) > 0) {
         edatay = do.call(rbind, lapply(datay$test, function(x) {
             datay$data[x,idCols,drop=F]
         }))
     } else {
-        if(!is.null(datay$extra)) {
-            sel = c(idCols, datay$extra)
-        } else {
-            sel = idCols
-        }
-        edatay = datay$data[sel]
+        edatay = datay$data[idCols]
+        idCols = unique(c(idCols, datay$extra))
+    }
+    if(!is.null(datay$extra)) {
+        edatay[datay$extra] = datay$data[datay$extra]
     }
 
     scoresx = cbind(edatax, data.frame(scorex=metric(datax, modelx, addCosts=addCostsx, ...)))
