@@ -18,9 +18,9 @@ install:
   - sudo R --no-save <<< 'library("devtools"); install_github("berndbischl/ParamHelpers")'
   - sudo R --no-save <<< 'library("devtools"); install_github("mlr-org/mlr", dependencies = TRUE)'
   - java -cp /usr/lib/R/library/RWekajars/java/weka.jar weka.core.WekaPackageManager -install-package XMeans
+  - sudo R CMD INSTALL .
   - sudo mv /usr/lib/R/site-library/* /usr/lib/R/library || true
   - sudo mv /usr/local/lib/R/site-library/* /usr/lib/R/library || true
-  - sudo R CMD INSTALL .
 script:
   - cd tests
   - Rscript run-all.R
