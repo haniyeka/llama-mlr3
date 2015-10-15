@@ -13,7 +13,8 @@ install:
   - ./travis-tool.sh aptget_install r-cran-rjava
   - sudo R CMD javareconf
   - sudo ./travis-tool.sh install_deps
-  - sudo ./travis-tool.sh install_r e1071 kernlab RWeka
+  - sudo ./travis-tool.sh install_r e1071 kernlab RWeka devtools
+  - sudo R --no-save <<< 'library("devtools"); install_github("mlr-org/mlr", dependencies = TRUE)'
   - java -cp /usr/lib/R/library/RWekajars/java/weka.jar weka.core.WekaPackageManager -install-package XMeans
   - sudo mv /usr/lib/R/site-library/* /usr/lib/R/library || true
   - sudo mv /usr/local/lib/R/site-library/* /usr/lib/R/library || true
