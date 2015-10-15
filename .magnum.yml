@@ -21,5 +21,6 @@ install:
   - sudo mv /usr/lib/R/site-library/* /usr/lib/R/library || true
   - sudo mv /usr/local/lib/R/site-library/* /usr/lib/R/library || true
 script:
-  - R --no-save <<< 'library("class"); library("mlr"); lrn = makeLearner("classif.knn")'
+  - cd tests
+  - Rscript run-all.R
   - ./travis-tool.sh run_tests
