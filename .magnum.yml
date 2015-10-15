@@ -20,6 +20,7 @@ install:
   - java -cp /usr/lib/R/library/RWekajars/java/weka.jar weka.core.WekaPackageManager -install-package XMeans
   - sudo mv /usr/lib/R/site-library/* /usr/lib/R/library || true
   - sudo mv /usr/local/lib/R/site-library/* /usr/lib/R/library || true
+  - sudo R CMD INSTALL .
 script:
   - cd tests
   - Rscript run-all.R
