@@ -16,14 +16,14 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
     }
 
     if(bestBy == "performance") {
-        innerbest = function(ss) { sort(sapply(data$performance, function(x) { sum(ss[x]) }), decreasing=!data$minimize) }
+        innerbest = function(ss) { sort(sapply(data$performance, function(x) { mean(ss[,x]) }), decreasing=!data$minimize) }
     } else if(bestBy == "count") {
         innerbest = function(ss) { sort(table(data$best[as.integer(rownames(ss))]), decreasing=T) }
     } else if(bestBy == "successes") {
         if(is.null(data$success)) {
             stop("Need successes to determine best by successes!")
         }
-        innerbest = function(ss) { setNames(sort(sapply(data$success, function(x) { colSums(ss[x])[1] }), decreasing=T), data$performance) }
+        innerbest = function(ss) { setNames(sort(sapply(data$success, function(x) { colMeans(ss[x])[1] }), decreasing=T), data$performance) }
     } else {
         stop(paste("Unknown bestBy: ", bestBy, sep=""))
     }
