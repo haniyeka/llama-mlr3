@@ -24,7 +24,6 @@ function(metric, modelx, modely, datax, datay=datax, addCostsx=NULL, addCostsy=N
     }
     if(!is.null(datax$extra)) {
         edatax[datax$extra] = datax$data[datax$extra]
-        idCols = c(idCols, datax$extra)
     }
     if(length(datay$test) > 0) {
         edatay = do.call(rbind, lapply(datay$test, function(x) {
@@ -32,7 +31,6 @@ function(metric, modelx, modely, datax, datay=datax, addCostsx=NULL, addCostsy=N
         }))
     } else {
         edatay = datay$data[idCols]
-        idCols = unique(c(idCols, datay$extra))
     }
     if(!is.null(datay$extra)) {
         edatay[datay$extra] = datay$data[datay$extra]
