@@ -39,12 +39,11 @@ function() {
 
 makeRLearner.classif.constant = function() {
     makeRLearnerClassif(cl = "classif.constant", package="llama",
-        par.set=makeParamSet(makeIntegerLearnerParam(id = "constant")),
-        properties=c("numerics", "factors", "oneclass"))
+        par.set=ParamHelpers::makeParamSet(), properties=c("numerics", "factors", "oneclass"))
 }
 trainLearner.classif.constant = function(.learner, .task, .subset, .weights, ...) { }
-predictLearner.classif.constant = function(learner, model, newdata) {
-    return(factor(rep.int(model$factor.levels$target, nrow(newdata))))
+predictLearner.classif.constant = function(.learner, .model, .newdata, ...) {
+    return(factor(rep.int(.model$factor.levels$target, nrow(.newdata))))
 }
 registerS3method("makeRLearner", "classif.constant", makeRLearner.classif.constant)
 registerS3method("trainLearner", "classif.constant", trainLearner.classif.constant)
