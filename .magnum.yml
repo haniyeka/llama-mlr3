@@ -2,7 +2,6 @@ env: RUN_EXPENSIVE="false"
      R_LIBS_SITE="/usr/lib/R/library"
 
 before_install:
-  - cd code/
   - curl -sOL http://raw.github.com/larskotthoff/r-travis/master/scripts/travis-tool.sh
   - chmod 755 ./travis-tool.sh
   - sudo apt-get -y install software-properties-common python-software-properties
