@@ -26,9 +26,9 @@ bsFolds(data, nfolds = 10L, stratify = FALSE)
 Partitions the data set into folds. Stratification, if requested, is done by the
 best algorithm, i.e. the one with the best performance. The distribution of the
 best algorithms in each fold will be approximately the same. For each fold, the
-training index set is assembled through .632 boostrap. The remaining indices are
-used for testing. There is no guarantee on the sizes of either sets. The sets of
-indices are added to the original data set and returned.
+training index set is assembled through .632 bootstrap. The remaining indices
+are used for testing. There is no guarantee on the sizes of either sets. The
+sets of indices are added to the original data set and returned.
 
 If the data set has train and test partitions already, they are overwritten.
 }
