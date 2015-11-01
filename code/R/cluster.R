@@ -45,14 +45,14 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
             if(!is.na(save.models)) {
                 saveRDS(list(model=model, train.data=task, test.data=tsf$features), file = paste(save.models, clusterer[[j]]$id, i, "rds", sep="."))
             }
-            trainclusters = predict(model, newdata=trf$features)$data$response
+            trainclusters = getPredictionResponse(predict(model, newdata=trf$features))
             if(all(is.na(trainclusters))) {
                 best = bestfun(data$data[data$train[[i]],])
             } else {
                 best = by(data$data[data$train[[i]],], trainclusters, bestfun)
             }
             if(inherits(combinator, "Learner")) { # only do this if we need it
-                trainpredictions[,j] = factor(sapply(predict(model, newdata=trf$features)$data$response,
+                trainpredictions[,j] = factor(sapply(getPredictionResponse(predict(model, newdata=trf$features)),
                 function(x) {
                     if(is.na(x)) {
                         factor(NA)
@@ -61,7 +61,7 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
                     }
                 }))
             }
-            preds = predict(model, newdata=tsf$features)$data$response
+            preds = getPredictionResponse(predict(model, newdata=tsf$features))
             ensemblepredictions[[j]] = list()
             for(k in 1:length(preds)) {
                 x = preds[k]
@@ -85,7 +85,7 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
                     featureData[k,j] = ensemblepredictions[[j]][[k]][1,1]
                 }
             }
-            preds = predict(combinedmodel, newdata=cbind(tsf$features, data.frame(featureData)))$data$response
+            preds = getPredictionResponse(predict(combinedmodel, newdata=cbind(tsf$features, data.frame(featureData))))
             combinedpredictions = do.call(rbind, lapply(1:length(preds), function(j) {
                 if(all(is.na(preds[j,drop=F]))) {
                     data.frame(ids[j,,drop=F], algorithm=NA, score=worstScore, iteration=i, row.names = NULL)
@@ -113,10 +113,10 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
     models = lapply(1:length(clusterer), function(i) {
         task = makeClusterTask(id="clustering", data=fs$features)
         model = train(clusterer[[i]], task=task)
-        clusters = predict(model, newdata=fs$features)$data$response
+        clusters = getPredictionResponse(predict(model, newdata=fs$features))
         best = by(data$data, clusters, bestfun)
         return(function(newdata) {
-            preds = predict(model, newdata=newdata)$data$response
+            preds = getPredictionResponse(predict(model, newdata=newdata))
             lapply(1:length(preds), function(k) {
                 x = preds[k]
                 if(is.na(x)) {
@@ -154,7 +154,7 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
                     featureData[k,j] = ensemblepredictions[[j]][[k]][1,1]
                 }
             }
-            preds = predict(combinedmodel, newdata=cbind(tsf$features, data.frame(featureData)))$data$response
+            preds = getPredictionResponse(predict(combinedmodel, newdata=cbind(tsf$features, data.frame(featureData))))
             combinedpredictions = do.call(rbind, lapply(1:length(preds), function(j) {
                 if(all(is.na(preds[j,drop=F]))) {
                     data.frame(ids[j,,drop=F], algorithm=NA, score=worstScore, iteration=1, row.names = NULL)

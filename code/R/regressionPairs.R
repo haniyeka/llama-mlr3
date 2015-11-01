@@ -39,9 +39,9 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
                 saveRDS(list(model=model, train.data=task, test.data=tsf$features), file = paste(save.models, regressor$id, combns[1,j], combns[2,j], i, "rds", sep="."))
             }
             if(!is.null(combine)) { # only do this if we need it
-                trainpredictions[,j] = predict(model, newdata=trf$features)$data$response
+                trainpredictions[,j] = getPredictionResponse(predict(model, newdata=trf$features))
             }
-            pairpredictions[,j] = predict(model, newdata=tsf$features)$data$response
+            pairpredictions[,j] = getPredictionResponse(predict(model, newdata=tsf$features))
         }
 
         if(!is.null(combine)) {
@@ -56,7 +56,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             if(!is.na(save.models)) {
                 saveRDS(list(model=combinedmodel, train.data=task, test.data=cbind(tsf$features, data.frame(pairpredictions))), file = paste(save.models, combine$id, "combined", i, "rds", sep="."))
             }
-            preds = predict(combinedmodel, newdata=cbind(tsf$features, data.frame(pairpredictions)))$data$response
+            preds = getPredictionResponse(predict(combinedmodel, newdata=cbind(tsf$features, data.frame(pairpredictions))))
             combinedpredictions = do.call(rbind, lapply(1:length(preds), function(j) {
                 if(all(is.na(preds[j,drop=F]))) {
                     data.frame(ids[j,,drop=F], algorithm=NA, score=worstScore, iteration=i, row.names = NULL)
@@ -98,7 +98,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
     if(!is.null(combine)) {
         trainpredictions = matrix(nrow=nrow(fs$features), ncol=ncol(combns))
         for(i in 1:ncol(combns)) {
-            trainpredictions[,i] = predict(models[[i]], newdata=fs$features)$data$response
+            trainpredictions[,i] = getPredictionResponse(predict(models[[i]], newdata=fs$features))
         }
         if(hasLearnerProperties(combine, "weights") && use.weights) {
             task = makeClassifTask(id="regression", target="target", weights=fw, data=cbind(totalBests, fs$features, data.frame(trainpredictions)), fixup.data="quiet", check.data=FALSE)
@@ -117,10 +117,10 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         }
         pairpredictions = matrix(nrow=nrow(tsf$features), ncol=ncol(combns))
         for(i in 1:ncol(combns)) {
-            pairpredictions[,i] = predict(models[[i]], newdata=tsf$features)$data$response
+            pairpredictions[,i] = getPredictionResponse(predict(models[[i]], newdata=tsf$features))
         }
         if(!is.null(combine)) {
-            preds = predict(combinedmodel, newdata=cbind(tsf$features, data.frame(pairpredictions)))$data$response
+            preds = getPredictionResponse(predict(combinedmodel, newdata=cbind(tsf$features, data.frame(pairpredictions))))
             combinedpredictions = do.call(rbind, lapply(1:length(preds), function(j) {
                 if(all(is.na(preds[j,drop=F]))) {
                     data.frame(ids[j,,drop=F], algorithm=NA, score=worstScore, iteration=i, row.names = NULL)

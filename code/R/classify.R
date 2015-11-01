@@ -44,9 +44,9 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
                 saveRDS(list(model=model, train.data=task, test.data=tsf$features), file = paste(save.models, classifier[[j]]$id, i, "rds", sep="."))
             }
             if(inherits(combinator, "Learner")) { # only do this if we need it
-                trainpredictions[,j] = predict(model, newdata=trf$features)$data$response
+                trainpredictions[,j] = getPredictionResponse(predict(model, newdata=trf$features))
             }
-            ensemblepredictions[,j] = predict(model, newdata=tsf$features)$data$response
+            ensemblepredictions[,j] = getPredictionResponse(predict(model, newdata=tsf$features))
         }
         if(inherits(combinator, "Learner")) {
             if(hasLearnerProperties(combinator, "weights") && use.weights) {
@@ -63,7 +63,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
             if(!is.na(save.models)) {
                 saveRDS(list(model=combinedmodel, train.data=task, test.data=cbind(tsf$features, lapply(ensemblepredictions, factor, levels=data$performance))), file = paste(save.models, combinator$id, "combined", i, "rds", sep="."))
             }
-            preds = predict(combinedmodel, newdata=cbind(tsf$features, lapply(ensemblepredictions, factor, levels=data$performance)))$data$response
+            preds = getPredictionResponse(predict(combinedmodel, newdata=cbind(tsf$features, lapply(ensemblepredictions, factor, levels=data$performance))))
             combinedpredictions = do.call(rbind, lapply(1:length(preds), function(j) {
                 if(all(is.na(preds[j,drop=F]))) {
                     data.frame(ids[j,,drop=F], algorithm=NA, score=-Inf, iteration=i, row.names = NULL)
@@ -105,7 +105,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
     if(inherits(combinator, "Learner")) {
         trainpredictions = data.frame(row.names=1:nrow(fs$features))
         for(i in 1:length(classifier)) {
-            trainpredictions[,i] = predict(models[[i]], newdata=fs$features)$data$response
+            trainpredictions[,i] = getPredictionResponse(predict(models[[i]], newdata=fs$features))
         }
         if(hasLearnerProperties(combinator, "weights") && use.weights) {
             task = makeClassifTask(id="classify", target="target", weights = fw, data=cbind(totalBests, fs$features, lapply(trainpredictions, factor, levels=data$performance)))
@@ -129,10 +129,10 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
         }
         ensemblepredictions = data.frame(row.names=1:nrow(tsf$features))
         for(i in 1:length(classifier)) {
-            ensemblepredictions[,i] = predict(models[[i]], newdata=tsf$features)$data$response
+            ensemblepredictions[,i] = getPredictionResponse(predict(models[[i]], newdata=tsf$features))
         }
         if(inherits(combinator, "Learner")) {
-            preds = predict(combinedmodel, newdata=cbind(tsf$features, lapply(ensemblepredictions, factor, levels=data$performance)))$data$response
+            preds = getPredictionResponse(predict(combinedmodel, newdata=cbind(tsf$features, lapply(ensemblepredictions, factor, levels=data$performance))))
             combinedpredictions = do.call(rbind, lapply(1:length(preds), function(j) {
                 if(all(is.na(preds[j,drop=F]))) {
                     data.frame(ids[j,,drop=F], algorithm=NA, score=-Inf, iteration=1, row.names = NULL)
