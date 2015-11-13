@@ -36,8 +36,8 @@ function(metric, modelx, modely, datax, datay=datax, addCostsx=NULL, addCostsy=N
         edatay[datay$extra] = datay$data[datay$extra]
     }
 
-    scoresx = cbind(edatax, data.frame(scorex=metric(datax, modelx, addCosts=addCostsx, ...)))
-    scoresy = cbind(edatay, data.frame(scorey=metric(datay, modely, addCosts=addCostsy, ...)))
+    scoresx = data.frame(edatax, scorex=metric(datax, modelx, addCosts=addCostsx, ...))
+    scoresy = data.frame(edatay, scorey=metric(datay, modely, addCosts=addCostsy, ...))
 
     d = merge(scoresx, scoresy, by=idCols)
     ggplot(d, aes_string(x="scorex", y="scorey")) +
