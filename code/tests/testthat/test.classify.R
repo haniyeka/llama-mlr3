@@ -96,43 +96,43 @@ test_that("classify works with NA predictions", {
     res = classify(classifier=natestclassifier, d)
     expect_equal(unique(res$predictions$id), 11:20)
     by(res$predictions, res$predictions$id, function(ss) {
-        expect_equal(ss$algorithm, NA)
-        expect_equal(ss$score, -Inf)
+        expect_equal(ss$algorithm, factor(c("b", "c")))
+        expect_equal(ss$score, as.numeric(c(NA, NA)))
     })
     fold$id = 1:10
     preds = res$predictor(fold)
     expect_equal(unique(preds$id), 1:10)
     by(preds, preds$id, function(ss) {
-        expect_equal(ss$algorithm, NA)
-        expect_equal(ss$score, -Inf)
+        expect_equal(ss$algorithm, factor(c("b", "c")))
+        expect_equal(ss$score, as.numeric(c(NA, NA)))
     })
 
     res = classify(classifier=list(natestclassifier, natestclassifier, natestclassifier), d)
     expect_equal(unique(res$predictions$id), 11:20)
     by(res$predictions, res$predictions$id, function(ss) {
-        expect_equal(ss$algorithm, NA)
-        expect_equal(ss$score, -Inf)
+        expect_equal(ss$algorithm, factor(c("b", "c")))
+        expect_equal(ss$score, as.numeric(c(NA, NA)))
     })
     fold$id = 1:10
     preds = res$predictor(fold)
     expect_equal(unique(preds$id), 1:10)
     by(preds, preds$id, function(ss) {
-        expect_equal(ss$algorithm, NA)
-        expect_equal(ss$score, -Inf)
+        expect_equal(ss$algorithm, factor(c("b", "c")))
+        expect_equal(ss$score, as.numeric(c(NA, NA)))
     })
 
     res = classify(classifier=list(natestclassifier, natestclassifier, natestclassifier, .combine=natestclassifier), d)
     expect_equal(unique(res$predictions$id), 11:20)
     by(res$predictions, res$predictions$id, function(ss) {
-        expect_equal(ss$algorithm, NA)
-        expect_equal(ss$score, -Inf)
+        expect_equal(ss$algorithm, factor(c("b", "c")))
+        expect_equal(ss$score, as.numeric(c(NA, NA)))
     })
     fold$id = 1:10
     preds = res$predictor(fold)
     expect_equal(unique(preds$id), 1:10)
     by(preds, preds$id, function(ss) {
-        expect_equal(ss$algorithm, NA)
-        expect_equal(ss$score, -Inf)
+        expect_equal(ss$algorithm, factor(c("b", "c")))
+        expect_equal(ss$score, as.numeric(c(NA, NA)))
     })
 })
 
@@ -142,5 +142,49 @@ test_that("classify works with one class train data", {
     by(res$predictions, res$predictions$id, function(ss) {
         expect_equal(ss$algorithm, factor(c("a")))
         expect_equal(ss$score, c(1))
+    })
+})
+
+test_that("classify works with probabilities", {
+    res = classify(classifier=probtestclassifier, d)
+    expect_equal(unique(res$predictions$id), 11:20)
+    by(res$predictions, res$predictions$id, function(ss) {
+        expect_equal(ss$algorithm, factor(c("b", "c")))
+        expect_equal(ss$score, c(.1, .2))
+    })
+    fold$id = 1:10
+    preds = res$predictor(fold)
+    expect_equal(unique(preds$id), 1:10)
+    by(preds, preds$id, function(ss) {
+        expect_equal(ss$algorithm, factor(c("b", "c")))
+        expect_equal(ss$score, c(.1, .2))
+    })
+
+    res = classify(classifier=list(probtestclassifier, probtestclassifier, probtestclassifier), d)
+    expect_equal(unique(res$predictions$id), 11:20)
+    by(res$predictions, res$predictions$id, function(ss) {
+        expect_equal(ss$algorithm, factor(c("b", "c")))
+        expect_equal(ss$score, c(.3, .6))
+    })
+    fold$id = 1:10
+    preds = res$predictor(fold)
+    expect_equal(unique(preds$id), 1:10)
+    by(preds, preds$id, function(ss) {
+        expect_equal(ss$algorithm, factor(c("b", "c")))
+        expect_equal(ss$score, c(.3, .6))
+    })
+
+    res = classify(classifier=list(probtestclassifier, probtestclassifier, probtestclassifier, .combine = probtestclassifier), d)
+    expect_equal(unique(res$predictions$id), 11:20)
+    by(res$predictions, res$predictions$id, function(ss) {
+        expect_equal(ss$algorithm, factor(c("b", "c")))
+        expect_equal(ss$score, c(.1, .2))
+    })
+    fold$id = 1:10
+    preds = res$predictor(fold)
+    expect_equal(unique(preds$id), 1:10)
+    by(preds, preds$id, function(ss) {
+        expect_equal(ss$algorithm, factor(c("b", "c")))
+        expect_equal(ss$score, c(.1, .2))
     })
 })

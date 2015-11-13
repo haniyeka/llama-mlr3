@@ -60,7 +60,7 @@ If the given classifier supports case weights and \code{use.weights} is
 is passed as a weight for each instance.
 
 If all predictions of an underlying machine learning model are \code{NA}, the
-prediction will be \code{NA} for the algorithm and \code{-Inf} for the score.
+prediction will be \code{NA} for the score.
 
 Training this model can take a very long time. Given \code{n} algorithms,
 \code{choose(n, 2)} models are trained and evaluated. This is significantly
@@ -116,6 +116,9 @@ res = classifyPairs(classifier=makeLearner("classif.J48"), data=folds)
 sum(successes(folds, res))
 # predictions on the entire data set
 res$predictor(satsolvers$data[satsolvers$features])
+
+# use probabilities instead of labels
+res = classifyPairs(classifier=makeLearner("classif.lda", predict.type = "prob"), data=folds)
 
 # combine predictions using J48 induced classifier instead of majority vote
 res = classifyPairs(classifier=makeLearner("classif.J48"),

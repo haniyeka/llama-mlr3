@@ -77,6 +77,24 @@ registerS3method("predictLearner", "classif.bartest", predictLearner.classif.bar
 bartestclassifier = makeLearner("classif.bartest")
 
 
+makeRLearner.classif.probtest = function() {
+    makeRLearnerClassif(cl = "classif.probtest", package="llama", par.set=makeParamSet(), properties=c("numerics", "factors", "twoclass", "multiclass", "weights", "prob"))
+}
+trainLearner.classif.probtest = function(.learner, .task, .subset, .weights, ...) {
+    classes = getTaskClassLevels(.task)
+    return(classes)
+}
+predictLearner.classif.probtest = function(learner, model, newdata) {
+    m = matrix((1:9/10)[1:(length(model$learner.model))], nrow = nrow(newdata), ncol = length(model$learner.model), byrow = TRUE)
+    colnames(m) = model$learner.model
+    return(m)
+}
+registerS3method("makeRLearner", "classif.probtest", makeRLearner.classif.probtest)
+registerS3method("trainLearner", "classif.probtest", trainLearner.classif.probtest)
+registerS3method("predictLearner", "classif.probtest", predictLearner.classif.probtest)
+probtestclassifier = makeLearner("classif.probtest", predict.type = "prob")
+
+
 makeRLearner.regr.test = function() {
     makeRLearnerRegr(cl = "regr.test", package="llama", par.set=makeParamSet(), properties=c("numerics", "factors", "weights"))
 }
