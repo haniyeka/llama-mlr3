@@ -19,7 +19,7 @@ function(data=NULL, model=NULL, factor=10, timeout=NULL, addCosts=NULL) {
     hp = attr(model, "hasPredictions")
     if(is.null(hp) || hp != TRUE) {
         if(length(data$test) > 0) {
-            predictions = do.call(rbind, lapply(data$test, function(x) {
+            predictions = rbind.fill(lapply(data$test, function(x) {
                 data$data = data$data[x,]
                 data$best = data$best[x]
                 model(data)

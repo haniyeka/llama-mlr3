@@ -41,7 +41,7 @@ function(ldf, llama.fun, learner, design, metric = parscores, nfolds = 10L, quie
     full.split.ldf$test = list(ldf$test[[1]])
     model = llama.fun(learner2, data = full.split.ldf)
 
-    predictions = do.call(rbind, lapply(inner.retval, function(x) x$predictions))
+    predictions = rbind.fill(lapply(inner.retval, function(x) x$predictions))
     parvals = lapply(inner.retval, function(x) x$parvals)
 
     retval = list(predictions = predictions, models = model$models, predictor = model$predictor,

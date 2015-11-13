@@ -23,7 +23,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
 
     totalBests = data.frame(target=factor(breakBestTies(data), levels=data$performance))
     combns = combn(data$performance, 2)
-    predictions = do.call(rbind, parallelMap(function(i) {
+    predictions = rbind.fill(parallelMap(function(i) {
         trf = pre(data$data[data$train[[i]],][data$features])
         tsf = pre(data$data[data$test[[i]],][data$features], trf$meta)
         ids = data$data[data$test[[i]],][data$ids]
@@ -57,7 +57,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
                 saveRDS(list(model=combinedmodel, train.data=task, test.data=cbind(tsf$features, data.frame(pairpredictions))), file = paste(save.models, combine$id, "combined", i, "rds", sep="."))
             }
             preds = getPredictionResponse(predict(combinedmodel, newdata=cbind(tsf$features, data.frame(pairpredictions))))
-            combinedpredictions = do.call(rbind, lapply(1:length(preds), function(j) {
+            combinedpredictions = rbind.fill(lapply(1:length(preds), function(j) {
                 if(all(is.na(preds[j,drop=F]))) {
                     data.frame(ids[j,,drop=F], algorithm=NA, score=worstScore, iteration=i, row.names = NULL)
                 } else {
@@ -71,7 +71,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             } else {
                 sign = function(d) { return(d) }
             }
-            combinedpredictions = do.call(rbind, lapply(1:nrow(pairpredictions), function(j) {
+            combinedpredictions = rbind.fill(lapply(1:nrow(pairpredictions), function(j) {
                 row = pairpredictions[j,]
                 performanceSums = sapply(data$performance, function(p) {
                     sum(sapply(1:ncol(combns), signPair, p, sign, row, combns))
@@ -121,7 +121,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         }
         if(!is.null(combine)) {
             preds = getPredictionResponse(predict(combinedmodel, newdata=cbind(tsf$features, data.frame(pairpredictions))))
-            combinedpredictions = do.call(rbind, lapply(1:length(preds), function(j) {
+            combinedpredictions = rbind.fill(lapply(1:length(preds), function(j) {
                 if(all(is.na(preds[j,drop=F]))) {
                     data.frame(ids[j,,drop=F], algorithm=NA, score=worstScore, iteration=i, row.names = NULL)
                 } else {
@@ -135,7 +135,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             } else {
                 sign = function(d) { return(d) }
             }
-            combinedpredictions = do.call(rbind, lapply(1:nrow(pairpredictions), function(j) {
+            combinedpredictions = rbind.fill(lapply(1:nrow(pairpredictions), function(j) {
                 row = pairpredictions[j,]
                 performanceSums = sapply(data$performance, function(p) {
                     sum(sapply(1:ncol(combns), signPair, p, sign, row, combns))

@@ -16,7 +16,7 @@ function(metric, modelx, modely, datax, datay=datax, addCostsx=NULL, addCostsy=N
     }
 
     if(length(datax$test) > 0) {
-        edatax = do.call(rbind, lapply(datax$test, function(x) {
+        edatax = rbind.fill(lapply(datax$test, function(x) {
             datax$data[x,idCols,drop=F]
         }))
     } else {
@@ -26,7 +26,7 @@ function(metric, modelx, modely, datax, datay=datax, addCostsx=NULL, addCostsy=N
         edatax[datax$extra] = datax$data[datax$extra]
     }
     if(length(datay$test) > 0) {
-        edatay = do.call(rbind, lapply(datay$test, function(x) {
+        edatay = rbind.fill(lapply(datay$test, function(x) {
             datay$data[x,idCols,drop=F]
         }))
     } else {

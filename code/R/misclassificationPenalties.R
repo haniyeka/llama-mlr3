@@ -8,7 +8,7 @@ function(data=NULL, model=NULL, addCosts=NULL) {
         predictions = model$predictions
     } else {
         if(length(data$test) > 0) {
-            predictions = do.call(rbind, lapply(data$test, function(x) {
+            predictions = rbind.fill(lapply(data$test, function(x) {
                 data$data = data$data[x,]
                 data$best = data$best[x]
                 model(data)
