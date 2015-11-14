@@ -10,7 +10,7 @@ function(metric, modelx, modely, datax, datay=datax, addCostsx=NULL, addCostsy=N
         stop("Need data to plot performances!")
     }
 
-    idCols = intersect(datax$ids, datay$ids)
+    idCols = intersect(c(datax$ids, datax$extra), c(datay$ids, datay$extra))
     if(length(idCols) == 0) {
         stop("Cannot match up the two data frames!")
     }
