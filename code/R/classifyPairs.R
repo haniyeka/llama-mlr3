@@ -88,12 +88,14 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
             }
             combinedpredictions = rbind.fill(lapply(1:nrow(preds), function(j) {
                 ss = preds[j,,drop=F]
-                data.frame(ids[j,,drop=F], algorithm=names(ss), score=as.numeric(ss), iteration=i, row.names = NULL)
+                ord = order(ss, decreasing = TRUE)
+                data.frame(ids[j,,drop=F], algorithm=names(ss)[ord], score=as.numeric(ss)[ord], iteration=i, row.names = NULL)
             }))
         } else {
             merged = Reduce('+', pairpredictions)
             combinedpredictions = rbind.fill(lapply(1:nrow(merged), function(j) {
-                data.frame(ids[j,,drop=F], algorithm=names(merged), score=as.numeric(merged[j,]), iteration=i, row.names = NULL)
+                ord = order(merged[j,], decreasing = TRUE)
+                data.frame(ids[j,,drop=F], algorithm=names(merged)[ord], score=as.numeric(merged[j,])[ord], iteration=i, row.names = NULL)
             }))
         }
         return(combinedpredictions)
@@ -177,12 +179,14 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
             }
             combinedpredictions =  rbind.fill(lapply(1:nrow(preds), function(j) {
                 ss = preds[j,,drop=F]
-                data.frame(ids[j,,drop=F], algorithm=names(ss), score=as.numeric(ss), iteration=i, row.names = NULL)
+                ord = order(ss, decreasing = TRUE)
+                data.frame(ids[j,,drop=F], algorithm=names(ss)[ord], score=as.numeric(ss)[ord], iteration=i, row.names = NULL)
             }))
         } else {
             merged = Reduce('+', pairpredictions)
             combinedpredictions = rbind.fill(lapply(1:nrow(merged), function(j) {
-                data.frame(ids[j,,drop=F], algorithm=names(merged), score=as.numeric(merged[j,]), iteration=i, row.names = NULL)
+                ord = order(merged[j,], decreasing = TRUE)
+                data.frame(ids[j,,drop=F], algorithm=names(merged)[ord], score=as.numeric(merged[j,])[ord], iteration=i, row.names = NULL)
             }))
         }
         return(combinedpredictions)

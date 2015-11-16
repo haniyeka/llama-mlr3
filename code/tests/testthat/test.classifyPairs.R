@@ -111,28 +111,28 @@ test_that("classifyPairs works with probabilities", {
     res = classifyPairs(classifier=probtestclassifier, d)
     expect_equal(unique(res$predictions$id), 11:20)
     by(res$predictions, res$predictions$id, function(ss) {
-        expect_equal(ss$algorithm, factor(c("b", "c")))
-        expect_equal(ss$score, c(.1, .2))
+        expect_equal(ss$algorithm, factor(c("c", "b")))
+        expect_equal(ss$score, c(.2, .1))
     })
     fold$id = 1:10
     preds = res$predictor(fold)
     expect_equal(unique(preds$id), 1:10)
     by(preds, preds$id, function(ss) {
-        expect_equal(ss$algorithm, factor(c("b", "c")))
-        expect_equal(ss$score, c(.1, .2))
+        expect_equal(ss$algorithm, factor(c("c", "b")))
+        expect_equal(ss$score, c(.2, .1))
     })
 
     res = classifyPairs(classifier=probtestclassifier, combine=probtestclassifier, d)
     expect_equal(unique(res$predictions$id), 11:20)
     by(res$predictions, res$predictions$id, function(ss) {
-        expect_equal(ss$algorithm, factor(c("b", "c")))
-        expect_equal(ss$score, c(.1, .2))
+        expect_equal(ss$algorithm, factor(c("c", "b")))
+        expect_equal(ss$score, c(.2, .1))
     })
     fold$id = 1:10
     preds = res$predictor(fold)
     expect_equal(unique(preds$id), 1:10)
     by(preds, preds$id, function(ss) {
-        expect_equal(ss$algorithm, factor(c("b", "c")))
-        expect_equal(ss$score, c(.1, .2))
+        expect_equal(ss$algorithm, factor(c("c", "b")))
+        expect_equal(ss$score, c(.2, .1))
     })
 })
