@@ -29,7 +29,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
                     sapply(data$data[data$train[[i]],][x] > data$data[data$train[[i]],][y], function(z) { if(z) { x } else { y } })
                 }
             }
-            labels = data.frame(target=factor(cmp(combns[1,j], combns[2,j]), levels=data$performance))
+            labels = data.frame(target=factor(cmp(combns[1,j], combns[2,j])))
             if(hasLearnerProperties(classifier, "weights") && use.weights) {
                 task = makeClassifTask(id="classifyPairs", target="target", weights=abs(data$data[data$train[[i]],][combns[1,j]] - data$data[data$train[[i]],][combns[2,j]]), data=data.frame(labels, trf$features), fixup.data="quiet", check.data=FALSE)
             } else {
@@ -47,7 +47,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
             if(!is.null(combine)) { # only do this if we need it
                 preds = predict(model, newdata=trf$features)
                 trainpredictions[[j]] = if(preds$predict.type == "prob") {
-                    getPredictionProbabilities(preds, data$performance)
+                    getPredictionProbabilities(preds, preds$task.desc$class.levels)
                 } else {
                     tmp = getPredictionResponse(preds)
                     rbind.fill(lapply(tmp, function(x) data.frame(t(setNames(as.numeric(x == levels(tmp)), levels(tmp))))))
@@ -55,7 +55,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
             }
             preds = predict(model, newdata=tsf$features)
             pairpredictions[[j]] = if(preds$predict.type == "prob") {
-                getPredictionProbabilities(preds, data$performance)
+                getPredictionProbabilities(preds, preds$task.desc$class.levels)
             } else {
                 tmp = getPredictionResponse(preds)
                 rbind.fill(lapply(tmp, function(x) data.frame(t(setNames(as.numeric(x == levels(tmp)), levels(tmp))))))
@@ -81,7 +81,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
             }
             preds = predict(combinedmodel, newdata=data.frame(tsf$features, pairpredictions))
             if(preds$predict.type == "prob") {
-                preds = getPredictionProbabilities(preds, data$performance)
+                preds = getPredictionProbabilities(preds, preds$task.desc$class.levels)
             } else {
                 preds = getPredictionResponse(preds)
                 preds = rbind.fill(lapply(preds, function(x) data.frame(t(setNames(as.numeric(x == levels(preds)), levels(preds))))))
@@ -114,7 +114,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
                 sapply(data$data[[x]] > data$data[[y]], function(z) { if(z) { x } else { y } })
             }
         }
-        labels = data.frame(target=factor(cmp(combns[1,i], combns[2,i]), levels=data$performance))
+        labels = data.frame(target=factor(cmp(combns[1,i], combns[2,i])))
         if(hasLearnerProperties(classifier, "weights") && use.weights) {
             task = makeClassifTask(id="classifyPairs", target="target", weights=abs(data$data[[combns[1,i]]] - data$data[[combns[2,i]]]), data=data.frame(labels, fs$features), fixup.data="quiet", check.data=FALSE)
         } else {
@@ -133,7 +133,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
         for(i in 1:ncol(combns)) {
             preds = predict(models[[i]], newdata=fs$features)
             trainpredictions[[i]] = if(preds$predict.type == "prob") {
-                getPredictionProbabilities(preds, data$performance)
+                getPredictionProbabilities(preds, preds$task.desc$class.levels)
             } else {
                 tmp = getPredictionResponse(preds)
                 rbind.fill(lapply(tmp, function(x) data.frame(t(setNames(as.numeric(x == levels(tmp)), levels(tmp))))))
@@ -163,7 +163,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
         for(i in 1:ncol(combns)) {
             preds = predict(models[[i]], newdata=tsf$features)
             pairpredictions[[i]] = if(preds$predict.type == "prob") {
-                getPredictionProbabilities(preds, data$performance)
+                getPredictionProbabilities(preds, preds$task.desc$class.levels)
             } else {
                 tmp = getPredictionResponse(preds)
                 rbind.fill(lapply(tmp, function(x) data.frame(t(setNames(as.numeric(x == levels(tmp)), levels(tmp))))))
@@ -172,7 +172,7 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
         if(!is.null(combine)) {
             preds = predict(combinedmodel, newdata=data.frame(tsf$features, pairpredictions))
             if(preds$predict.type == "prob") {
-                preds = getPredictionProbabilities(preds, data$performance)
+                preds = getPredictionProbabilities(preds, preds$task.desc$class.levels)
             } else {
                 preds = getPredictionResponse(preds)
                 preds = rbind.fill(lapply(preds, function(x) data.frame(t(setNames(as.numeric(x == levels(preds)), levels(preds))))))
