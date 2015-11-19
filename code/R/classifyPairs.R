@@ -31,7 +31,8 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
             }
             labels = data.frame(target=factor(cmp(combns[1,j], combns[2,j])))
             if(hasLearnerProperties(classifier, "weights") && use.weights) {
-                task = makeClassifTask(id="classifyPairs", target="target", weights=abs(data$data[data$train[[i]],][combns[1,j]] - data$data[data$train[[i]],][combns[2,j]]), data=data.frame(labels, trf$features), fixup.data="quiet", check.data=FALSE)
+                trw = abs(data$data[data$train[[i]],combns[1,j]] - data$data[data$train[[i]],combns[2,j]])
+                task = makeClassifTask(id="classifyPairs", target="target", weights=trw, data=data.frame(labels, trf$features), fixup.data="quiet", check.data=FALSE)
             } else {
                 task = makeClassifTask(id="classifyPairs", target="target", data=data.frame(labels, trf$features), fixup.data="quiet", check.data=FALSE)
             }
