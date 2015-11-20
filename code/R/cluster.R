@@ -74,10 +74,10 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
         }
         if(inherits(combinator, "Learner")) {
             trainBests = data.frame(target=factor(breakBestTies(data, i), levels=data$performance))
-            task = makeClassifTask(id="cluster", target="target", data=data.frame(trainBests, trf$features, data.frame(trainpredictions)))
+            task = makeClassifTask(id="cluster", target="target", data=cbind(trainBests, trf$features, data.frame(trainpredictions)))
             combinedmodel = train(combinator, task=task)
             if(!is.na(save.models)) {
-                saveRDS(list(model=combinedmodel, train.data=task, test.data=data.frame(tsf$features, data.frame(featureData))), file = paste(save.models, combinator$id, "combined", i, "rds", sep="."))
+                saveRDS(list(model=combinedmodel, train.data=task, test.data=cbind(tsf$features, data.frame(featureData))), file = paste(save.models, combinator$id, "combined", i, "rds", sep="."))
             }
             featureData = matrix(nrow=nrow(tsf$features), ncol=length(clusterer))
             for(k in 1:nrow(featureData)) {
@@ -85,7 +85,7 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
                     featureData[k,j] = ensemblepredictions[[j]][[k]][1,1]
                 }
             }
-            preds = getPredictionResponse(predict(combinedmodel, newdata=data.frame(tsf$features, data.frame(featureData))))
+            preds = getPredictionResponse(predict(combinedmodel, newdata=cbind(tsf$features, data.frame(featureData))))
             combinedpredictions = rbind.fill(lapply(1:length(preds), function(j) {
                 if(all(is.na(preds[j,drop=F]))) {
                     data.frame(ids[j,,drop=F], algorithm=NA, score=worstScore, iteration=i, row.names = NULL)
@@ -102,7 +102,7 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
                 } else {
                     df = aggregate(data=df, as.formula(paste(predNames[2], predNames[1], sep="~")), sum)
                     df$iteration = i
-                    data.frame(ids[j,,drop=F], df, row.names = NULL)
+                    cbind(ids[j,,drop=F], df, row.names = NULL)
                 }
             }))
         }
@@ -133,7 +133,7 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
             trainpredictions[,j] = factor(sapply(models[[j]](fs$features), function(x) { x[1,1] }))
         }
         totalBests = data.frame(target=factor(breakBestTies(data), levels=data$performance))
-        combinedmodel = train(combinator, task=makeClassifTask(id="cluster", target="target", data=data.frame(totalBests, fs$features, data.frame(trainpredictions))))
+        combinedmodel = train(combinator, task=makeClassifTask(id="cluster", target="target", data=cbind(totalBests, fs$features, data.frame(trainpredictions))))
     }
 
     predictor = function(x) {
@@ -154,7 +154,7 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
                     featureData[k,j] = ensemblepredictions[[j]][[k]][1,1]
                 }
             }
-            preds = getPredictionResponse(predict(combinedmodel, newdata=data.frame(tsf$features, data.frame(featureData))))
+            preds = getPredictionResponse(predict(combinedmodel, newdata=cbind(tsf$features, data.frame(featureData))))
             combinedpredictions = rbind.fill(lapply(1:length(preds), function(j) {
                 if(all(is.na(preds[j,drop=F]))) {
                     data.frame(ids[j,,drop=F], algorithm=NA, score=worstScore, iteration=1, row.names = NULL)
@@ -171,7 +171,7 @@ function(clusterer=NULL, data=NULL, bestBy="performance", pre=function(x, y=NULL
                 } else {
                     df = aggregate(data=df, as.formula(paste(predNames[2], predNames[1], sep="~")), sum)
                     df$iteration = 1
-                    data.frame(ids[j,,drop=F], df, row.names = NULL)
+                    cbind(ids[j,,drop=F], df, row.names = NULL)
                 }
             }))
         }
