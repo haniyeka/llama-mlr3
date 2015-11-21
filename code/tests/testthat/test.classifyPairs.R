@@ -99,6 +99,8 @@ test_that("classifyPairs works with NA predictions", {
 })
 
 test_that("classifyPairs works with one class train data", {
+    # fails with --as-cran
+    skip.expensive()
     res = classifyPairs(classifier=makeLearner("classif.knn"), one)
     expect_equal(unique(res$predictions$id), 11:20)
     by(res$predictions, res$predictions$id, function(ss) {

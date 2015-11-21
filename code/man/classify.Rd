@@ -113,7 +113,7 @@ res$predictor(satsolvers$data[satsolvers$features])
 res = classify(classifier=makeLearner("classif.svm"), data=folds)
 
 # use probabilities instead of labels
-res = classify(classifier=makeLearner("classif.lda", predict.type = "prob"), data=folds)
+res = classify(classifier=makeLearner("classif.randomForest", predict.type = "prob"), data=folds)
 
 # ensemble classification
 rese = classify(classifier=list(makeLearner("classif.J48"),

@@ -43,7 +43,7 @@ a set of example SAT problems.
 \vspace*{\stretch{1}}
 
 \begin{center}
-This document corresponds to LLAMA version 0.8.1.
+This document corresponds to LLAMA version 0.9.
 \end{center}
 
 \end{titlepage}

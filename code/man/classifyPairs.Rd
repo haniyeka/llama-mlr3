@@ -118,7 +118,8 @@ sum(successes(folds, res))
 res$predictor(satsolvers$data[satsolvers$features])
 
 # use probabilities instead of labels
-res = classifyPairs(classifier=makeLearner("classif.lda", predict.type = "prob"), data=folds)
+res = classifyPairs(classifier=makeLearner("classif.randomForest",
+                                predict.type = "prob"), data=folds)
 
 # combine predictions using J48 induced classifier instead of majority vote
 res = classifyPairs(classifier=makeLearner("classif.J48"),
