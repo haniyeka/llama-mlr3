@@ -1,24 +1,36 @@
 input <-
-function(features, performances, successes=NULL, costs=NULL, extra=NULL, minimize=T) {
-    if(nrow(features) != nrow(performances) || (!is.null(successes) && (nrow(features) != nrow(successes) || nrow(performances) != nrow(successes)))) {
+function(instanceFeatures, algorithmFeatures = NULL, performances, successes=NULL, costs=NULL, extra=NULL, minimize=T) {
+    if(nrow(instanceFeatures) != nrow(performances) || (!is.null(successes) && (nrow(instanceFeatures) != nrow(successes) || nrow(performances) != nrow(successes)))) {
         warning("Different number of rows in data frames, taking only common rows.")
     }
-    common = intersect(names(features), names(performances))
-    if(length(common) == 0) {
-        stop("Performance can't be linked to features -- no common columns!")
+    if(!is.null(algorithmFeatures)) {
+        algos = colnames(performances)[-1] %in% algorithmFeatures$algorithm
+        if(!all(algos)) {
+            stop("Not all algorithms are present in algorithmic features, taking only common algorithms.")
+        }
     }
-    pnames = setdiff(names(performances), common)
+    
+    instanceCommon = intersect(names(instanceFeatures), names(performances))
+    if(length(instanceCommon) == 0) {
+        stop("Performance can't be linked to instance features -- no common columns!")
+    }
+    pnames = setdiff(names(performances), instanceCommon)
+    
+    # find common column for algo features
+    if (!is.null(algorithmFeatures)) {
+        algorithmCommon = intersect(names(algorithmFeatures), names(performances))
+    }
 
-    ids = factor(do.call(paste0, features[common]))
+    ids = factor(do.call(paste0, instanceFeatures[instanceCommon]))
     if(length(ids) != length(levels(ids))) {
         stop("Common columns do not provide unique IDs!")
     }
 
-    combined = merge(features, performances, by=common)
+    combined = merge(instanceFeatures, performances, by=instanceCommon)
     snames = NULL
     if(!is.null(successes)) {
-        commonSuccess = intersect(names(successes), common)
-        successNames = setdiff(names(successes), common)
+        commonSuccess = intersect(names(successes), instanceCommon)
+        successNames = setdiff(names(successes), instanceCommon)
         if(length(commonSuccess) == 0) {
             stop("Successes can't be linked to rest of data -- no common columns!")
         }
@@ -28,8 +40,8 @@ function(features, performances, successes=NULL, costs=NULL, extra=NULL, minimiz
         names(successes) = c(commonSuccess, sapply(successNames, function(x) { paste(x, "success", sep="_") }))
         # reorder successes according to performances
         successes = successes[c(commonSuccess, sapply(successNames[order(match(successNames, pnames))], function(x) { paste(x, "success", sep="_") }))]
-        combined = merge(combined, successes, by=common)
-        snames = setdiff(names(successes), common)
+        combined = merge(combined, successes, by=instanceCommon)
+        snames = setdiff(names(successes), instanceCommon)
     }
 
     optfun = if(minimize) { min } else { max }
@@ -52,13 +64,13 @@ function(features, performances, successes=NULL, costs=NULL, extra=NULL, minimiz
     names(best) = NULL
 
 
-    retval = list(data=combined, features=setdiff(names(features), common),
+    retval = list(data=combined, features=setdiff(names(instanceFeatures), instanceCommon),
         performance=pnames, success=snames, minimize=minimize,
-        best=best, ids=common)
+        best=best, ids=instanceCommon)
     
     if(!is.null(extra)) {
-        extraNames = setdiff(names(extra), common)
-        combined = merge(combined, extra, by=common)
+        extraNames = setdiff(names(extra), instanceCommon)
+        combined = merge(combined, extra, by=instanceCommon)
         retval$extra = extraNames
         retval$data = combined
     }
@@ -69,17 +81,17 @@ function(features, performances, successes=NULL, costs=NULL, extra=NULL, minimiz
             combined$cost = rep.int(costs, times=length(best))
             cnames = c("cost")
         } else if(is.data.frame(costs)) {
-            commonCosts = intersect(names(costs), common)
+            commonCosts = intersect(names(costs), instanceCommon)
             if(length(commonCosts) == 0) {
                 stop("Costs can't be linked to rest of data -- no common columns!")
             }
-            cnames = setdiff(names(costs), common)
+            cnames = setdiff(names(costs), instanceCommon)
             if(length(intersect(cnames, retval$features)) != length(retval$features)) {
                 stop(paste("Costs (", paste(cnames, collapse=", "), ") and features (", paste(retval$features, collapse=", "), ") are disjoint!", sep=""))
             }
             cnames = as.vector(sapply(cnames, function(x) { paste(x, "cost", sep="_") }))
             names(costs) = c(commonCosts, cnames)
-            combined = merge(combined, costs, by=common)
+            combined = merge(combined, costs, by=instanceCommon)
         } else if(is.list(costs)) {
             # cost groups
             dups = intersect(names(costs$groups), retval$features)
@@ -87,8 +99,8 @@ function(features, performances, successes=NULL, costs=NULL, extra=NULL, minimiz
                 stop(paste("Some cost groups have the same names as features:", paste(dups, collapse=", ")))
             }
             retval$costGroups = costs$groups
-            commonCosts = intersect(names(costs$values), common)
-            cnames = setdiff(names(costs$values), common)
+            commonCosts = intersect(names(costs$values), instanceCommon)
+            cnames = setdiff(names(costs$values), instanceCommon)
             if(length(commonCosts) == 0) {
                 stop("Costs can't be linked to rest of data -- no common columns!")
             }
@@ -98,7 +110,7 @@ function(features, performances, successes=NULL, costs=NULL, extra=NULL, minimiz
             if(length(intersect(names(costs$groups), cnames)) != length(names(costs$groups))) {
                 stop(paste("Cost groups (", paste(do.call(c, costs$groups), collapse=", "), ") and costs (", paste(cnames, collapse=", "), ") are disjoint!", sep=""))
             }
-            combined = merge(combined, costs$values, by=common)
+            combined = merge(combined, costs$values, by=intanceCommon)
         } else {
             stop("Invalid format for costs!")
         }
