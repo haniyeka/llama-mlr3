@@ -26,7 +26,7 @@ function(instanceFeatures, algorithmFeatures = NULL, performances, successes=NUL
     if(!is.null(algorithmFeatures)) {
         #reshape features into  long format 
         combined = reshape(combined, direction = "long", varying = pnames, 
-                             v.names = measure, timevar = "algorithm", 
+                             v.names = "performance", timevar = "algorithm", 
                              times = pnames, idvar = instanceCommon)
         row.names(combined) = NULL
         
@@ -89,8 +89,8 @@ function(instanceFeatures, algorithmFeatures = NULL, performances, successes=NUL
                      # nothing was able to solve this instance
                      return(NA)
                  } else {
-                     perfs = combined[combined$instance_id == x, c(measure, "algorithm")]
-                     perfs = perfs[perfs$algorithm %in% tosel, measure]
+                     perfs = combined[combined$instance_id == x, c("performance", "algorithm")]
+                     perfs = perfs[perfs$algorithm %in% tosel, "performance"]
                      return(tosel[which(perfs == optfun(perfs))])
                  }
              })
