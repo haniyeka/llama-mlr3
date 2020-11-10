@@ -24,10 +24,12 @@ function(instanceFeatures, algorithmFeatures = NULL, performances, successes=NUL
 
     combined = merge(instanceFeatures, performances, by=instanceCommon)
     if(!is.null(algorithmFeatures)) {
-        trf = combined
         #reshape features into  long format 
-        combined = reshape2::melt(trf, measure.vars = c(as.character(algorithmFeatures$algorithm)), 
-                                variable.name = "algorithm", value.name = measure)
+        combined = reshape(combined, direction = "long", varying = pnames, 
+                             v.names = measure, timevar = "algorithm", 
+                             times = pnames, idvar = instanceCommon)
+        row.names(combined) = NULL
+        
         #merge with solver featuress
         combined = merge(combined, algorithmFeatures, by = "algorithm") 
     }
