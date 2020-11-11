@@ -86,10 +86,15 @@ function(data=NULL) {
     if(is.null(data)) {
         stop("Need data to determine single best!")
     }
-
-    best = names(sort(sapply(data$performance, function(x) { mean(data$data[,x]) }), decreasing=!data$minimize))[1]
+    
+    if(is.null(data$algorithmFeatures)) {
+        best = names(sort(sapply(data$performance, function(x) { mean(data$data[,x]) }), decreasing=!data$minimize))[1]
+    } else {
+        best = names(sort(sapply(data$performance, function(x) { mean(data$data[data$data$algorithm == x, "performance"]) }), decreasing=!data$minimize))[1]
+    }
     ids = data$data[data$ids]
     data.frame(ids, algorithm = factor(best), score = 1, iteration = 1)
+
 }
 class(singleBest) = "llama.model"
 attr(singleBest, "type") = "single best"
