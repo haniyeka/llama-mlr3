@@ -159,7 +159,7 @@ function(instanceFeatures, algorithmFeatures = NULL, performances, successes=NUL
             if(length(intersect(names(costs$groups), cnames)) != length(names(costs$groups))) {
                 stop(paste("Cost groups (", paste(do.call(c, costs$groups), collapse=", "), ") and costs (", paste(cnames, collapse=", "), ") are disjoint!", sep=""))
             }
-            combined = merge(combined, costs$values, by=intanceCommon)
+            combined = merge(combined, costs$values, by=instanceCommon)
         } else {
             stop("Invalid format for costs!")
         }
