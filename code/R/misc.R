@@ -106,17 +106,36 @@ function(data=NULL, fold=NULL) {
     if(is.null(data)) {
         stop("Need data to break ties!")
     }
-
-    if(is.null(fold)) {
-        perfs = data$data[data$performance]
+    
+    if(!is.null(data$algorithmFeatures)) {
+        if(is.null(fold)) {
+            perfs = data$data[c("performance", "algorithm", data$ids)]
+        } else {
+            perfs = data$data[data$train[[fold]],][c("performance", "algorithm", data$ids)]
+            perfs = data$data[data$train[[fold]],][data$performance]
+        }
+        perfs = convertLongToWide(perfs, timevar="algorithm", idvar=data$ids, prefix="performance.")
     } else {
-        perfs = data$data[data$train[[fold]],][data$performance]
+        if(is.null(fold)) {
+            perfs = data$data[data$performance]
+        } else {
+            perfs = data$data[data$train[[fold]],][data$performance]
+        }
     }
+    
     order = names(sort(sapply(perfs, mean), decreasing=!data$minimize))
     optfun = if(data$minimize) { which.min } else { which.max }
     best = factor(apply(perfs[order], 1, function(x) { order[optfun(unlist(x))] }))
     names(best) = NULL
     return(best)
+}
+
+convertLongToWide <- 
+function(data=NULL, timevar=NULL, idvar=NULL, prefix=NULL) {
+    data = reshape(data, direction = "wide", timevar = timevar, idvar = idvar)
+    colnames(data) = gsub(prefix, "", colnames(data))
+    data[[idvar]] = NULL
+    return(data)
 }
 
 predTable <-
