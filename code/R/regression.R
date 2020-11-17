@@ -58,9 +58,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             performancePredictions[["performance"]] = getPredictionResponse(predict(model, newdata=tsf$features))
             performancePredictions[["algorithm"]] = tsa$algorithm
             performancePredictions[[data$ids]] = ids
-            performancePredictions = reshape(performancePredictions, direction = "wide", timevar = "algorithm", idvar = "instance_id")
-            colnames(performancePredictions) = gsub("performance.", "", colnames(performancePredictions))
-            performancePredictions[[data$ids]] = NULL
+            performancePredictions = convertLongToWide(performancePredictions, timevar="algorithm", idvar=data$ids, prefix="performance.")
         }
         
         #FIXME: combine with algorithm features
@@ -68,9 +66,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             if(!is.null(data$algorithmFeatures)) {
                 trainpredictions[["algorithm"]] = tra$algorithm
                 trainpredictions[["ids"]] = 1:nrow(trainpredictions)
-                trainpredictions = reshape(trainpredictions, direction = "wide", timevar = "algorithm", idvar = "ids")
-                colnames(trainpredictions) = gsub("performance.", "", colnames(trainpredictions))
-                trainpredictions[[data$ids]] = NULL
+                trainpredictions = convertLongToWide(trainpredictions, timevar="algorithm", idvar="ids", prefix="performance.")
             } else {
                 colnames(trainpredictions) = data$performance
             }
@@ -162,9 +158,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             performancePredictions[["performance"]] = getPredictionResponse(predict(models[[1]], newdata=tsf$features))
             performancePredictions[["algorithm"]] = algo.names
             performancePredictions[[data$ids]] = ids
-            performancePredictions = reshape(performancePredictions, direction = "wide", timevar = "algorithm", idvar = "instance_id")
-            colnames(performancePredictions) = gsub("performance.", "", colnames(performancePredictions))
-            performancePredictions[[data$ids]] = NULL
+            performancePredictions = convertLongToWide(performancePredictions, timevar="algorithm", idvar=data$ids, prefix="performance.")
         }
         
         #FIXME: combine with algorithm features
