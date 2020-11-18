@@ -11,7 +11,6 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
     
     worstScore = if(data$minimize) { Inf } else { -Inf }
     
-    #FIXME: breakBestTies with algorithm features
     totalBests = data.frame(target=factor(breakBestTies(data), levels=data$performance))
     predictions = rbind.fill(parallelMap(function(i) {
         if(is.null(data$algorithmFeatures)) {
@@ -54,20 +53,11 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             if(!is.null(combine)) {
                 trainpredictions[["performance"]] = getPredictionResponse(predict(model, newdata=trf$features))
             }
-            
             performancePredictions[["performance"]] = getPredictionResponse(predict(model, newdata=tsf$features))
-            performancePredictions[["algorithm"]] = tsa$algorithm
-            performancePredictions[[data$ids]] = ids
-            performancePredictions = convertLongToWide(performancePredictions, timevar="algorithm", idvar=data$ids, prefix="performance.")
         }
         
-        #FIXME: combine with algorithm features
         if(!is.null(combine)) {
-            if(!is.null(data$algorithmFeatures)) {
-                trainpredictions[["algorithm"]] = tra$algorithm
-                trainpredictions[["ids"]] = 1:nrow(trainpredictions)
-                trainpredictions = convertLongToWide(trainpredictions, timevar="algorithm", idvar="ids", prefix="performance.")
-            } else {
+            if(is.null(data$algorithmFeatures)) {
                 colnames(trainpredictions) = data$performance
             }
             trainBests = data.frame(target=factor(breakBestTies(data, i), levels=data$performance))
@@ -91,6 +81,10 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
                 }
             }))
         } else {
+            performancePredictions[["algorithm"]] = tsa$algorithm
+            performancePredictions[[data$ids]] = ids
+            performancePredictions = convertLongToWide(performancePredictions, timevar="algorithm", idvar=data$ids, prefix="performance.")
+            
             combinedpredictions = rbind.fill(lapply(1:nrow(performancePredictions), function(j) {
                 if(all(is.na(performancePredictions[j,]))) {
                     data.frame(ids[j,,drop=F], algorithm=factor(NA), score=worstScore, iteration=i, row.names = NULL)
@@ -119,16 +113,20 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         })
     } else {
         task = makeRegrTask(id="regression", target="target", data=cbind(data.frame(target=data$data[["performance"]]), fs$features))
-        models = list(train(regressor, task = task))
+        models = train(regressor, task = task)
     }
     
-    #FIXME: combine with algorithm features
     if(!is.null(combine)) {
         trainpredictions = data.frame(row.names=1:nrow(fs$features))
-        for (i in 1:length(data$performance)) {
-            trainpredictions[,i] = getPredictionResponse(predict(models[[i]], newdata=fs$features))
+        if(is.null(data$algorithmFeatures)) {
+            for (i in 1:length(data$performance)) {
+                trainpredictions[,i] = getPredictionResponse(predict(models[[i]], newdata=fs$features))
+            }
+            colnames(trainpredictions) = data$performance
+        } else {
+            trainpredictions[["performance"]] = getPredictionResponse(predict(models, newdata=fs$features))
         }
-        colnames(trainpredictions) = data$performance
+        
         if(hasLearnerProperties(combine, "weights") && use.weights) {
             task = makeClassifTask(id="regression", target="target", weights=fw, data=cbind(totalBests, fs$features, data.frame(expand(trainpredictions))))
         } else {
@@ -155,13 +153,9 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             }
             colnames(performancePredictions) = data$performance
         } else {
-            performancePredictions[["performance"]] = getPredictionResponse(predict(models[[1]], newdata=tsf$features))
-            performancePredictions[["algorithm"]] = algo.names
-            performancePredictions[[data$ids]] = ids
-            performancePredictions = convertLongToWide(performancePredictions, timevar="algorithm", idvar=data$ids, prefix="performance.")
+            performancePredictions[["performance"]] = getPredictionResponse(predict(models, newdata=tsf$features))
         }
         
-        #FIXME: combine with algorithm features
         if(!is.null(combine)) {
             preds = getPredictionResponse(predict(combinedmodel, newdata=cbind(tsf$features, data.frame(expand(performancePredictions)))))
             combinedpredictions = rbind.fill(lapply(1:length(preds), function(j) {
@@ -173,6 +167,9 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
                 }
             }))
         } else {
+            performancePredictions[["algorithm"]] = algo.names
+            performancePredictions[[data$ids]] = ids
+            performancePredictions = convertLongToWide(performancePredictions, timevar="algorithm", idvar=data$ids, prefix="performance.")
             combinedpredictions = rbind.fill(lapply(1:nrow(performancePredictions), function(j) {
                 if(all(is.na(performancePredictions[j,]))) {
                     data.frame(ids[j,,drop=F], algorithm=factor(NA), score=worstScore, iteration=1, row.names = NULL)
