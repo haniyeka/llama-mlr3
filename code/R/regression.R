@@ -81,9 +81,11 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
                 }
             }))
         } else {
-            performancePredictions[["algorithm"]] = tsa$algorithm
-            performancePredictions[[data$ids]] = ids
-            performancePredictions = convertLongToWide(performancePredictions, timevar="algorithm", idvar=data$ids, prefix="performance.")
+            if(!is.null(data$algorithmFeatures)) {
+                performancePredictions[["algorithm"]] = tsa$algorithm
+                performancePredictions[[data$ids]] = ids
+                performancePredictions = convertLongToWide(performancePredictions, timevar="algorithm", idvar=data$ids, prefix="performance.")
+            }
             
             combinedpredictions = rbind.fill(lapply(1:nrow(performancePredictions), function(j) {
                 if(all(is.na(performancePredictions[j,]))) {
