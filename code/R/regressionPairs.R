@@ -27,6 +27,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         if(is.null(data$algorithmFeatures)) {
             trf = pre(data$data[data$train[[i]],][data$features])
             tsf = pre(data$data[data$test[[i]],][data$features], trf$meta)
+            ids = data$data[data$test[[i]],][data$ids]
             trp = data$data[data$train[[i]],][data$performance]
         } else {
             trf = pre(data$data[data$train[[i]],][c(data$features, "algorithm")])
@@ -279,7 +280,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             } else {
                 sign = function(d) { return(d) }
             }
-            if(!is.null(algo.pairs)) {
+            if(!is.null(data$algorithmFeatures)) {
                 ids = unique(x[data$ids])
                 pairpredictions = data.frame(target = pairpredictions, algo.pairs = algo.pairs, rep(ids[[data$ids]], ncol(combns)))
                 colnames(pairpredictions) = c("target", "algo.pairs", data$ids)
