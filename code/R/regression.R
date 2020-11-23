@@ -137,7 +137,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         combinedmodel = train(combine, task = task)
     }
     
-    predictor = function(x, algo.names) {
+    predictor = function(x, algo.names=NULL) {
         if(is.null(data$algorithmFeatures)) {
             tsf = pre(x[data$features], fs$meta)
         } else {
@@ -169,9 +169,12 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
                 }
             }))
         } else {
-            performancePredictions[["algorithm"]] = algo.names
-            performancePredictions[[data$ids]] = ids
-            performancePredictions = convertLongToWide(performancePredictions, timevar="algorithm", idvar=data$ids, prefix="performance.")
+            if(!is.null(algo.names)) {
+                performancePredictions[["algorithm"]] = algo.names
+                performancePredictions[[data$ids]] = ids
+                performancePredictions = convertLongToWide(performancePredictions, timevar="algorithm", idvar=data$ids, prefix="performance.")
+            }
+            
             combinedpredictions = rbind.fill(lapply(1:nrow(performancePredictions), function(j) {
                 if(all(is.na(performancePredictions[j,]))) {
                     data.frame(ids[j,,drop=F], algorithm=factor(NA), score=worstScore, iteration=1, row.names = NULL)
