@@ -31,14 +31,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             trp = data$data[data$train[[i]],][data$performance]
         } else {
             trf = pre(data$data[data$train[[i]],][c(data$features, "algorithm")])
-            #trperf = data.frame(data$data[data$train[[fold]],combns[1,j]] - data$data[data$train[[fold]],combns[2,j]])
-            
-            #trf = pre(data$data[data$train[[i]],][c(data$features, data$algorithmFeatures)])
             tsf = pre(data$data[data$test[[i]],][c(data$features, "algorithm")], trf$meta)
-            #trp = data$data[data$train[[i]],]["performance"]
-            #tsa = data$data[data$test[[i]],]["algorithm"]
-            #tsa = rep(1:ncol(combns), each = nrow(tsf$features))
-            
             #if(!is.null(combine)) {
             #    tra = data$data[data$train[[i]],]["algorithm"]
             #}
