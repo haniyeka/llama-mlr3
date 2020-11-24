@@ -37,15 +37,12 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         } else {
             trf = pre(data$data[data$train[[i]],][c(data$features, "algorithm")])
             tsf = pre(data$data[data$test[[i]],][c(data$features, "algorithm")], trf$meta)
-            if(!is.null(combine)) {
-                tra = data$data[data$train[[i]],][c("algorithm", data$ids)]
-            }
             ids = unique(data$data[data$test[[i]],][data$ids])
         }
         
-        trainpredictions = matrix(nrow=nrow(trf$features), ncol=ncol(combns))
-        pairpredictions = matrix(nrow=nrow(tsf$features), ncol=ncol(combns))
         if (is.null(data$algorithmFeatures)) {
+            trainpredictions = matrix(nrow=nrow(trf$features), ncol=ncol(combns))
+            pairpredictions = matrix(nrow=nrow(tsf$features), ncol=ncol(combns))
             for (j in 1:ncol(combns)) {
                 values = data.frame(target=data$data[data$train[[i]],combns[1,j]] - data$data[data$train[[i]],combns[2,j]])
                 task = makeRegrTask(id="regression", target="target", data=cbind(values, trf$features), fixup.data="quiet")
@@ -63,7 +60,6 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             values = lapply(1:ncol(combns), function(j) {
                 a1 = which(data$data[data$train[[i]], "algorithm"] == combns[1,j])
                 a2 = which(data$data[data$train[[i]], "algorithm"] == combns[2,j])
-                #FIXME: make sure instances match before subtracting
                 trperf = data.frame(target=data$data[a1, "performance"] - data$data[a2, "performance"])
                 
                 f1 = subset(data$data, data$data$algorithm == combns[1,j])
@@ -82,21 +78,18 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
                 return(list(trd = trd, tsd = tsd))
             })
             
-            #split vals into respective objects
             trf = list()
             tsf = list()
             trf$features = as.data.frame(rbindlist(lapply(values, function(x) { x$trd })))
             tsf$features = as.data.frame(rbindlist(lapply(values, function(x) { x$tsd })))
             
-            #save indicies of algo pairs from combns
             algo.pairs = rep(1:ncol(combns), each = nrow(values[[1]]$tsd))
             
-            #check if need to change dimensions of pairpredictions
             task = makeRegrTask(id="regression", target="target", data=trf$features, fixup.data="quiet")
             model = train(regressor, task = task)
             
             if(!is.na(save.models)) {
-                saveRDS(list(model=model, train.data=task, test.data=tsd), file = paste(save.models, regressor$id, i, "rds", sep="."))
+                saveRDS(list(model=model, train.data=task, test.data=tsf$features), file = paste(save.models, regressor$id, i, "rds", sep="."))
             }
             if(!is.null(combine)) { # only do this if we need it
                 trainpredictions = getPredictionResponse(predict(model, newdata=trf$features))
@@ -104,7 +97,6 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             pairpredictions = getPredictionResponse(predict(model, newdata=tsf$features))
         }
         
-        #FIXME: combine
         if(!is.null(combine)) {
             trainBests = data.frame(target=factor(breakBestTies(data, i, pairs=TRUE), levels=data$performance))
             if(hasLearnerProperties(combine, "weights") && use.weights) {
@@ -137,8 +129,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             if(!is.null(data$algorithmFeatures)) {
                 pairpredictions = data.frame(target = pairpredictions, algo.pairs = algo.pairs, rep(ids[[data$ids]], ncol(combns)))
                 colnames(pairpredictions) = c("target", "algo.pairs", data$ids)
-                pairpredictions = convertLongToWide(pairpredictions, timevar="algo.pairs", idvar=data$ids, prefix="")
-                colnames(pairpredictions) = gsub("target.", "", colnames(pairpredictions))
+                pairpredictions = convertLongToWide(pairpredictions, timevar="algo.pairs", idvar=data$ids, prefix="target.")
             }
             combinedpredictions = rbind.fill(lapply(1:nrow(pairpredictions), function(j) {
                 row = pairpredictions[j,]
@@ -192,14 +183,12 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         fs = list()
         fs$features = as.data.frame(rbindlist(lapply(values, function(x) { x$fsd })))
         
-        #save indicies of algo pairs from combns
         algo.pairs = rep(1:ncol(combns), each = nrow(values[[1]]$fsd))
         
         task = makeRegrTask(id="regression", target="target", data=fs$features)
         models = train(regressor, task = task)
     }
     
-    #FIXME: combine
     if(!is.null(combine)) {
         if(is.null(data$algorithmFeatures)) {
             trainpredictions = matrix(nrow=nrow(fs$features), ncol=ncol(combns))
@@ -226,7 +215,6 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             values = lapply(1:ncol(combns), function(j) {
                 a1 = which(x[["algorithm"]] == combns[1,j])
                 a2 = which(x[["algorithm"]] == combns[2,j])
-                #FIXME: make sure instances match before subtracting
                 trperf = data.frame(target=x[a1, "performance"] - x[a2, "performance"])
                 
                 f1 = subset(x, x$algorithm == combns[1,j])
@@ -244,7 +232,6 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             tsf = list()
             tsf$features = as.data.frame(rbindlist(lapply(values, function(x) { x$tsd })))
             
-            #save indicies of algo pairs from combns
             algo.pairs = rep(1:ncol(combns), each = nrow(values[[1]]$tsd))
         }
         if(is.null(data$algorithmFeatures)) {
@@ -271,7 +258,6 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             pairpredictions = getPredictionResponse(predict(models, newdata=tsf$features))
         }
         
-        #FIXME: combine
         if(!is.null(combine)) {
             preds = getPredictionResponse(predict(combinedmodel, newdata=cbind(tsf$features, data.frame(pairpredictions))))
             combinedpredictions = rbind.fill(lapply(1:length(preds), function(j) {
@@ -292,8 +278,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
                 ids = unique(x[data$ids])
                 pairpredictions = data.frame(target = pairpredictions, algo.pairs = algo.pairs, rep(ids[[data$ids]], ncol(combns)))
                 colnames(pairpredictions) = c("target", "algo.pairs", data$ids)
-                pairpredictions = convertLongToWide(pairpredictions, timevar="algo.pairs", idvar=data$ids, prefix="")
-                colnames(pairpredictions) = gsub("target.", "", colnames(pairpredictions))
+                pairpredictions = convertLongToWide(pairpredictions, timevar="algo.pairs", idvar=data$ids, prefix="target.")
             }
             combinedpredictions = rbind.fill(lapply(1:nrow(pairpredictions), function(j) {
                 row = pairpredictions[j,]
