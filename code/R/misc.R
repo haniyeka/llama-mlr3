@@ -102,7 +102,7 @@ attr(singleBest, "hasPredictions") = FALSE
 attr(singleBest, "addCosts") = FALSE
 
 breakBestTies <-
-function(data=NULL, fold=NULL) {
+function(data=NULL, fold=NULL, pairs=FALSE) {
     if(is.null(data)) {
         stop("Need data to break ties!")
     }
@@ -113,6 +113,19 @@ function(data=NULL, fold=NULL) {
             perfs = data$data[c("performance", "algorithm", data$ids)]
         } else {
             perfs = data$data[data$train[[fold]],][c("performance", "algorithm", data$ids)]
+        }
+        if(pairs) {
+            if(is.null(fold)) {
+                perfs = data$data[c("performance", "algorithm", data$ids)]
+            } else {
+                perfs = data$data[data$train[[fold]],][c("performance", "algorithm", data$ids)]
+            }
+            combns = combn(data$performance, 2)
+            values = lapply(1:ncol(combns), function(j) {
+                p = perfs[perfs$algorithm == combns[1,j], ]
+                return(p = p)
+            })
+            perfs = as.data.frame(rbindlist(lapply(values, function(x) { x })))
         }
         best = factor(sapply(perfs[[data$ids]], function(x) { order=perfs[perfs[[data$ids]]==x, "algorithm"]; order[optfun(unlist(perfs[perfs[[data$ids]]==x, "performance"]))] }))
     } else {
