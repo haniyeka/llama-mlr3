@@ -21,7 +21,12 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
     
     worstScore = if(data$minimize) { Inf } else { -Inf }
     
-    totalBests = data.frame(target=factor(breakBestTies(data), levels=data$performance))
+    if(is.null(data$algorithmFeatures)) {
+        totalBests = data.frame(target=factor(breakBestTies(data), levels=data$performance))
+    } else {
+        totalBests = data.frame(target=factor(breakBestTies(data, pairs=TRUE), levels=data$performance))
+    }
+    
     combns = combn(data$performance, 2)
     predictions = rbind.fill(parallelMap(function(i) {
         if(is.null(data$algorithmFeatures)) {
@@ -32,9 +37,9 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         } else {
             trf = pre(data$data[data$train[[i]],][c(data$features, "algorithm")])
             tsf = pre(data$data[data$test[[i]],][c(data$features, "algorithm")], trf$meta)
-            #if(!is.null(combine)) {
-            #    tra = data$data[data$train[[i]],]["algorithm"]
-            #}
+            if(!is.null(combine)) {
+                tra = data$data[data$train[[i]],][c("algorithm", data$ids)]
+            }
             ids = unique(data$data[data$test[[i]],][data$ids])
         }
         
@@ -78,34 +83,38 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             })
             
             #split vals into respective objects
-            trd = as.data.frame(rbindlist(lapply(values, function(x) { x$trd })))
-            tsd = as.data.frame(rbindlist(lapply(values, function(x) { x$tsd })))
+            trf = list()
+            tsf = list()
+            trf$features = as.data.frame(rbindlist(lapply(values, function(x) { x$trd })))
+            tsf$features = as.data.frame(rbindlist(lapply(values, function(x) { x$tsd })))
             
             #save indicies of algo pairs from combns
             algo.pairs = rep(1:ncol(combns), each = nrow(values[[1]]$tsd))
             
             #check if need to change dimensions of pairpredictions
-            task = makeRegrTask(id="regression", target="target", data=trd, fixup.data="quiet")
+            task = makeRegrTask(id="regression", target="target", data=trf$features, fixup.data="quiet")
             model = train(regressor, task = task)
             
             if(!is.na(save.models)) {
                 saveRDS(list(model=model, train.data=task, test.data=tsd), file = paste(save.models, regressor$id, i, "rds", sep="."))
             }
             if(!is.null(combine)) { # only do this if we need it
-                trainpredictions = getPredictionResponse(predict(model, newdata=trd))
+                trainpredictions = getPredictionResponse(predict(model, newdata=trf$features))
             }
-            pairpredictions = getPredictionResponse(predict(model, newdata=tsd))
+            pairpredictions = getPredictionResponse(predict(model, newdata=tsf$features))
         }
         
         #FIXME: combine
         if(!is.null(combine)) {
-            trainBests = data.frame(target=factor(breakBestTies(data, i), levels=data$performance))
+            trainBests = data.frame(target=factor(breakBestTies(data, i, pairs=TRUE), levels=data$performance))
             if(hasLearnerProperties(combine, "weights") && use.weights) {
                 trw = abs(apply(trp, 1, max) - apply(trp, 1, min))
                 task = makeClassifTask(id="regression", target="target", weights=trw, data=cbind(trainBests, trf$features, data.frame(trainpredictions)), fixup.data="quiet", check.data=FALSE)
             } else {
                 task = makeClassifTask(id="regression", target="target", data=cbind(trainBests, trf$features, data.frame(trainpredictions)), fixup.data="quiet", check.data=FALSE)
             }
+            
+            
             combinedmodel = train(combine, task = task)
             if(!is.na(save.models)) {
                 saveRDS(list(model=combinedmodel, train.data=task, test.data=cbind(tsf$features, data.frame(pairpredictions))), file = paste(save.models, combine$id, "combined", i, "rds", sep="."))
@@ -180,22 +189,27 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             return(list(fsd = fsd))
         })
         
-        #split vals into respective objects
-        fsd = as.data.frame(rbindlist(lapply(values, function(x) { x$fsd })))
+        fs = list()
+        fs$features = as.data.frame(rbindlist(lapply(values, function(x) { x$fsd })))
         
         #save indicies of algo pairs from combns
         algo.pairs = rep(1:ncol(combns), each = nrow(values[[1]]$fsd))
         
-        task = makeRegrTask(id="regression", target="target", data=fsd)
+        task = makeRegrTask(id="regression", target="target", data=fs$features)
         models = train(regressor, task = task)
     }
     
     #FIXME: combine
     if(!is.null(combine)) {
-        trainpredictions = matrix(nrow=nrow(fs$features), ncol=ncol(combns))
-        for(i in 1:ncol(combns)) {
-            trainpredictions[,i] = getPredictionResponse(predict(models[[i]], newdata=fs$features))
+        if(is.null(data$algorithmFeatures)) {
+            trainpredictions = matrix(nrow=nrow(fs$features), ncol=ncol(combns))
+            for(i in 1:ncol(combns)) {
+                trainpredictions[,i] = getPredictionResponse(predict(models[[i]], newdata=fs$features))
+            }
+        } else {
+            trainpredictions = getPredictionResponse(predict(models, newdata=fs$features))
         }
+        
         if(hasLearnerProperties(combine, "weights") && use.weights) {
             task = makeClassifTask(id="regression", target="target", weights=fw, data=cbind(totalBests, fs$features, data.frame(trainpredictions)), fixup.data="quiet", check.data=FALSE)
         } else {
@@ -227,7 +241,8 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
                 return(list(tsd = tsd))
             })
             
-            tsf = as.data.frame(rbindlist(lapply(values, function(x) { x$tsd })))
+            tsf = list()
+            tsf$features = as.data.frame(rbindlist(lapply(values, function(x) { x$tsd })))
             
             #save indicies of algo pairs from combns
             algo.pairs = rep(1:ncol(combns), each = nrow(values[[1]]$tsd))
@@ -253,7 +268,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
                 pairpredictions[,i] = getPredictionResponse(predict(models[[i]], newdata=tsf$features))
             }
         } else {
-            pairpredictions = getPredictionResponse(predict(models, newdata=tsf))
+            pairpredictions = getPredictionResponse(predict(models, newdata=tsf$features))
         }
         
         #FIXME: combine
