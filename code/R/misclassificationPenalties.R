@@ -3,7 +3,7 @@ function(data=NULL, model=NULL, addCosts=NULL) {
     if(is.null(data) || is.null(model)) {
         stop("Need both data and model to calculate misclassification penalties!")
     }
-
+    
     if(attr(model, "hasPredictions")) {
         predictions = model$predictions
     } else {
@@ -17,9 +17,15 @@ function(data=NULL, model=NULL, addCosts=NULL) {
             predictions = model(data)
         }
     }
-
+    
     optfun = if(data$minimize) { min } else { max }
-    perfs = data$data[data$performance]
+    if(is.null(data$algorithmFeatures)) {
+        perfs = data$data[data$performance]
+    } else {
+        d = data$data[c(data$ids, "algorithm", "performance")]
+        perfs = convertLongToWide(data=d, timevar="algorithm", idvar=data$ids, prefix="performance.")
+    }
+    
     opts = apply(perfs, 1, optfun)
     predictions$iid = match(do.call(paste, predictions[data$ids]), do.call(paste, data$data[data$ids]))
     predictions$pid = match(predictions$algorithm, data$performance)
