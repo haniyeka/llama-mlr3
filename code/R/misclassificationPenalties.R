@@ -27,7 +27,14 @@ function(data=NULL, model=NULL, addCosts=NULL) {
     }
     
     opts = apply(perfs, 1, optfun)
-    predictions$iid = match(do.call(paste, predictions[data$ids]), do.call(paste, data$data[data$ids]))
+    if(is.null(data$algorithmFeatures)) {
+        predictions$iid = match(do.call(paste, predictions[data$ids]), do.call(paste, data$data[data$ids]))  
+    } else {
+        d = data$data[c(data$ids, "algorithm", "performance")]
+        d = convertLongToWide(data=d, timevar="algorithm", idvar=data$ids, prefix="performance.", remove.id=FALSE)
+        predictions$iid = match(do.call(paste, predictions[data$ids]), do.call(paste, d[data$ids]))
+    }
+    
     predictions$pid = match(predictions$algorithm, data$performance)
     predictions$score = apply(predictions, 1, function(x) {
         pid = as.numeric(x[["pid"]])
