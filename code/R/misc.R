@@ -150,10 +150,12 @@ function(data=NULL, fold=NULL, pairs=FALSE) {
 }
 
 convertLongToWide <- 
-function(data=NULL, timevar=NULL, idvar=NULL, prefix=NULL) {
+function(data=NULL, timevar=NULL, idvar=NULL, prefix=NULL, remove.id=TRUE) {
     data = reshape(data, direction = "wide", timevar = timevar, idvar = idvar)
     colnames(data) = gsub(prefix, "", colnames(data))
-    data[[idvar]] = NULL
+    if(remove.id) {
+        data[[idvar]] = NULL
+    }
     return(data)
 }
 
