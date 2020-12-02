@@ -6,7 +6,14 @@ function(data=NULL) {
     }
     lens = sapply(data$best, length)
     idxs = unlist(lapply(1:length(lens), function(i) { rep.int(i, lens[i]) }))
-    ids = data$data[idxs,data$ids,drop=F]
+    if(is.null(data$algorithmFeatures)) {
+        ids = data$data[idxs,data$ids,drop=F]
+    } else {
+        ids = unique(data$data$instance_id)[idxs]
+        ids = data.frame(ids)
+        colnames(ids) = data$ids
+    }
+    
     bests = unlist(data$best)
     scores = rep.int(1, length(bests))
     scores[is.na(bests)] = 0
