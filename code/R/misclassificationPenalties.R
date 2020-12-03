@@ -24,6 +24,7 @@ function(data=NULL, model=NULL, addCosts=NULL) {
     } else {
         d = data$data[c(data$ids, "algorithm", "performance")]
         perfs = convertLongToWide(data=d, timevar="algorithm", idvar=data$ids, prefix="performance.")
+        perfs = perfs[data$performance]
     }
     
     opts = apply(perfs, 1, optfun)
