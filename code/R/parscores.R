@@ -54,9 +54,11 @@ function(data=NULL, model=NULL, factor=10, timeout=NULL, addCosts=NULL) {
     } else {
         d = data$data[c(data$ids, "algorithm", "performance")]
         perfs = convertLongToWide(data=d, timevar="algorithm", idvar=data$ids, prefix="performance.")
+        perfs = perfs[data$performance]
         
         d = data$data[c(data$ids, "algorithm", "success")]
         successes = convertLongToWide(data=d, timevar="algorithm", idvar=data$ids, prefix="success.")
+        successes = successes[data$performance]
         colnames(successes) = paste(colnames(successes), "success", sep="_")
     }
     
