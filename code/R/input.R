@@ -42,20 +42,20 @@ function(instanceFeatures, algorithmFeatures = NULL, performances, successes=NUL
     
     optfun = if(minimize) { min } else { max }
     best = apply(combined, 1,
-                 function(x) {
-                     tosel = pnames
-                     if(!is.null(successes)) {
-                         nosuccs = sapply(snames[which(as.logical(x[snames]) == FALSE)], function(y) { unlist(strsplit(y, "_"))[1] })
-                         tosel = setdiff(pnames, nosuccs)
-                     }
-                     if(length(tosel) == 0) {
-                         # nothing was able to solve this instance
-                         return(NA)
-                     } else {
-                         perfs = as.numeric(x[tosel])
-                         return(tosel[which(perfs == optfun(perfs))])
-                     }
-                 })
+             function(x) {
+                 tosel = pnames
+                 if(!is.null(successes)) {
+                     nosuccs = sapply(snames[which(as.logical(x[snames]) == FALSE)], function(y) { unlist(strsplit(y, "_"))[1] })
+                     tosel = setdiff(pnames, nosuccs)
+                 }
+                 if(length(tosel) == 0) {
+                     # nothing was able to solve this instance
+                     return(NA)
+                 } else {
+                     perfs = as.numeric(x[tosel])
+                     return(tosel[which(perfs == optfun(perfs))])
+                 }
+             })
     
     # simplify...
     names(best) = NULL
@@ -67,13 +67,13 @@ function(instanceFeatures, algorithmFeatures = NULL, performances, successes=NUL
                        v.names = "performance", timevar = "algorithm", 
                        times = pnames, idvar = instanceCommon)
         row.names(perf) = NULL
-        combined = merge(perf, instanceFeatures, by = data$ids)
+        combined = merge(perf, instanceFeatures, by=instanceCommon)
         
         # merge with solver features
         combined = merge(combined, algorithmFeatures, by = "algorithm") 
         
         # reshape successes
-        colnames(successes) = c(data$ids, gsub("_success", "", snames))
+        colnames(successes) = c(instanceCommon, gsub("_success", "", snames))
         successes = reshape(successes, direction = "long", varying = pnames, 
                             v.names = "success", timevar = "algorithm", 
                             times = pnames, idvar = instanceCommon)
