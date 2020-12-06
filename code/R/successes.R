@@ -33,7 +33,11 @@ function(data=NULL, model=NULL, timeout=NULL, addCosts=NULL) {
     
     if(is.null(timeout)) {
         # if timeout value wasn't given, assume maximum from data set
-        timeout = max(data$data[data$performance])
+        if(is.null(data$algorithmFeatures)) {
+            timeout = max(data$data[data$performance])
+        } else {
+            timeout = max(data$data["performance"])
+        }
     }
     
     if(addCosts || !is.null(data$costs)) {
@@ -50,9 +54,11 @@ function(data=NULL, model=NULL, timeout=NULL, addCosts=NULL) {
     } else {
         d = data$data[c(data$ids, "algorithm", "performance")]
         perfs = convertLongToWide(data=d, timevar="algorithm", idvar=data$ids, prefix="performance.")
+        perfs = perfs[data$performance]
         
         d = data$data[c(data$ids, "algorithm", "success")]
         successes = convertLongToWide(data=d, timevar="algorithm", idvar=data$ids, prefix="success.")
+        successes = successes[data$performance]
         colnames(successes) = paste(colnames(successes), "success", sep="_")
     }
     if(!addCosts || is.null(data$cost)) {
