@@ -35,8 +35,8 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             ids = data$data[data$test[[i]],][data$ids]
             trp = data$data[data$train[[i]],][data$performance]
         } else {
-            trf = pre(data$data[data$train[[i]],][c(data$features, "algorithm")])
-            tsf = pre(data$data[data$test[[i]],][c(data$features, "algorithm")], trf$meta)
+            trf = pre(data$data[data$train[[i]],][c(data$features, data$algos)])
+            tsf = pre(data$data[data$test[[i]],][c(data$features, data$algos)], trf$meta)
             ids = unique(data$data[data$test[[i]],][data$ids])
         }
         
@@ -58,22 +58,22 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             
         } else {
             values = lapply(1:ncol(combns), function(j) {
-                a1 = which(data$data[data$train[[i]], "algorithm"] == combns[1,j])
-                a2 = which(data$data[data$train[[i]], "algorithm"] == combns[2,j])
+                a1 = which(data$data[data$train[[i]], data$algos] == combns[1,j])
+                a2 = which(data$data[data$train[[i]], data$algos] == combns[2,j])
                 trperf = data.frame(target=data$data[a1, "performance"] - data$data[a2, "performance"])
                 
-                f1 = subset(data$data, data$data$algorithm == combns[1,j])
-                f2 = subset(data$data, data$data$algorithm == combns[2,j])
+                f1 = subset(data$data, data$data[[data$algos]] == combns[1,j])
+                f2 = subset(data$data, data$data[[data$algos]] == combns[2,j])
                 f1 = f1[data$algorithmFeatures][1,]
                 f2 = f2[data$algorithmFeatures][1,]
                 feature.diff = f1 - f2
                 
-                tr.features = trf$features[trf$features$algorithm == combns[1,j], ]
-                tr.features$algorithm = NULL
+                tr.features = trf$features[trf$features[[data$algos]] == combns[1,j], ]
+                tr.features[[data$algos]] = NULL
                 trd = cbind.data.frame(tr.features, feature.diff, trperf)
                 
-                ts.features = tsf$features[tsf$features$algorithm == combns[1,j], ]
-                ts.features$algorithm = NULL
+                ts.features = tsf$features[tsf$features[[data$algos]] == combns[1,j], ]
+                ts.features[[data$algos]] = NULL
                 tsd = cbind.data.frame(ts.features, feature.diff)
                 return(list(trd = trd, tsd = tsd))
             })
@@ -151,7 +151,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         fs = pre(data$data[data$features])
         fp = data$data[data$performance]
     } else {
-        fs = pre(data$data[c(data$features, "algorithm")]) #pre(data$data[c(data$features, data$algorithmFeatures)])
+        fs = pre(data$data[c(data$features, data$algos)]) 
         fp = data$data["performance"]
     }
     
@@ -164,18 +164,18 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         })
     } else {
         values = lapply(1:ncol(combns), function(j) {
-            a1 = which(data$data["algorithm"] == combns[1,j])
-            a2 = which(data$data["algorithm"] == combns[2,j])
+            a1 = which(data$data[[data$algos]] == combns[1,j])
+            a2 = which(data$data[[data$algos]] == combns[2,j])
             trperf = data.frame(target=data$data[a1, "performance"] - data$data[a2, "performance"])
             
-            f1 = subset(data$data, data$data$algorithm == combns[1,j])
-            f2 = subset(data$data, data$data$algorithm == combns[2,j])
+            f1 = subset(data$data, data$data[[data$algos]] == combns[1,j])
+            f2 = subset(data$data, data$data[[data$algos]] == combns[2,j])
             f1 = f1[data$algorithmFeatures][1,]
             f2 = f2[data$algorithmFeatures][1,]
             feature.diff = f1 - f2
             
-            fs.features = fs$features[fs$features$algorithm == combns[1,j], ]
-            fs.features$algorithm = NULL
+            fs.features = fs$features[fs$features[[data$algos]] == combns[1,j], ]
+            fs.features[[data$algos]] = NULL
             fsd = cbind.data.frame(fs.features, feature.diff, trperf)
             return(list(fsd = fsd))
         })
@@ -211,20 +211,20 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         if(is.null(data$algorithmFeatures)) {
             tsf = pre(x[data$features], fs$meta)
         } else {
-            tsf = pre(x[c(data$features, "algorithm")], fs$meta)
+            tsf = pre(x[c(data$features, data$algos)], fs$meta)
             values = lapply(1:ncol(combns), function(j) {
-                a1 = which(x[["algorithm"]] == combns[1,j])
-                a2 = which(x[["algorithm"]] == combns[2,j])
+                a1 = which(x[[data$algos]] == combns[1,j])
+                a2 = which(x[[data$algos]] == combns[2,j])
                 trperf = data.frame(target=x[a1, "performance"] - x[a2, "performance"])
                 
-                f1 = subset(x, x$algorithm == combns[1,j])
-                f2 = subset(x, x$algorithm == combns[2,j])
+                f1 = subset(x, x[[data$algos]] == combns[1,j])
+                f2 = subset(x, x[[data$algos]] == combns[2,j])
                 f1 = f1[data$algorithmFeatures][1,]
                 f2 = f2[data$algorithmFeatures][1,]
                 feature.diff = f1 - f2
                 
-                ts.features = tsf$features[tsf$features$algorithm == combns[1,j], ]
-                ts.features$algorithm = NULL
+                ts.features = tsf$features[tsf$features[[data$algos]] == combns[1,j], ]
+                ts.features[[data$algos]] = NULL
                 tsd = cbind.data.frame(ts.features, feature.diff)
                 return(list(tsd = tsd))
             })
