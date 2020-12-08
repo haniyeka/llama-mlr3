@@ -76,14 +76,17 @@ function(instanceFeatures, algorithmFeatures=NULL, performances, successes=NULL,
         # merge with solver features
         combined = merge(combined, algorithmFeatures, by = algorithmCommon) 
         
-        # reshape successes
-        colnames(successes) = c(instanceCommon, gsub("_success", "", snames))
-        successes = reshape(successes, direction = "long", varying = pnames, 
-                            v.names = "success", timevar = algorithmCommon, 
-                            times = pnames, idvar = instanceCommon)
-        row.names(successes) = NULL
-        combined = merge(combined, successes, by=c(commonSuccess, algorithmCommon))
-        snames = "success"
+        if(!is.null(successes)) {
+            # reshape successes
+            colnames(successes) = c(instanceCommon, gsub("_success", "", snames))
+            successes = reshape(successes, direction = "long", varying = pnames, 
+                                v.names = "success", timevar = algorithmCommon, 
+                                times = pnames, idvar = instanceCommon)
+            row.names(successes) = NULL
+            
+            combined = merge(combined, successes, by=c(commonSuccess, algorithmCommon))
+            snames = "success"
+        }
     }
     
     if(is.null(algorithmFeatures)) {
