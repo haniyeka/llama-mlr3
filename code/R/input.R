@@ -3,19 +3,24 @@ function(instanceFeatures, algorithmFeatures = NULL, performances, successes=NUL
     if(nrow(instanceFeatures) != nrow(performances) || (!is.null(successes) && (nrow(instanceFeatures) != nrow(successes) || nrow(performances) != nrow(successes)))) {
         warning("Different number of rows in data frames, taking only common rows.")
     }
-    #FIXME: find algorithm column without explicitly stating it
-    if(!is.null(algorithmFeatures)) {
-        algos = colnames(performances)[-1] %in% algorithmFeatures$algorithm
-        if(!all(algos)) {
-            stop("Not all algorithms are present in algorithmic features, taking only common algorithms.")
-        }
-    }
     
     instanceCommon = intersect(names(instanceFeatures), names(performances))
     if(length(instanceCommon) == 0) {
         stop("Performance can't be linked to instance features -- no common columns!")
     }
     pnames = setdiff(names(performances), instanceCommon)
+    
+    #FIXME: find algorithm column without explicitly stating it
+    if(!is.null(algorithmFeatures)) {
+        matches = lapply(algorithmFeatures, function(x) pnames %in% x)
+        sums = lapply(matches, function(x) sum(x))
+        algorithmCommon = names(sort(unlist(sums), decreasing = TRUE)[1])
+        
+        algos = pnames %in% algorithmFeatures[[algorithmCommon]]
+        if(!all(algos)) {
+            stop("Not all algorithms are present in algorithmic features, taking only common algorithms.")
+        }
+    }
     
     ids = factor(do.call(paste0, instanceFeatures[instanceCommon]))
     if(length(ids) != length(levels(ids))) {
@@ -42,20 +47,20 @@ function(instanceFeatures, algorithmFeatures = NULL, performances, successes=NUL
     
     optfun = if(minimize) { min } else { max }
     best = apply(combined, 1,
-             function(x) {
-                 tosel = pnames
-                 if(!is.null(successes)) {
-                     nosuccs = sapply(snames[which(as.logical(x[snames]) == FALSE)], function(y) { unlist(strsplit(y, "_"))[1] })
-                     tosel = setdiff(pnames, nosuccs)
-                 }
-                 if(length(tosel) == 0) {
-                     # nothing was able to solve this instance
-                     return(NA)
-                 } else {
-                     perfs = as.numeric(x[tosel])
-                     return(tosel[which(perfs == optfun(perfs))])
-                 }
-             })
+                 function(x) {
+                     tosel = pnames
+                     if(!is.null(successes)) {
+                         nosuccs = sapply(snames[which(as.logical(x[snames]) == FALSE)], function(y) { unlist(strsplit(y, "_"))[1] })
+                         tosel = setdiff(pnames, nosuccs)
+                     }
+                     if(length(tosel) == 0) {
+                         # nothing was able to solve this instance
+                         return(NA)
+                     } else {
+                         perfs = as.numeric(x[tosel])
+                         return(tosel[which(perfs == optfun(perfs))])
+                     }
+                 })
     
     # simplify...
     names(best) = NULL
@@ -64,21 +69,21 @@ function(instanceFeatures, algorithmFeatures = NULL, performances, successes=NUL
     if(!is.null(algorithmFeatures)) {
         # reshape performances into  long format
         perf = reshape(performances, direction = "long", varying = pnames, 
-                       v.names = "performance", timevar = "algorithm", 
+                       v.names = "performance", timevar = algorithmCommon, 
                        times = pnames, idvar = instanceCommon)
         row.names(perf) = NULL
         combined = merge(perf, instanceFeatures, by=instanceCommon)
         
         # merge with solver features
-        combined = merge(combined, algorithmFeatures, by = "algorithm") 
+        combined = merge(combined, algorithmFeatures, by = algorithmCommon) 
         
         # reshape successes
         colnames(successes) = c(instanceCommon, gsub("_success", "", snames))
         successes = reshape(successes, direction = "long", varying = pnames, 
-                            v.names = "success", timevar = "algorithm", 
+                            v.names = "success", timevar = algorithmCommon, 
                             times = pnames, idvar = instanceCommon)
         row.names(successes) = NULL
-        combined = merge(combined, successes, by=c(commonSuccess, "algorithm"))
+        combined = merge(combined, successes, by=c(commonSuccess, algorithmCommon))
         snames = "success"
     }
     
@@ -88,7 +93,7 @@ function(instanceFeatures, algorithmFeatures = NULL, performances, successes=NUL
                       best=best, ids=instanceCommon)
     } else {
         retval = list(data=combined, features=setdiff(names(instanceFeatures), instanceCommon),
-                      algorithmFeatures=setdiff(names(algorithmFeatures), "algorithm"),
+                      algorithmFeatures=setdiff(names(algorithmFeatures), algorithmCommon),
                       performance=pnames, success=snames, minimize=minimize,
                       best=best, ids=instanceCommon)
     }
