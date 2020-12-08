@@ -10,7 +10,6 @@ function(instanceFeatures, algorithmFeatures = NULL, performances, successes=NUL
     }
     pnames = setdiff(names(performances), instanceCommon)
     
-    #FIXME: find algorithm column without explicitly stating it
     if(!is.null(algorithmFeatures)) {
         matches = lapply(algorithmFeatures, function(x) pnames %in% x)
         sums = lapply(matches, function(x) sum(x))
@@ -90,7 +89,7 @@ function(instanceFeatures, algorithmFeatures = NULL, performances, successes=NUL
     if(is.null(algorithmFeatures)) {
         retval = list(data=combined, features=setdiff(names(instanceFeatures), instanceCommon),
                       performance=pnames, success=snames, minimize=minimize,
-                      best=best, ids=instanceCommon)
+                      best=best, ids=instanceCommon, algos=algorithmCommon)
     } else {
         retval = list(data=combined, features=setdiff(names(instanceFeatures), instanceCommon),
                       algorithmFeatures=setdiff(names(algorithmFeatures), algorithmCommon),
