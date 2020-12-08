@@ -82,7 +82,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             }))
         } else {
             if(!is.null(data$algorithmFeatures)) {
-                performancePredictions[[data$algos]] = tsa$algorithm
+                performancePredictions[[data$algos]] = tsa[[data$algos]]
                 performancePredictions[[data$ids]] = ids
                 performancePredictions = convertLongToWide(performancePredictions, timevar=data$algos, idvar=data$ids, prefix="performance.")
             }
