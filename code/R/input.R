@@ -1,5 +1,5 @@
 input <-
-function(instanceFeatures, algorithmFeatures = NULL, performances, successes=NULL, costs=NULL, extra=NULL, minimize=T) {
+function(instanceFeatures, algorithmFeatures=NULL, performances, successes=NULL, costs=NULL, extra=NULL, minimize=T) {
     if(nrow(instanceFeatures) != nrow(performances) || (!is.null(successes) && (nrow(instanceFeatures) != nrow(successes) || nrow(performances) != nrow(successes)))) {
         warning("Different number of rows in data frames, taking only common rows.")
     }
@@ -89,12 +89,12 @@ function(instanceFeatures, algorithmFeatures = NULL, performances, successes=NUL
     if(is.null(algorithmFeatures)) {
         retval = list(data=combined, features=setdiff(names(instanceFeatures), instanceCommon),
                       performance=pnames, success=snames, minimize=minimize,
-                      best=best, ids=instanceCommon, algos=algorithmCommon)
+                      best=best, ids=instanceCommon)
     } else {
         retval = list(data=combined, features=setdiff(names(instanceFeatures), instanceCommon),
                       algorithmFeatures=setdiff(names(algorithmFeatures), algorithmCommon),
                       performance=pnames, success=snames, minimize=minimize,
-                      best=best, ids=instanceCommon)
+                      best=best, ids=instanceCommon, algos=algorithmCommon)
     }
     
     
