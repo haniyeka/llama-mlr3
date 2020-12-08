@@ -52,12 +52,12 @@ function(data=NULL, model=NULL, timeout=NULL, addCosts=NULL) {
         perfs = data$data[data$performance]
         successes = data$data[data$success]
     } else {
-        d = data$data[c(data$ids, "algorithm", "performance")]
-        perfs = convertLongToWide(data=d, timevar="algorithm", idvar=data$ids, prefix="performance.")
+        d = data$data[c(data$ids, data$algos, "performance")]
+        perfs = convertLongToWide(data=d, timevar=data$algos, idvar=data$ids, prefix="performance.")
         perfs = perfs[data$performance]
         
-        d = data$data[c(data$ids, "algorithm", "success")]
-        successes = convertLongToWide(data=d, timevar="algorithm", idvar=data$ids, prefix="success.")
+        d = data$data[c(data$ids, data$algos, "success")]
+        successes = convertLongToWide(data=d, timevar=data$algos, idvar=data$ids, prefix="success.")
         successes = successes[data$performance]
         colnames(successes) = paste(colnames(successes), "success", sep="_")
     }
@@ -69,8 +69,8 @@ function(data=NULL, model=NULL, timeout=NULL, addCosts=NULL) {
     if(is.null(data$algorithmFeatures)) {
         predictions$iid = match(do.call(paste, predictions[data$ids]), do.call(paste, data$data[data$ids]))
     } else {
-        d = data$data[c(data$ids, "algorithm", "performance")]
-        d = reshape(d, direction = "wide", timevar = "algorithm", idvar = data$ids)
+        d = data$data[c(data$ids, data$algos, "performance")]
+        d = reshape(d, direction = "wide", timevar = data$algos, idvar = data$ids)
         colnames(d) = gsub("performance.", "", colnames(d))
         predictions$iid = match(do.call(paste, predictions[data$ids]), do.call(paste, d[data$ids]))
     }

@@ -22,8 +22,8 @@ function(data=NULL, model=NULL, addCosts=NULL) {
     if(is.null(data$algorithmFeatures)) {
         perfs = data$data[data$performance]
     } else {
-        d = data$data[c(data$ids, "algorithm", "performance")]
-        perfs = convertLongToWide(data=d, timevar="algorithm", idvar=data$ids, prefix="performance.")
+        d = data$data[c(data$ids, data$algos, "performance")]
+        perfs = convertLongToWide(data=d, timevar=data$algos, idvar=data$ids, prefix="performance.")
         perfs = perfs[data$performance]
     }
     
@@ -31,8 +31,8 @@ function(data=NULL, model=NULL, addCosts=NULL) {
     if(is.null(data$algorithmFeatures)) {
         predictions$iid = match(do.call(paste, predictions[data$ids]), do.call(paste, data$data[data$ids]))  
     } else {
-        d = data$data[c(data$ids, "algorithm", "performance")]
-        d = convertLongToWide(data=d, timevar="algorithm", idvar=data$ids, prefix="performance.", remove.id=FALSE)
+        d = data$data[c(data$ids, data$algos, "performance")]
+        d = convertLongToWide(data=d, timevar=data$algos, idvar=data$ids, prefix="performance.", remove.id=FALSE)
         predictions$iid = match(do.call(paste, predictions[data$ids]), do.call(paste, d[data$ids]))
     }
     
