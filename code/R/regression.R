@@ -21,10 +21,10 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             trf = pre(data$data[data$train[[i]],][c(data$features, data$algorithmFeatures)])
             tsf = pre(data$data[data$test[[i]],][c(data$features, data$algorithmFeatures)], trf$meta)
             trp = data$data[data$train[[i]],]["performance"]
-            tsa = data$data[data$test[[i]],]["algorithm"]
+            tsa = data$data[data$test[[i]],][data$algos]
             
             if(!is.null(combine)) {
-                tra = data$data[data$train[[i]],]["algorithm"]
+                tra = data$data[data$train[[i]],][data$algos]
             }
         }
         ids = data$data[data$test[[i]],][data$ids]
@@ -82,9 +82,9 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             }))
         } else {
             if(!is.null(data$algorithmFeatures)) {
-                performancePredictions[["algorithm"]] = tsa$algorithm
+                performancePredictions[[data$algos]] = tsa$algorithm
                 performancePredictions[[data$ids]] = ids
-                performancePredictions = convertLongToWide(performancePredictions, timevar="algorithm", idvar=data$ids, prefix="performance.")
+                performancePredictions = convertLongToWide(performancePredictions, timevar=data$algos, idvar=data$ids, prefix="performance.")
             }
             
             combinedpredictions = rbind.fill(lapply(1:nrow(performancePredictions), function(j) {
@@ -170,9 +170,9 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             }))
         } else {
             if(!is.null(algo.names)) {
-                performancePredictions[["algorithm"]] = algo.names
+                performancePredictions[[data$algos]] = algo.names
                 performancePredictions[[data$ids]] = ids
-                performancePredictions = convertLongToWide(performancePredictions, timevar="algorithm", idvar=data$ids, prefix="performance.")
+                performancePredictions = convertLongToWide(performancePredictions, timevar=data$algos, idvar=data$ids, prefix="performance.")
             }
             
             combinedpredictions = rbind.fill(lapply(1:nrow(performancePredictions), function(j) {
