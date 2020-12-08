@@ -1,10 +1,11 @@
 print.llama.data <-
 function(x, ...) {
+  if(is.null(x$algorithmFeatures)) {
     cat(
       nrow(x$data), " instances\n",
       length(x$performance), " algorithms\n",
       "ID columns: ", paste(x$ids, collapse=", "), "\n",
-      "Features: ", paste(x$features, collapse=", "), "\n",
+      "Instance Features: ", paste(x$features, collapse=", "), "\n",
       "Performances: ", paste(x$performance, collapse=", "), "\n",
       "Successes: ", paste(x$success, collapse=", "), "\n",
       "Cost groups: ", printList(x$costGroups), "\n",
@@ -12,6 +13,21 @@ function(x, ...) {
       "Minimize: ", x$minimize, "\n",
       "Has splits: ", attr(x, "hasSplits"), "\n",
       sep = "")
+  } else {
+    cat(
+      nrow(x$data), " instances\n",
+      length(x$performance), " algorithms\n",
+      "ID columns: ", paste(x$ids, collapse=", "), "\n",
+      "Instance Features: ", paste(x$features, collapse=", "), "\n",
+      "Algorithm Features: ", paste(x$algorithmFeatures, collapse=", "), "\n",
+      "Performances: ", paste(x$performance, collapse=", "), "\n",
+      "Successes: ", paste(x$success, collapse=", "), "\n",
+      "Cost groups: ", printList(x$costGroups), "\n",
+      "Extra: ", paste(x$extra, collapse=", "), "\n",
+      "Minimize: ", x$minimize, "\n",
+      "Has splits: ", attr(x, "hasSplits"), "\n",
+      sep = "")
+  }
 }
 
 print.llama.model <-
