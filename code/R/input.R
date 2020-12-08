@@ -1,10 +1,10 @@
 input <-
-function(instanceFeatures, algorithmFeatures=NULL, performances, successes=NULL, costs=NULL, extra=NULL, minimize=T) {
-    if(nrow(instanceFeatures) != nrow(performances) || (!is.null(successes) && (nrow(instanceFeatures) != nrow(successes) || nrow(performances) != nrow(successes)))) {
+function(features, performances, algorithmFeatures=NULL, successes=NULL, costs=NULL, extra=NULL, minimize=T) {
+    if(nrow(features) != nrow(performances) || (!is.null(successes) && (nrow(features) != nrow(successes) || nrow(performances) != nrow(successes)))) {
         warning("Different number of rows in data frames, taking only common rows.")
     }
     
-    instanceCommon = intersect(names(instanceFeatures), names(performances))
+    instanceCommon = intersect(names(features), names(performances))
     if(length(instanceCommon) == 0) {
         stop("Performance can't be linked to instance features -- no common columns!")
     }
@@ -21,12 +21,12 @@ function(instanceFeatures, algorithmFeatures=NULL, performances, successes=NULL,
         }
     }
     
-    ids = factor(do.call(paste0, instanceFeatures[instanceCommon]))
+    ids = factor(do.call(paste0, features[instanceCommon]))
     if(length(ids) != length(levels(ids))) {
         stop("Common columns do not provide unique IDs!")
     }
     
-    combined = merge(instanceFeatures, performances, by=instanceCommon)
+    combined = merge(features, performances, by=instanceCommon)
     snames = NULL
     if(!is.null(successes)) {
         commonSuccess = intersect(names(successes), instanceCommon)
@@ -71,7 +71,7 @@ function(instanceFeatures, algorithmFeatures=NULL, performances, successes=NULL,
                        v.names = "performance", timevar = algorithmCommon, 
                        times = pnames, idvar = instanceCommon)
         row.names(perf) = NULL
-        combined = merge(perf, instanceFeatures, by=instanceCommon)
+        combined = merge(perf, features, by=instanceCommon)
         
         # merge with solver features
         combined = merge(combined, algorithmFeatures, by = algorithmCommon) 
@@ -90,11 +90,11 @@ function(instanceFeatures, algorithmFeatures=NULL, performances, successes=NULL,
     }
     
     if(is.null(algorithmFeatures)) {
-        retval = list(data=combined, features=setdiff(names(instanceFeatures), instanceCommon),
+        retval = list(data=combined, features=setdiff(names(features), instanceCommon),
                       performance=pnames, success=snames, minimize=minimize,
                       best=best, ids=instanceCommon)
     } else {
-        retval = list(data=combined, features=setdiff(names(instanceFeatures), instanceCommon),
+        retval = list(data=combined, features=setdiff(names(features), instanceCommon),
                       algorithmFeatures=setdiff(names(algorithmFeatures), algorithmCommon),
                       performance=pnames, success=snames, minimize=minimize,
                       best=best, ids=instanceCommon, algos=algorithmCommon)
