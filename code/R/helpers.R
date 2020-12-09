@@ -15,9 +15,10 @@ function(x, ...) {
       sep = "")
   } else {
     cat(
-      nrow(x$data), " instances\n",
+      nrow(unique(x$data[x$ids])), " instances\n",
       length(x$performance), " algorithms\n",
       "ID columns: ", paste(x$ids, collapse=", "), "\n",
+      "Algorithm columns: ", paste(x$algos, collapse=", "), "\n",
       "Instance Features: ", paste(x$features, collapse=", "), "\n",
       "Algorithm Features: ", paste(x$algorithmFeatures, collapse=", "), "\n",
       "Performances: ", paste(x$performance, collapse=", "), "\n",
