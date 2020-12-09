@@ -13,11 +13,15 @@ function(features, performances, algorithmFeatures=NULL, successes=NULL, costs=N
     if(!is.null(algorithmFeatures)) {
         matches = lapply(algorithmFeatures, function(x) pnames %in% x)
         sums = lapply(matches, function(x) sum(x))
-        algorithmCommon = names(sort(unlist(sums), decreasing = TRUE)[1])
+        n = sort(unlist(sums), decreasing = TRUE)[1]
+        if(!n) {
+            stop("Performance can't be linked to algorithm features -- no common columns!")
+        }
+        algorithmCommon = names(n)
         
         algos = pnames %in% algorithmFeatures[[algorithmCommon]]
         if(!all(algos)) {
-            stop("Not all algorithms are present in algorithmic features, taking only common algorithms.")
+            warning("Different number of algorithms in algorithmic features, taking only common algorithms.")
         }
     }
     
