@@ -11,6 +11,22 @@ d = list(data=rbind(cbind(fold, id=1:10), cbind(fold, id=11:20)),
 class(d) = "llama.data"
 attr(d, "hasSplits") = TRUE
 
+fold.algo = data.frame(a=rep.int(0, 20), performance=c(rep.int(c(1, 0), 5), rep.int(c(0, 1), 5)),
+                       f=rep.int(c(2, 3), 10), algo=rep(c("b", "c"), 10))
+d.algo = list(data=rbind(cbind(fold.algo, id=rep.int(1:10, rep.int(2, 10))), cbind(fold.algo, id=rep.int(11:20, rep.int(2, 10)))),
+              train=list(1:nrow(fold.algo)),
+              test=list(1:nrow(fold.algo) + nrow(fold.algo)),
+              features=c("a"),
+              algorithmFeatures=c("f"),
+              ids=c("id"),
+              algos=c("algo"),
+              minimize=T,
+              performance=c("b", "c"),
+              best=rep.int(c(rep.int("c", 5), rep.int("b", 5)), 2))
+class(d.algo) = "llama.data"
+attr(d.algo, "hasSplits") = TRUE
+
+
 fold.three = data.frame(a=rep.int(0, 10), b=c(rep.int(1, 5), rep.int(0, 5)),
                   c=c(rep.int(0, 5), rep.int(1, 5)), d = rep.int(1, 10))
 d.three = list(data=rbind(cbind(fold.three, id=1:10), cbind(fold.three, id=11:20)),
