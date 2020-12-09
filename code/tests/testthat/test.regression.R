@@ -5,6 +5,14 @@ test_that("regression predicts", {
         expect_equal(ss$algorithm, factor(c("c", "b")))
         expect_equal(ss$score, c(0, 1))
     })
+    
+    # test same with algorithm features
+    res = regression(testregressor, d.algo)
+    expect_equal(unique(res$predictions$id), 11:20)
+    by(res$predictions, res$predictions$id, function(ss) {
+        expect_equal(ss$algorithm, factor(c("c", "b")))
+        expect_equal(ss$score, c(0, 1))
+    })
 })
 
 test_that("regression returns predictor", {
