@@ -8,6 +8,9 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
     if(is.null(hs) || hs != TRUE) {
         stop("Need data with train/test split!")
     }
+    if(!is.null(combine) && !is.null(data$algorithmFeatures)) {
+        stop("Stacking with algorithm features is not supported yet!")
+    }
     
     worstScore = if(data$minimize) { Inf } else { -Inf }
     
@@ -22,12 +25,9 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             tsf = pre(data$data[data$test[[i]],][c(data$features, data$algorithmFeatures)], trf$meta)
             trp = data$data[data$train[[i]],]["performance"]
             tsa = data$data[data$test[[i]],][data$algos]
-            
-            if(!is.null(combine)) {
-                tra = data$data[data$train[[i]],][data$algos]
-            }
         }
         ids = data$data[data$test[[i]],][data$ids]
+        
         
         trainpredictions = data.frame(row.names=1:nrow(trf$features))
         performancePredictions = data.frame(row.names=1:nrow(tsf$features))
@@ -50,16 +50,11 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             if(!is.na(save.models)) {
                 saveRDS(list(model=model, train.data=task, test.data=tsf$features), file = paste(save.models, regressor$id, i, "rds", sep="."))
             }
-            if(!is.null(combine)) {
-                trainpredictions[["performance"]] = getPredictionResponse(predict(model, newdata=trf$features))
-            }
             performancePredictions[["performance"]] = getPredictionResponse(predict(model, newdata=tsf$features))
         }
         
         if(!is.null(combine)) {
-            if(is.null(data$algorithmFeatures)) {
-                colnames(trainpredictions) = data$performance
-            }
+            colnames(trainpredictions) = data$performance
             trainBests = data.frame(target=factor(breakBestTies(data, i), levels=data$performance))
             if(hasLearnerProperties(combine, "weights") && use.weights) {
                 trw = abs(apply(trp, 1, max) - apply(trp, 1, min))
@@ -85,6 +80,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
                 performancePredictions[[data$algos]] = tsa[[data$algos]]
                 performancePredictions[[data$ids]] = ids
                 performancePredictions = convertLongToWide(performancePredictions, timevar=data$algos, idvar=data$ids, prefix="performance.")
+                ids = unique(ids)
             }
             
             combinedpredictions = rbind.fill(lapply(1:nrow(performancePredictions), function(j) {
@@ -173,6 +169,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
                 performancePredictions[[data$algos]] = algo.names
                 performancePredictions[[data$ids]] = ids
                 performancePredictions = convertLongToWide(performancePredictions, timevar=data$algos, idvar=data$ids, prefix="performance.")
+                ids = unique(ids)
             }
             
             combinedpredictions = rbind.fill(lapply(1:nrow(performancePredictions), function(j) {
