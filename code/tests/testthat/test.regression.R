@@ -10,8 +10,8 @@ test_that("regression predicts", {
     res = regression(testregressor, d.algo)
     expect_equal(unique(res$predictions$id), 11:20)
     by(res$predictions, res$predictions$id, function(ss) {
-        expect_equal(ss$algorithm, factor(c("c", "b")))
-        expect_equal(ss$score, c(0, 1))
+        expect_equal(ss$algorithm, factor(c("b", "c")))
+        expect_equal(ss$score, c(1, 1))
     })
 })
 
