@@ -146,7 +146,7 @@ function(data=NULL, fold=NULL, pairs=FALSE) {
             } else {
                 perfs = data$data[data$train[[fold]],][c(data$performance, data$algos, data$ids)]
             }
-            combns = combn(data$performance, 2)
+            combns = combn(unique(data$data$algorithm), 2)
             values = lapply(1:ncol(combns), function(j) {
                 p = perfs[perfs[[data$algos]] == combns[1,j], ]
                 return(p = p)
