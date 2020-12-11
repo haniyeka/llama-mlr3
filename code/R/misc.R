@@ -33,7 +33,7 @@ function(data=NULL) {
     if(is.null(data$algorithmFeatures)) {
         ids = data$data[data$ids]
     } else { 
-        best = best[seq(1, length(best), length(unique(data$data$algorithm))]
+        best = best[seq(1, length(best), length(unique(data$data$algorithm)))]
         ids = unique(data$data[data$ids]) 
     }
     data.frame(ids, algorithm = factor(names(sort(table(best), decreasing=T)[1])), score = 1, iteration = 1)
