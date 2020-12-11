@@ -14,7 +14,12 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
     
     worstScore = if(data$minimize) { Inf } else { -Inf }
     
-    totalBests = data.frame(target=factor(breakBestTies(data), levels=data$performance))
+    if(is.null(data$algorithmFeatures)) {
+        totalBests = data.frame(target=factor(breakBestTies(data), levels=data$performance))
+    } else {
+        totalBests = data.frame(target=factor(breakBestTies(data), levels=unique(data$data$algorithm)))
+    }
+    
     predictions = rbind.fill(parallelMap(function(i) {
         if(is.null(data$algorithmFeatures)) {
             trf = pre(data$data[data$train[[i]],][data$features])
