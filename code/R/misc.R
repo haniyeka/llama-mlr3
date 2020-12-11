@@ -116,11 +116,11 @@ function(data=NULL) {
     if(is.null(data$algorithmFeatures)) {
         best = names(sort(sapply(data$performance, function(x) { mean(data$data[,x]) }), decreasing=!data$minimize))[1]
     } else {
-        best = names(sort(sapply(data$performance, function(x) { mean(data$data[data$data[[data$algos]] == x, "performance"]) }), decreasing=!data$minimize))[1]
+        best = names(sort(sapply(data$performance, function(x) { mean(data$data[data$data[[data$algos]] == x, data$performance]) }), decreasing=!data$minimize))[1]
     }
     ids = data$data[data$ids]
     data.frame(ids, algorithm = factor(best), score = 1, iteration = 1)
-
+    
 }
 class(singleBest) = "llama.model"
 attr(singleBest, "type") = "single best"
@@ -136,15 +136,15 @@ function(data=NULL, fold=NULL, pairs=FALSE) {
     optfun = if(data$minimize) { which.min } else { which.max }
     if(!is.null(data$algorithmFeatures)) {
         if(is.null(fold)) {
-            perfs = data$data[c("performance", data$algos, data$ids)]
+            perfs = data$data[c(data$performance, data$algos, data$ids)]
         } else {
-            perfs = data$data[data$train[[fold]],][c("performance", data$algos, data$ids)]
+            perfs = data$data[data$train[[fold]],][c(data$performance, data$algos, data$ids)]
         }
         if(pairs) {
             if(is.null(fold)) {
-                perfs = data$data[c("performance", data$algos, data$ids)]
+                perfs = data$data[c(data$performance, data$algos, data$ids)]
             } else {
-                perfs = data$data[data$train[[fold]],][c("performance", data$algos, data$ids)]
+                perfs = data$data[data$train[[fold]],][c(data$performance, data$algos, data$ids)]
             }
             combns = combn(data$performance, 2)
             values = lapply(1:ncol(combns), function(j) {
@@ -153,7 +153,7 @@ function(data=NULL, fold=NULL, pairs=FALSE) {
             })
             perfs = as.data.frame(rbindlist(lapply(values, function(x) { x })))
         }
-        best = factor(sapply(perfs[[data$ids]], function(x) { order=perfs[perfs[[data$ids]]==x, data$algos]; order[optfun(unlist(perfs[perfs[[data$ids]]==x, "performance"]))] }))
+        best = factor(sapply(perfs[[data$ids]], function(x) { order=perfs[perfs[[data$ids]]==x, data$algos]; order[optfun(unlist(perfs[perfs[[data$ids]]==x, data$performance]))] }))
     } else {
         if(is.null(fold)) {
             perfs = data$data[data$performance]
