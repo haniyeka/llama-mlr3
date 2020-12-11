@@ -133,7 +133,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         combinedmodel = train(combine, task = task)
     }
     
-    predictor = function(x, algo.names=NULL) {
+    predictor = function(x) {
         if(is.null(data$algorithmFeatures)) {
             tsf = pre(x[data$features], fs$meta)
         } else {
@@ -142,7 +142,13 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         if(length(intersect(colnames(x), data$ids)) > 0) {
             ids = x[data$ids]
         } else {
-            ids = data.frame(id = 1:nrow(x)) # don't have IDs, generate them
+            # don't have IDs, generate them
+            if(is.null(data$algorithmFeatures)) {
+                ids = data.frame(id = 1:nrow(x))  
+            } else {
+                n = nrow(x) / length(unique(x[[data$algos]]))
+                ids = data.frame(id = rep.int(1:n, rep.int(length(unique(x[[data$algos]])), n)))
+            }
         }
         performancePredictions = data.frame(row.names=1:nrow(tsf$features))
         if(is.null(data$algorithmFeatures)) {
@@ -165,8 +171,8 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
                 }
             }))
         } else {
-            if(!is.null(algo.names)) {
-                performancePredictions[[data$algos]] = algo.names
+            if(!is.null(data$algorithmFeatures)) {
+                performancePredictions[[data$algos]] = x[[data$algos]]
                 performancePredictions[[data$ids]] = ids
                 performancePredictions = convertLongToWide(performancePredictions, timevar=data$algos, idvar=data$ids, prefix="performance.")
                 ids = unique(ids)
