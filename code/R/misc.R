@@ -30,11 +30,11 @@ function(data=NULL) {
         stop("Need data to determine single best!")
     }
     best = breakBestTies(data)
-    if(!is.null(data$algorithmFeatures)) {
-        best = best[seq(1, length(best), length(data$performance))]
-        ids = unique(data$data[data$ids])
-    } else {
+    if(is.null(data$algorithmFeatures)) {
         ids = data$data[data$ids]
+    } else { 
+        best = best[seq(1, length(best), length(unique(data$data$algorithm))]
+        ids = unique(data$data[data$ids]) 
     }
     data.frame(ids, algorithm = factor(names(sort(table(best), decreasing=T)[1])), score = 1, iteration = 1)
 }
@@ -51,8 +51,13 @@ function(data=NULL, factor=10) {
     if(is.null(data$success)) {
         stop("Need successes to compute PAR scores.")
     }
+    if(is.null(data$algorithmFeatures)) {
+        algos = data$performance
+    } else {
+        algos = unique(data$data$algorithm)
+    }
     
-    best = names(sort(sapply(data$performance, function(x) {
+    best = names(sort(sapply(algos, function(x) {
         prs = data.frame(data$data[,data$ids,drop=F], algorithm = factor(x), score = 1, iteration = 1)
         if(!is.null(data$algorithmFeatures)) {
             prs = unique(prs)
@@ -83,8 +88,13 @@ function(data=NULL) {
     if(is.null(data$success)) {
         stop("Need successes to compute successes.")
     }
+    if(is.null(data$algorithmFeatures)) {
+        algos = data$performance
+    } else {
+        algos = unique(data$data$algorithm)
+    }
     
-    best = names(sort(sapply(data$performance, function(x) {
+    best = names(sort(sapply(algos, function(x) {
         prs = data.frame(data$data[,data$ids,drop=F], algorithm = factor(x), score = 1, iteration = 1)
         if(!is.null(data$algorithmFeatures)) {
             prs = unique(prs)
@@ -116,7 +126,7 @@ function(data=NULL) {
     if(is.null(data$algorithmFeatures)) {
         best = names(sort(sapply(data$performance, function(x) { mean(data$data[,x]) }), decreasing=!data$minimize))[1]
     } else {
-        best = names(sort(sapply(data$performance, function(x) { mean(data$data[data$data[[data$algos]] == x, data$performance]) }), decreasing=!data$minimize))[1]
+        best = names(sort(sapply(unique(data$data$algorithm), function(x) { mean(data$data[data$data[[data$algos]] == x, data$performance]) }), decreasing=!data$minimize))[1]
     }
     ids = data$data[data$ids]
     data.frame(ids, algorithm = factor(best), score = 1, iteration = 1)
