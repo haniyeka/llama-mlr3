@@ -1,5 +1,5 @@
 input <-
-function(features, performances, algorithmFeatures=NULL, successes=NULL, costs=NULL, extra=NULL, minimize=T) {
+function(features, performances, algorithmFeatures=NULL, successes=NULL, costs=NULL, extra=NULL, minimize=T, perfcol="performance") {
     if(nrow(features) != nrow(performances) || (!is.null(successes) && (nrow(features) != nrow(successes) || nrow(performances) != nrow(successes)))) {
         warning("Different number of rows in data frames, taking only common rows.")
     }
@@ -72,7 +72,7 @@ function(features, performances, algorithmFeatures=NULL, successes=NULL, costs=N
     if(!is.null(algorithmFeatures)) {
         # reshape performances into  long format
         perf = reshape(performances, direction = "long", varying = pnames, 
-                       v.names = "performance", timevar = algorithmCommon, 
+                       v.names = perfcol, timevar = algorithmCommon, 
                        times = pnames, idvar = instanceCommon)
         row.names(perf) = NULL
         combined = merge(perf, features, by=instanceCommon)
@@ -100,7 +100,7 @@ function(features, performances, algorithmFeatures=NULL, successes=NULL, costs=N
     } else {
         retval = list(data=combined, features=setdiff(names(features), instanceCommon),
                       algorithmFeatures=setdiff(names(algorithmFeatures), algorithmCommon),
-                      performance=pnames, success=snames, minimize=minimize,
+                      performance=perfcol, success=snames, minimize=minimize,
                       best=best, ids=instanceCommon, algos=algorithmCommon)
     }
     
