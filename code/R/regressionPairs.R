@@ -8,6 +8,9 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
     if(is.null(hs) || hs != TRUE) {
         stop("Need data with train/test split!")
     }
+    if(!is.null(combine) && !is.null(data$algorithmFeatures)) {
+        stop("Stacking with algorithm features is not supported yet!")
+    }
     
     signPair = function(k, p, sign, row, combns) {
         if(p == combns[1,k]) {
@@ -23,11 +26,12 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
     
     if(is.null(data$algorithmFeatures)) {
         totalBests = data.frame(target=factor(breakBestTies(data), levels=data$performance))
+        combns = combn(data$performance, 2)
     } else {
-        totalBests = data.frame(target=factor(breakBestTies(data, pairs=TRUE), levels=data$performance))
+        totalBests = data.frame(target=factor(breakBestTies(data, pairs=TRUE), levels=unique(data$data$algorithm)))
+        combns = combn(unique(data$data$algorithm), 2)
     }
     
-    combns = combn(data$performance, 2)
     predictions = rbind.fill(parallelMap(function(i) {
         if(is.null(data$algorithmFeatures)) {
             trf = pre(data$data[data$train[[i]],][data$features])
@@ -55,12 +59,11 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
                 }
                 pairpredictions[,j] = getPredictionResponse(predict(model, newdata=tsf$features))
             }
-            
         } else {
             values = lapply(1:ncol(combns), function(j) {
                 a1 = which(data$data[data$train[[i]], data$algos] == combns[1,j])
                 a2 = which(data$data[data$train[[i]], data$algos] == combns[2,j])
-                trperf = data.frame(target=data$data[a1, "performance"] - data$data[a2, "performance"])
+                trperf = data.frame(target=data$data[a1, data$performance] - data$data[a2, data$performance])
                 
                 f1 = subset(data$data, data$data[[data$algos]] == combns[1,j])
                 f2 = subset(data$data, data$data[[data$algos]] == combns[2,j])
@@ -91,9 +94,6 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             if(!is.na(save.models)) {
                 saveRDS(list(model=model, train.data=task, test.data=tsf$features), file = paste(save.models, regressor$id, i, "rds", sep="."))
             }
-            if(!is.null(combine)) { # only do this if we need it
-                trainpredictions = getPredictionResponse(predict(model, newdata=trf$features))
-            }
             pairpredictions = getPredictionResponse(predict(model, newdata=tsf$features))
         }
         
@@ -105,7 +105,6 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             } else {
                 task = makeClassifTask(id="regression", target="target", data=cbind(trainBests, trf$features, data.frame(trainpredictions)), fixup.data="quiet", check.data=FALSE)
             }
-            
             
             combinedmodel = train(combine, task = task)
             if(!is.na(save.models)) {
@@ -133,7 +132,12 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             }
             combinedpredictions = rbind.fill(lapply(1:nrow(pairpredictions), function(j) {
                 row = pairpredictions[j,]
-                performanceSums = sapply(data$performance, function(p) {
+                if(is.null(data$algorithmFeatures)) {
+                    algos = data$performance
+                } else {
+                    algos = unique(data$data$algorithm)
+                }
+                performanceSums = sapply(algos, function(p) {
                     sum(unlist(sapply(1:ncol(combns), signPair, p, sign, row, combns)))
                 })
                 x = sort(performanceSums, decreasing = TRUE)
@@ -149,11 +153,10 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
     
     if(is.null(data$algorithmFeatures)) {
         fs = pre(data$data[data$features])
-        fp = data$data[data$performance]
     } else {
         fs = pre(data$data[c(data$features, data$algos)]) 
-        fp = data$data["performance"]
     }
+    fp = data$data[data$performance]
     
     fw = abs(apply(fp, 1, max) - apply(fp, 1, min))
     if(is.null(data$algorithmFeatures)) {
@@ -166,7 +169,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         values = lapply(1:ncol(combns), function(j) {
             a1 = which(data$data[[data$algos]] == combns[1,j])
             a2 = which(data$data[[data$algos]] == combns[2,j])
-            trperf = data.frame(target=data$data[a1, "performance"] - data$data[a2, "performance"])
+            trperf = data.frame(target=data$data[a1, data$performance] - data$data[a2, data$performance])
             
             f1 = subset(data$data, data$data[[data$algos]] == combns[1,j])
             f2 = subset(data$data, data$data[[data$algos]] == combns[2,j])
@@ -190,13 +193,9 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
     }
     
     if(!is.null(combine)) {
-        if(is.null(data$algorithmFeatures)) {
-            trainpredictions = matrix(nrow=nrow(fs$features), ncol=ncol(combns))
-            for(i in 1:ncol(combns)) {
-                trainpredictions[,i] = getPredictionResponse(predict(models[[i]], newdata=fs$features))
-            }
-        } else {
-            trainpredictions = getPredictionResponse(predict(models, newdata=fs$features))
+        trainpredictions = matrix(nrow=nrow(fs$features), ncol=ncol(combns))
+        for(i in 1:ncol(combns)) {
+            trainpredictions[,i] = getPredictionResponse(predict(models[[i]], newdata=fs$features))
         }
         
         if(hasLearnerProperties(combine, "weights") && use.weights) {
@@ -215,7 +214,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             values = lapply(1:ncol(combns), function(j) {
                 a1 = which(x[[data$algos]] == combns[1,j])
                 a2 = which(x[[data$algos]] == combns[2,j])
-                trperf = data.frame(target=x[a1, "performance"] - x[a2, "performance"])
+                trperf = data.frame(target=x[a1, data$performance] - x[a2, data$performance])
                 
                 f1 = subset(x, x[[data$algos]] == combns[1,j])
                 f2 = subset(x, x[[data$algos]] == combns[2,j])
@@ -282,7 +281,12 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             }
             combinedpredictions = rbind.fill(lapply(1:nrow(pairpredictions), function(j) {
                 row = pairpredictions[j,]
-                performanceSums = sapply(data$performance, function(p) {
+                if(is.null(data$algorithmFeatures)) {
+                    algos = data$performance
+                } else {
+                    algos = unique(data$data$algorithm)
+                }
+                performanceSums = sapply(algos, function(p) {
                     sum(unlist(sapply(1:ncol(combns), signPair, p, sign, row, combns)))
                 })
                 x = sort(performanceSums, decreasing = TRUE)
