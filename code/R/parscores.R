@@ -54,11 +54,11 @@ function(data=NULL, model=NULL, factor=10, timeout=NULL, addCosts=NULL) {
     } else {
         d = data$data[c(data$ids, data$algos, "performance")]
         perfs = convertLongToWide(data=d, timevar=data$algos, idvar=data$ids, prefix="performance.")
-        perfs = perfs[data$performance]
+        perfs = perfs[unique(data$data$algorithm)]
         
         d = data$data[c(data$ids, data$algos, "success")]
         successes = convertLongToWide(data=d, timevar=data$algos, idvar=data$ids, prefix="success.")
-        successes = successes[data$performance]
+        successes = successes[unique(data$data$algorithm)]
         colnames(successes) = paste(colnames(successes), "success", sep="_")
     }
     
@@ -70,13 +70,15 @@ function(data=NULL, model=NULL, factor=10, timeout=NULL, addCosts=NULL) {
     
     if(is.null(data$algorithmFeatures)) {
         predictions$iid = match(do.call(paste, predictions[data$ids]), do.call(paste, data$data[data$ids]))
+        predictions$pid = match(predictions$algorithm, data$performance)
     } else {
         d = data$data[c(data$ids, data$algos, "performance")]
         d = reshape(d, direction = "wide", timevar = data$algos, idvar = data$ids)
         colnames(d) = gsub("performance.", "", colnames(d))
         predictions$iid = match(do.call(paste, predictions[data$ids]), do.call(paste, d[data$ids]))
+        predictions$pid = match(predictions$algorithm, unique(data$data$algorithm))
     }
-    predictions$pid = match(predictions$algorithm, data$performance)
+    
     predictions$score = apply(predictions, 1, function(x) {
         pid = as.numeric(x[["pid"]])
         if(is.na(pid)) {
