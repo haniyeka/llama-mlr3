@@ -23,7 +23,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         } else {
             trf = pre(data$data[data$train[[i]],][c(data$features, data$algorithmFeatures)])
             tsf = pre(data$data[data$test[[i]],][c(data$features, data$algorithmFeatures)], trf$meta)
-            trp = data$data[data$train[[i]],]["performance"]
+            trp = data$data[data$train[[i]],][data$performance]
             tsa = data$data[data$test[[i]],][data$algos]
         }
         ids = data$data[data$test[[i]],][data$ids]
@@ -45,12 +45,12 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             }
             colnames(performancePredictions) = data$performance
         } else {
-            task = makeRegrTask(id="regression", target="target", data=cbind(data.frame(target=data$data[data$train[[i]],"performance"], trf$features)))
+            task = makeRegrTask(id="regression", target="target", data=cbind(data.frame(target=data$data[data$train[[i]],data$performance], trf$features)))
             model = train(regressor, task = task)
             if(!is.na(save.models)) {
                 saveRDS(list(model=model, train.data=task, test.data=tsf$features), file = paste(save.models, regressor$id, i, "rds", sep="."))
             }
-            performancePredictions[["performance"]] = getPredictionResponse(predict(model, newdata=tsf$features))
+            performancePredictions[[data$performance]] = getPredictionResponse(predict(model, newdata=tsf$features))
         }
         
         if(!is.null(combine)) {
@@ -79,7 +79,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             if(!is.null(data$algorithmFeatures)) {
                 performancePredictions[[data$algos]] = tsa[[data$algos]]
                 performancePredictions[[data$ids]] = ids
-                performancePredictions = convertLongToWide(performancePredictions, timevar=data$algos, idvar=data$ids, prefix="performance.")
+                performancePredictions = convertLongToWide(performancePredictions, timevar=data$algos, idvar=data$ids, prefix=paste(data$performance,".",sep=""))
                 ids = unique(ids)
             }
             
@@ -97,11 +97,10 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
     
     if(is.null(data$algorithmFeatures)) {
         fs = pre(data$data[data$features])
-        fp = data$data[data$performance]
     } else {
         fs = pre(data$data[c(data$features, data$algorithmFeatures)])
-        fp = data$data["performance"]
     }
+    fp = data$data[data$performance]
     
     fw = abs(apply(fp, 1, max) - apply(fp, 1, min))
     if(is.null(data$algorithmFeatures)) {
@@ -110,7 +109,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             return(train(regressor, task = task))
         })
     } else {
-        task = makeRegrTask(id="regression", target="target", data=cbind(data.frame(target=data$data[["performance"]]), fs$features))
+        task = makeRegrTask(id="regression", target="target", data=cbind(data.frame(target=data$data[[data$performance]]), fs$features))
         models = train(regressor, task = task)
     }
     
@@ -122,7 +121,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             }
             colnames(trainpredictions) = data$performance
         } else {
-            trainpredictions[["performance"]] = getPredictionResponse(predict(models, newdata=fs$features))
+            trainpredictions[[data$performance]] = getPredictionResponse(predict(models, newdata=fs$features))
         }
         
         if(hasLearnerProperties(combine, "weights") && use.weights) {
@@ -157,7 +156,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             }
             colnames(performancePredictions) = data$performance
         } else {
-            performancePredictions[["performance"]] = getPredictionResponse(predict(models, newdata=tsf$features))
+            performancePredictions[[data$performance]] = getPredictionResponse(predict(models, newdata=tsf$features))
         }
         
         if(!is.null(combine)) {
@@ -174,7 +173,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             if(!is.null(data$algorithmFeatures)) {
                 performancePredictions[[data$algos]] = x[[data$algos]]
                 performancePredictions[[data$ids]] = ids
-                performancePredictions = convertLongToWide(performancePredictions, timevar=data$algos, idvar=data$ids, prefix="performance.")
+                performancePredictions = convertLongToWide(performancePredictions, timevar=data$algos, idvar=data$ids, prefix=paste(data$performance,".",sep=""))
                 ids = unique(ids)
             }
             

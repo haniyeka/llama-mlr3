@@ -1,250 +1,194 @@
-test_that("virtual best returns the vbs", {
-    d = list(data=data.frame(id=1:5), best=bests, ids=c("id"))
-    class(d) = "llama.data"
-
-    preds = vbs(d)
-    by(preds, preds$id, function(ss) {
-        expect_equal(ss$algorithm, factor(bests[ss$id], levels=unique(bests)))
-        expect_equal(ss$score, 1)
-    })
-})
-
-test_that("virtual best works with best list", {
-    d = list(data=data.frame(id=1:3), best=bestlist, ids=c("id"))
-    class(d) = "llama.data"
-
-    preds = vbs(d)
-    by(preds, preds$id, function(ss) {
-        algs = bestlist[[ss$id[1]]]
-        expect_equal(ss$algorithm, factor(algs, levels = c("a", "b")))
-        expect_equal(ss$score, rep.int(1, length(algs)))
-    })
-})
-
-test_that("virtual best raises error without data", {
-    expect_error(vbs(), "Need data to determine virtual best!")
-})
-
-test_that("single best raises error without data", {
-    expect_error(singleBest(), "Need data to determine single best!")
-})
-
-test_that("virtual best works with NAs", {
-    d = list(data=data.frame(id=1), best=c(NA), ids=c("id"))
-    class(d) = "llama.data"
-
-    preds = vbs(d)
-    expect_equal(nrow(preds), 1)
-    by(preds, preds$id, function(ss) {
-        expect_equal(ss$algorithm, factor(NA))
-        expect_equal(ss$score, 0)
-    })
-})
-
-test_that("single best returns the single best", {
-    fold = data.frame(id=1:10, a=rep.int(1, 10), b=rep.int(0, 10))
-    d = list(data=fold, performance=c("a", "b"), minimize=T, best=rep.int("a", 10), ids=c("id"))
-    class(d) = "llama.data"
-    e = list(data=fold, performance=c("a", "b"), minimize=F, best=rep.int("a", 10), ids=c("id"))
-    class(e) = "llama.data"
-
-    preds = singleBest(d)
-    by(preds, preds$id, function(ss) {
-        expect_equal(ss$algorithm, factor("b"))
-        expect_equal(ss$score, 1)
-    })
-    preds = singleBest(e)
-    by(preds, preds$id, function(ss) {
-        expect_equal(ss$algorithm, factor("a"))
-        expect_equal(ss$score, 1)
-    })
-})
-
-test_that("single best works with best list", {
-    fold = data.frame(id=1:10, a=rep.int(1, 10), b=rep.int(0, 10))
-    d = list(data=fold, performance=c("a", "b"), minimize=T, ids=c("id"))
-    d$best = bestlistlong
-    class(d) = "llama.data"
-    e = list(data=fold, performance=c("a", "b"), minimize=F, ids=c("id"))
-    e$best = bestlistlong
-    class(e) = "llama.data"
-
-    preds = singleBest(d)
-    by(preds, preds$id, function(ss) {
-        expect_equal(ss$algorithm, factor("b"))
-        expect_equal(ss$score, 1)
-    })
-    preds = singleBest(e)
-    by(preds, preds$id, function(ss) {
-        expect_equal(ss$algorithm, factor("a"))
-        expect_equal(ss$score, 1)
-    })
-})
-
-test_that("single best by count returns the single best", {
-    d = list(data=data.frame(id=1:3, a=c(1,2,3), b=c(2,2,3)),
-             performance=c("a", "b"), minimize=T, ids=c("id"))
-    d$best = rep.int("a", 3)
-    class(d) = "llama.data"
-
-    preds = singleBestByCount(d)
-    by(preds, preds$id, function(ss) {
-        expect_equal(ss$algorithm, factor("a"))
-        expect_equal(ss$score, 1)
-    })
-})
-
-test_that("single best by count works with best list", {
-    d = list(data=data.frame(id=1:3, a=c(1,2,3), b=c(2,2,3)),
-             performance=c("a", "b"), minimize=T, ids=c("id"))
-    d$best = bestlist
-    class(d) = "llama.data"
-
-    preds = singleBestByCount(d)
-    by(preds, preds$id, function(ss) {
-        expect_equal(ss$algorithm, factor("a"))
-        expect_equal(ss$score, 1)
-    })
-})
-
-test_that("single best by par returns the single best", {
-    fold = data.frame(id=1:10, a=rep.int(1, 10), b=rep.int(0, 10),
-        d=rep.int(F, 10), e=rep.int(T, 10))
-    d = list(data=fold, performance=c("a", "b"), success=c("d", "e"), best=rep.int("a", 10), ids=c("id"))
-    class(d) = "llama.data"
-
-    preds = singleBestByPar(d)
-    by(preds, preds$id, function(ss) {
-        expect_equal(ss$algorithm, factor("b"))
-        expect_equal(ss$score, 1)
-    })
-})
-
-test_that("single best by par works with best list", {
-    fold = data.frame(id=1:10, a=rep.int(1, 10), b=rep.int(0, 10),
-        d=rep.int(F, 10), e=rep.int(T, 10))
-    d = list(data=fold, performance=c("a", "b"), success=c("d", "e"), ids=c("id"))
-    d$best = bestlistlong
-    class(d) = "llama.data"
-
-    preds = singleBestByPar(d)
-    by(preds, preds$id, function(ss) {
-        expect_equal(ss$algorithm, factor("b"))
-        expect_equal(ss$score, 1)
-    })
-})
-
-test_that("single best by par works with train/test split", {
-    fold = data.frame(id=1:10, a=rep.int(1, 10), b=rep.int(0, 10),
-        d=rep.int(F, 10), e=rep.int(T, 10))
-    d = list(data=fold, test=list(1:5), train=list(6:10),
-        performance=c("a", "b"), success=c("d", "e"), ids=c("id"))
-    d$best = bestlistlong
-    class(d) = "llama.data"
-
-    preds = singleBestByPar(d)
-    by(preds, preds$id, function(ss) {
-        expect_equal(ss$algorithm, factor("b"))
-        expect_equal(ss$score, 1)
-    })
-})
-
-test_that("single best by par raises error without data", {
-    expect_error(singleBestByPar(), "Need data to determine single best!")
-})
-
-test_that("single best by successes returns the single best", {
-    fold = data.frame(id=1:10, a=rep.int(1, 10), b=rep.int(0, 10),
-        d=rep.int(F, 10), e=rep.int(T, 10))
-    d = list(data=fold, performance=c("a", "b"), success=c("d", "e"), best=rep.int("a", 10), ids=c("id"))
-    class(d) = "llama.data"
-
-    preds = singleBestBySuccesses(d)
-    by(preds, preds$id, function(ss) {
-        expect_equal(ss$algorithm, factor("b"))
-        expect_equal(ss$score, 1)
-    })
-})
-
-test_that("single best by successes works with best list", {
-    fold = data.frame(id=1:10, a=rep.int(1, 10), b=rep.int(0, 10),
-        d=rep.int(F, 10), e=rep.int(T, 10))
-    d = list(data=fold, performance=c("a", "b"), success=c("d", "e"), ids=c("id"))
-    d$best = bestlistlong
-    class(d) = "llama.data"
-
-    preds = singleBestBySuccesses(d)
-    by(preds, preds$id, function(ss) {
-        expect_equal(ss$algorithm, factor("b"))
-        expect_equal(ss$score, 1)
-    })
-})
-
-test_that("single best by successes raises error without data", {
-    expect_error(singleBestBySuccesses(), "Need data to determine single best!")
-})
-
-test_that("break best ties recomputes bests without ties", {
-    d = list(data=data.frame(a=c(1,2,3), b=c(2,2,2.5)),
-             performance=c("a", "b"), minimize=T)
-    class(d) = "llama.data"
-
-    expect_equal(breakBestTies(d), factor(c("a", "a", "b")))
-})
-
-test_that("break best ties accepts fold argument", {
-    fold = data=data.frame(a=c(1,2,3), b=c(2,2,2.5))
-    d = list(data=rbind(fold, fold), performance=c("a", "b"), minimize=T,
-        train=list(1:nrow(fold)))
-    class(d) = "llama.data"
-
-    expect_equal(breakBestTies(d), factor(c("a", "a", "b", "a", "a", "b")))
-    expect_equal(breakBestTies(d, 1), factor(c("a", "a", "b")))
-})
-
-test_that("predTable tabulates", {
-    d = list(data=data.frame(id=1:3), best=bestlist, ids=c("id"))
-    class(d) = "llama.data"
-    preds = vbs(d)
-
-    tab1 = predTable(preds)
-    expect_equal(as.vector(tab1), c(2, 1))
-    expect_equal(names(tab1), c("a", "b"))
-
-    tab2 = predTable(preds, FALSE)
-    expect_equal(as.vector(tab2), c(2, 2))
-    expect_equal(names(tab2), c("a", "b"))
-
-    preds = data.frame(id=1:3, algorithm=factor(c("a", "a", "b")), score = 1, iteration=1)
-    tab3 = predTable(preds)
-    expect_equal(as.vector(tab3), c(2, 1))
-    expect_equal(names(tab3), c("a", "b"))
-
-    preds = data.frame(id=c(1, 2, 3, 3), algorithm=factor(c("a", "a", "a", "b")), score = 1, iteration=1)
-    tab4 = predTable(preds)
-    expect_equal(as.vector(tab4), 3)
-    expect_equal(names(tab4), "a")
-    tab5 = predTable(preds, FALSE)
-    expect_equal(as.vector(tab5), c(3, 1))
-    expect_equal(names(tab5), c("a", "b"))
-
-    i = 0
-    model = function(data) {
-        i <<- i + 1
-        data.frame(id=data$data$id, algorithm=factor("a"), score=1, iteration=i)
+predNames = c("algorithm", "score")
+vbs <-
+function(data=NULL) {
+    if(is.null(data)) {
+        stop("Need data to determine virtual best!")
     }
-    class(model) = "llama.model"
-    attr(model, "hasPredictions") = FALSE
-    attr(model, "addCosts") = TRUE
+    lens = sapply(data$best, length)
+    idxs = unlist(lapply(1:length(lens), function(i) { rep.int(i, lens[i]) }))
+    if(is.null(data$algorithmFeatures)) {
+        ids = data$data[idxs,data$ids,drop=F]
+    } else {
+        ids = unique(data$data$instance_id)[idxs]
+        ids = data.frame(ids)
+        colnames(ids) = data$ids
+    }
+    
+    bests = unlist(data$best)
+    scores = rep.int(1, length(bests))
+    scores[is.na(bests)] = 0
+    return(data.frame(ids, algorithm = factor(bests), score = scores, iteration = 1))
+}
+class(vbs) = "llama.model"
+attr(vbs, "type") = "virtual best"
+attr(vbs, "hasPredictions") = FALSE
+attr(vbs, "addCosts") = FALSE
 
-    d = dmeas
-    d$test = list(c(1,2), c(1,2), c(1,2))
-    preds = do.call(rbind, lapply(d$test, function(x) {
-        d$data = d$data[x,]
-        d$best = d$best[x]
-        model(d)
-    }))
-    tab6 = predTable(preds)
-    expect_equal(as.vector(tab6), 6)
-    expect_equal(names(tab6), "a")
-})
+singleBestByCount <-
+function(data=NULL) {
+    if(is.null(data)) {
+        stop("Need data to determine single best!")
+    }
+    best = breakBestTies(data)
+    if(!is.null(data$algorithmFeatures)) {
+        best = best[seq(1, length(best), length(data$performance))]
+        ids = unique(data$data[data$ids])
+    } else {
+        ids = data$data[data$ids]
+    }
+    data.frame(ids, algorithm = factor(names(sort(table(best), decreasing=T)[1])), score = 1, iteration = 1)
+}
+class(singleBestByCount) = "llama.model"
+attr(singleBestByCount, "type") = "single best"
+attr(singleBestByCount, "hasPredictions") = FALSE
+attr(singleBestByCount, "addCosts") = FALSE
+
+singleBestByPar <-
+function(data=NULL, factor=10) {
+    if(is.null(data)) {
+        stop("Need data to determine single best!")
+    }
+    if(is.null(data$success)) {
+        stop("Need successes to compute PAR scores.")
+    }
+    
+    best = names(sort(sapply(data$performance, function(x) {
+        prs = data.frame(data$data[,data$ids,drop=F], algorithm = factor(x), score = 1, iteration = 1)
+        if(!is.null(data$algorithmFeatures)) {
+            prs = unique(prs)
+        }
+        model = list(predictions=prs, ids=c("id"))
+        class(model) = "llama.model"
+        attr(model, "hasPredictions") = TRUE
+        attr(model, "addCosts") = FALSE
+        mean(parscores(data, model, factor=factor))
+    })))[1]
+    if(is.null(data$algorithmFeatures)) {
+        ids = data$data[data$ids]
+    } else {
+        ids = unique(data$data[data$ids])
+    }
+    data.frame(ids, algorithm = factor(best), score = 1, iteration = 1)
+}
+class(singleBestByPar) = "llama.model"
+attr(singleBestByPar, "type") = "single best"
+attr(singleBestByPar, "hasPredictions") = FALSE
+attr(singleBestByPar, "addCosts") = FALSE
+
+singleBestBySuccesses <-
+function(data=NULL) {
+    if(is.null(data)) {
+        stop("Need data to determine single best!")
+    }
+    if(is.null(data$success)) {
+        stop("Need successes to compute successes.")
+    }
+    
+    best = names(sort(sapply(data$performance, function(x) {
+        prs = data.frame(data$data[,data$ids,drop=F], algorithm = factor(x), score = 1, iteration = 1)
+        if(!is.null(data$algorithmFeatures)) {
+            prs = unique(prs)
+        }
+        model = list(predictions=prs, ids=c("id"))
+        class(model) = "llama.model"
+        attr(model, "hasPredictions") = TRUE
+        attr(model, "addCosts") = FALSE
+        mean(successes(data, model))
+    }), decreasing=T))[1]
+    if(is.null(data$algorithmFeatures)) {
+        ids = data$data[data$ids]
+    } else {
+        ids = unique(data$data[data$ids])
+    }
+    data.frame(ids, algorithm = factor(best), score = 1, iteration = 1)
+}
+class(singleBestBySuccesses) = "llama.model"
+attr(singleBestBySuccesses, "type") = "single best"
+attr(singleBestBySuccesses, "hasPredictions") = FALSE
+attr(singleBestBySuccesses, "addCosts") = FALSE
+
+singleBest <-
+function(data=NULL) {
+    if(is.null(data)) {
+        stop("Need data to determine single best!")
+    }
+    
+    if(is.null(data$algorithmFeatures)) {
+        best = names(sort(sapply(data$performance, function(x) { mean(data$data[,x]) }), decreasing=!data$minimize))[1]
+    } else {
+        best = names(sort(sapply(data$performance, function(x) { mean(data$data[data$data[[data$algos]] == x, data$performance]) }), decreasing=!data$minimize))[1]
+    }
+    ids = data$data[data$ids]
+    data.frame(ids, algorithm = factor(best), score = 1, iteration = 1)
+    
+}
+class(singleBest) = "llama.model"
+attr(singleBest, "type") = "single best"
+attr(singleBest, "hasPredictions") = FALSE
+attr(singleBest, "addCosts") = FALSE
+
+breakBestTies <-
+function(data=NULL, fold=NULL, pairs=FALSE) {
+    if(is.null(data)) {
+        stop("Need data to break ties!")
+    }
+    
+    optfun = if(data$minimize) { which.min } else { which.max }
+    if(!is.null(data$algorithmFeatures)) {
+        if(is.null(fold)) {
+            perfs = data$data[c(data$performance, data$algos, data$ids)]
+        } else {
+            perfs = data$data[data$train[[fold]],][c(data$performance, data$algos, data$ids)]
+        }
+        if(pairs) {
+            if(is.null(fold)) {
+                perfs = data$data[c(data$performance, data$algos, data$ids)]
+            } else {
+                perfs = data$data[data$train[[fold]],][c(data$performance, data$algos, data$ids)]
+            }
+            combns = combn(data$performance, 2)
+            values = lapply(1:ncol(combns), function(j) {
+                p = perfs[perfs[[data$algos]] == combns[1,j], ]
+                return(p = p)
+            })
+            perfs = as.data.frame(rbindlist(lapply(values, function(x) { x })))
+        }
+        best = factor(sapply(perfs[[data$ids]], function(x) { order=perfs[perfs[[data$ids]]==x, data$algos]; order[optfun(unlist(perfs[perfs[[data$ids]]==x, data$performance]))] }))
+    } else {
+        if(is.null(fold)) {
+            perfs = data$data[data$performance]
+        } else {
+            perfs = data$data[data$train[[fold]],][data$performance]
+        }
+        order = names(sort(sapply(perfs, mean), decreasing=!data$minimize))
+        best = factor(apply(perfs[order], 1, function(x) { order[optfun(unlist(x))] }))
+    }
+    
+    names(best) = NULL
+    return(best)
+}
+
+convertLongToWide <- 
+function(data=NULL, timevar=NULL, idvar=NULL, prefix=NULL, remove.id=TRUE) {
+    data = reshape(data, direction = "wide", timevar = timevar, idvar = idvar)
+    colnames(data) = gsub(prefix, "", colnames(data))
+    if(remove.id) {
+        data[[idvar]] = NULL
+    }
+    return(data)
+}
+
+predTable <-
+function(predictions=NULL, bestOnly=TRUE) {
+    if(is.null(predictions)) {
+        stop("Need predictions to tabulate!")
+    }
+    if(bestOnly) {
+        ids = setdiff(names(predictions), c(predNames))
+        lvls = levels(predictions$algorithm)
+        algorithms = factor(lvls[as.vector(by(predictions$algorithm, predictions[ids], head, 1))])
+    } else {
+        algorithms = predictions$algorithm
+    }
+    sort(table(algorithms), decreasing = TRUE)
+}

@@ -9,7 +9,7 @@ test_that("input reads features and performances", {
     expect_equal(dim(data$data), c(5, 3))
     expect_equal(data$best, rep.int("c", 5))
     
-    # test same with algorithm features
+    # same test with algorithm features
     a = data.frame(a=c(1:5), b=rep.int(1, 5))
     b = data.frame(a=c(1:5), c=rep.int(1, 5))
     f = data.frame(aa="c", d=3)
@@ -18,7 +18,7 @@ test_that("input reads features and performances", {
     expect_equal(data$features, c("b"))
     expect_equal(data$algorithmFeatures, c("d"))
     expect_equal(data$algos, c("aa"))
-    expect_equal(data$performance, c("c"))
+    expect_equal(data$performance, c("performance"))
     expect_equal(data$success, c())
     expect_equal(dim(data$data), c(5, 5))
     expect_equal(data$best, rep.int("c", 5))
@@ -66,14 +66,14 @@ test_that("input reads features, performances and successes", {
     expect_equal(dim(data$data), c(5, 4))
     expect_equal(data$best, rep.int("c", 5))
     
-    # test same with algorithm features
+    # same test with algorithm features
     c = data.frame(aa="c", d=3)
     d = data.frame(a=c(1:5), c=rep.int(T, 5))
     data = input(a, b, c, d)
     expect_equal(data$features, c("b"))
     expect_equal(data$algorithmFeatures, c("d"))
     expect_equal(data$algos, c("aa"))
-    expect_equal(data$performance, c("c"))
+    expect_equal(data$performance, c("performance"))
     expect_equal(data$success, c("success"))
     expect_equal(dim(data$data), c(5, 6))
     expect_equal(data$best, rep.int("c", 5))
@@ -100,7 +100,7 @@ test_that("input takes success into account when determining best", {
     expect_equal(data$best, c(NA, "d", NA, NA, NA))
     
     
-    # test same with algorithm features
+    # same test with algorithm features
     a = data.frame(a=c(1:5), b=rep.int(1, 5))
     b = data.frame(a=c(1:5), c=rep.int(1, 5), d=rep.int(0, 5))
     c = data.frame(aa=c("c", "d"), e=c(3, 4))
@@ -110,7 +110,7 @@ test_that("input takes success into account when determining best", {
     expect_equal(data$features, c("b"))
     expect_equal(data$algorithmFeatures, c("e"))
     expect_equal(data$algos, c("aa"))
-    expect_equal(data$performance, c("c", "d"))
+    expect_equal(data$performance, c("performance"))
     expect_equal(data$success, c("success"))
     expect_equal(dim(data$data), c(10, 6))
     expect_equal(data$best, rep.int("c", 5))
@@ -144,7 +144,7 @@ test_that("best is determined correctly", {
     expect_equal(as.character(data$best), c("direct.ladder_direct", "direct.support", "direct.pairwise_and_ladder_direct"))
     
     
-    # test same with algorithm features
+    # same test with algorithm features
     algo.features = data.frame(solvers=c("direct.direct", "direct.ladder_direct", "direct.pairwise_and_ladder_direct", "direct.support"),
                                algo.feat1=c(0,0,0,0))
     

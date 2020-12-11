@@ -33,11 +33,7 @@ function(data=NULL, model=NULL, factor=10, timeout=NULL, addCosts=NULL) {
     
     if(is.null(timeout)) {
         # if timeout value wasn't given, assume maximum from data set
-        if(is.null(data$algorithmFeatures)) {
-            timeout = max(data$data[data$performance])
-        } else {
-            timeout = max(data$data["performance"])
-        }
+        timeout = max(data$data[data$performance])
     }
     
     if(addCosts || !is.null(data$costs)) {
@@ -52,8 +48,8 @@ function(data=NULL, model=NULL, factor=10, timeout=NULL, addCosts=NULL) {
         perfs = data$data[data$performance]
         successes = data$data[data$success]
     } else {
-        d = data$data[c(data$ids, data$algos, "performance")]
-        perfs = convertLongToWide(data=d, timevar=data$algos, idvar=data$ids, prefix="performance.")
+        d = data$data[c(data$ids, data$algos, data$performance)]
+        perfs = convertLongToWide(data=d, timevar=data$algos, idvar=data$ids, prefix=paste(data$performance,".",sep=""))
         perfs = perfs[unique(data$data$algorithm)]
         
         d = data$data[c(data$ids, data$algos, "success")]
@@ -72,9 +68,9 @@ function(data=NULL, model=NULL, factor=10, timeout=NULL, addCosts=NULL) {
         predictions$iid = match(do.call(paste, predictions[data$ids]), do.call(paste, data$data[data$ids]))
         predictions$pid = match(predictions$algorithm, data$performance)
     } else {
-        d = data$data[c(data$ids, data$algos, "performance")]
+        d = data$data[c(data$ids, data$algos, data$performance)]
         d = reshape(d, direction = "wide", timevar = data$algos, idvar = data$ids)
-        colnames(d) = gsub("performance.", "", colnames(d))
+        colnames(d) = gsub(paste(data$performance,".",sep=""), "", colnames(d))
         predictions$iid = match(do.call(paste, predictions[data$ids]), do.call(paste, d[data$ids]))
         predictions$pid = match(predictions$algorithm, unique(data$data$algorithm))
     }
