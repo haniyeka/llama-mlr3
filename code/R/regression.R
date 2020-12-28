@@ -83,9 +83,10 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         } else {
             if(!is.null(data$algorithmFeatures)) {
                 performancePredictions[[data$algos]] = tsa[[data$algos]]
-                performancePredictions[[data$ids]] = ids
-                performancePredictions = convertLongToWide(performancePredictions, timevar=data$algos, idvar=data$ids, prefix=paste(data$performance,".",sep=""))
-                ids = unique(ids)
+                performancePredictions[[data$ids]] = ids[[data$ids]]
+                performancePredictions = convertLongToWide(performancePredictions, timevar=data$algos, idvar=data$ids, prefix=paste(data$performance,".",sep=""), remove.id = FALSE)
+                ids = performancePredictions[data$ids]
+                performancePredictions[data$ids] = NULL
             }
             
             combinedpredictions = rbind.fill(lapply(1:nrow(performancePredictions), function(j) {
@@ -176,10 +177,11 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             }))
         } else {
             if(!is.null(data$algorithmFeatures)) {
-                performancePredictions[[data$algos]] = x[[data$algos]]
-                performancePredictions[[data$ids]] = ids
-                performancePredictions = convertLongToWide(performancePredictions, timevar=data$algos, idvar=data$ids, prefix=paste(data$performance,".",sep=""))
-                ids = unique(ids)
+                performancePredictions[[data$algos]] = tsa[[data$algos]]
+                performancePredictions[[data$ids]] = ids[[data$ids]]
+                performancePredictions = convertLongToWide(performancePredictions, timevar=data$algos, idvar=data$ids, prefix=paste(data$performance,".",sep=""), remove.id = FALSE)
+                ids = performancePredictions[data$ids]
+                performancePredictions[data$ids] = NULL
             }
             
             combinedpredictions = rbind.fill(lapply(1:nrow(performancePredictions), function(j) {
