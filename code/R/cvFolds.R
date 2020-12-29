@@ -28,7 +28,7 @@ function(data, nfolds = 10L, stratify = FALSE) {
     } 
     
     if(!is.null(data$algorithmFeatures)) {
-        tmp = tmp[match(data$data$instance_id, d$instance_id)]
+        tmp = tmp[match(data$data[[data$ids]], d[[data$ids]])]
     }
     
     parts = split(1:nrow(data$data), tmp)
@@ -39,3 +39,4 @@ function(data, nfolds = 10L, stratify = FALSE) {
     attr(newdata, "hasSplits") = TRUE
     return(newdata)
 }
+
