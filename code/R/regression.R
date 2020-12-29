@@ -143,6 +143,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             tsf = pre(x[data$features], fs$meta)
         } else {
             tsf = pre(x[c(data$features, data$algorithmFeatures)], fs$meta)
+						tsa = x[data$algos]
         }
         if(length(intersect(colnames(x), data$ids)) > 0) {
             ids = x[data$ids]
