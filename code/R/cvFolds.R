@@ -5,7 +5,11 @@ function(data, nfolds = 10L, stratify = FALSE) {
     
     if(nfolds == -1L) {
         stratify = FALSE
-        nfolds = nrow(data$data)
+        if(is.null(data$algorithmFeatures)) {
+            nfolds = nrow(data$data) 
+        } else {
+            nfolds = nrow(data$data) / length(unique(data$data[[data$algos]]))
+        }
     }
     if(is.null(data$algorithmFeatures)) {
         d = data$data
