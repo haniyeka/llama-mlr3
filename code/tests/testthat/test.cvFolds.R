@@ -121,7 +121,6 @@ test_that("cvFolds allows -1 for leave-one-out", {
     expect_true(all(sapply(dfs$test, length) == 2))
 })
 
-#FIXME: finish this
 test_that("cvFolds stratifies", {
     d = list(data=data.frame(a=rep.int(0, 10)), best=c(rep.int(0, 5), rep.int(1, 5)))
     class(d) = "llama.data"
@@ -143,7 +142,7 @@ test_that("cvFolds stratifies", {
                   algorithmFeatures=c("f"),
                   ids=c("id"),
                   algos=c("algo"),
-                  best=c(rep.int("a1", 5), rep.int("a2", 5)))
+                  best=c(rep.int("a1", 10), rep.int("a2", 10)))
     class(d.algo) = "llama.data"
     
     dfs = cvFolds(d.algo, nfolds=5L, T)
@@ -152,10 +151,10 @@ test_that("cvFolds stratifies", {
     expect_true(all(sapply(dfs$train, length) == 16))
     expect_true(all(sapply(dfs$test, length) == 4))
     
-    expect_true(all(sapply(dfs$train, function(x) { sum(d.algo$best[x]=="a1") }) == 4))
-    expect_true(all(sapply(dfs$train, function(x) { sum(d.algo$best[x]==1) }) == 4))
-    expect_true(all(sapply(dfs$test, function(x) { sum(d.algo$best[x]==0) }) == 1))
-    expect_true(all(sapply(dfs$test, function(x) { sum(d.algo$best[x]==1) }) == 1))
+    expect_true(all(sapply(dfs$train, function(x) { sum(d.algo$best[x]=="a1") }) == 8))
+    expect_true(all(sapply(dfs$train, function(x) { sum(d.algo$best[x]=="a2") }) == 8))
+    expect_true(all(sapply(dfs$test, function(x) { sum(d.algo$best[x]=="a1") }) == 2))
+    expect_true(all(sapply(dfs$test, function(x) { sum(d.algo$best[x]=="a2") }) == 2))
 })
 
 test_that("cvFolds replaces existing splits", {
