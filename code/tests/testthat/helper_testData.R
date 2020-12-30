@@ -90,14 +90,30 @@ dmeas = list(data=rbind(cbind(foldmeas, id=1:5), cbind(foldmeas, id=6:10)),
     test=list(1:5, 6:10), performance=c("a", "b"), minimize=T, ids=c("id"),
     success=c("d", "e"))
 
+foldmeas.algo = data.frame(p=rep.int(c(1, 0), 5),
+                      s=rep.int(c(F, T), 5), a=rep(c("a", "b"), 5), f=rep.int(1, 5))
+dmeas.algo = list(data=rbind(cbind(foldmeas.algo, id=rep.int(1:5, rep.int(2, 5))), cbind(foldmeas.algo, id=rep.int(6:10, rep.int(2, 5)))),
+             test=list(1:10, 11:20), performance=c("p"), minimize=T, ids=c("id"), 
+             success=c("s"), algos=("a"), algorithmFeatures=c("f"))
+
 asmeas = data.frame(algorithm=rep.int("a", 5), score=1, iteration=1)
 bsmeas = data.frame(algorithm=rep.int("b", 5), score=1, iteration=1)
+asmeas.algo = data.frame(algorithm=rep.int("a", 10), score=1, iteration=1)
+bsmeas.algo = data.frame(algorithm=rep.int("b", 10), score=1, iteration=1)
+
 modelameas = list(predictions=rbind(cbind(asmeas, id=1:5), cbind(asmeas, id=6:10)))
 class(modelameas) = "llama.model"
 attr(modelameas, "hasPredictions") = TRUE
 modelbmeas = list(predictions=rbind(cbind(bsmeas, id=1:5), cbind(bsmeas, id=6:10)))
 class(modelbmeas) = "llama.model"
 attr(modelbmeas, "hasPredictions") = TRUE
+
+modelameas.algo = list(predictions=rbind(cbind(asmeas.algo, id=rep.int(1:5, rep.int(2, 5))), cbind(asmeas.algo, id=rep.int(6:10, rep.int(2, 5)))))
+class(modelameas.algo) = "llama.model"
+attr(modelameas.algo, "hasPredictions") = TRUE
+modelbmeas.algo = list(predictions=rbind(cbind(bsmeas.algo, id=rep.int(1:5, rep.int(2, 5))), cbind(bsmeas.algo, id=rep.int(6:10, rep.int(2, 5)))))
+class(modelbmeas.algo) = "llama.model"
+attr(modelbmeas.algo, "hasPredictions") = TRUE
 
 foldone = data.frame(a=rep.int(1, 10), b=rep.int(2, 10), c=rep.int(1.5, 10), d=rep.int(1, 10))
 one = list(data=rbind(cbind(foldone, id=1:10), cbind(foldone, id=11:20)),
@@ -109,3 +125,4 @@ one = list(data=rbind(cbind(foldone, id=1:10), cbind(foldone, id=11:20)),
          best=rep.int("a", 20))
 class(one) = "llama.data"
 attr(one, "hasSplits") = TRUE
+
