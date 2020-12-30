@@ -18,7 +18,12 @@ function(data, nfolds = 10L, stratify = FALSE) {
         d = reshape(d, direction = "wide", timevar = data$algos, idvar = data$ids)
     }
     if(stratify) {
-        stratifier = sapply(data$best, paste, collapse="-")
+        if(is.null(data$algorithmFeatures)) {
+            best = data$best
+        } else {
+            best = data$best[seq(1, length(data$best), length(unique(data$data[[data$algos]])))]
+        }
+        stratifier = sapply(best, paste, collapse="-")
     } else {
         stratifier = rep.int(TRUE, nrow(d))
     }
