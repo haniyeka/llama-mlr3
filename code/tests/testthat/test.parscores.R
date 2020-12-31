@@ -1,12 +1,21 @@
 test_that("parscores returns parscores", {
     expect_equal(sum(parscores(dmeas, modelameas)), 100)
     expect_equal(sum(parscores(dmeas, modelbmeas)), 0)
+    
+    # same test with algorithm features
+    expect_equal(sum(parscores(dmeas.algo, modelameas.algo)), 100)
+    expect_equal(sum(parscores(dmeas.algo, modelbmeas.algo)), 0)
 })
 
 test_that("parscores raises error if no successes are given", {
     d = dmeas
     d$success = NULL
     expect_error(parscores(d, modelameas), "Need successes to calculate PAR scores!")
+    
+    # same test with algorithm features
+    d.algo = dmeas.algo
+    d.algo$success = NULL
+    expect_error(parscores(d.algo, modelameas.algo), "Need successes to calculate PAR scores!")
 })
 
 test_that("parscores works without test split", {
@@ -16,16 +25,33 @@ test_that("parscores works without test split", {
 
     expect_equal(sum(parscores(d, modelameas)), 100)
     expect_equal(sum(parscores(d, modelbmeas)), 0)
+    
+    # same test with algorithm features
+    fold.algo = data.frame(id=rep.int(1:10, rep.int(2, 10)), p=rep.int(c(1, 0), 10),
+                      s=rep.int(c(F, T), 10), f=rep.int(1, 20), a=rep.int(c("a", "b"), 10))
+    d.algo = list(data=fold.algo, performance=c("p"), success=c("s"), ids=c("id"),
+                  algorithmFeatures=c("f"), algos=c("a"))
+    
+    expect_equal(sum(parscores(d.algo, modelameas.algo)), 100)
+    expect_equal(sum(parscores(d.algo, modelbmeas.algo)), 0)
 })
 
 test_that("parscores allows to specify factor", {
     expect_equal(sum(parscores(dmeas, modelameas, 100)), 1000)
     expect_equal(sum(parscores(dmeas, modelbmeas, 100)), 0)
+    
+    # same test with algorithm features
+    expect_equal(sum(parscores(dmeas.algo, modelameas.algo, 100)), 1000)
+    expect_equal(sum(parscores(dmeas.algo, modelbmeas.algo, 100)), 0)
 })
 
 test_that("parscores allows to specify timeout", {
     expect_equal(sum(parscores(dmeas, modelameas, timeout=5)), 500)
     expect_equal(sum(parscores(dmeas, modelbmeas, timeout=5)), 0)
+    
+    # same test with algorithm features
+    expect_equal(sum(parscores(dmeas.algo, modelameas.algo, timeout=5)), 500)
+    expect_equal(sum(parscores(dmeas.algo, modelbmeas.algo, timeout=5)), 0)
 })
 
 test_that("parscores takes feature costs into account", {
@@ -124,3 +150,4 @@ test_that("parscores works with NA predictions", {
     expect_equal(length(pars), 10)
     expect_equal(sum(pars), 50)
 })
+
