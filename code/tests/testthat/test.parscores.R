@@ -76,6 +76,31 @@ test_that("parscores takes feature costs into account", {
     expect_equal(sum(parscores(d, modela, timeout=0.5)), 50)
     expect_equal(sum(parscores(d, modela, timeout=5)), 10)
     expect_equal(sum(parscores(d, modelb, timeout=2.5)), 0)
+    
+    # same test with algorithm features
+    fold.algo = data.frame(p=rep.int(c(1, 0), 5),
+                      s=rep.int(T, 10), c=rep.int(1, 10), c_cost=rep.int(2, 10),
+                      f=rep.int(1, 10), a=rep.int(c("a", "b"), 5))
+    d.algo = list(data=rbind(cbind(id=rep.int(1:5, rep.int(2, 5)), fold.algo), cbind(id=rep.int(6:10, rep.int(2, 5)), fold.algo)),
+             test=list(1:5, 6:10), performance=c("p"), ids=c("id"),
+             success=c("s"), cost=c("c_cost"), features=c("c"), algos=c("a"),
+             algorithmFeatures=c("f"))
+    
+    expect_equal(sum(parscores(d.algo, modelameas.algo, timeout=1.5)), 150)
+    expect_equal(sum(parscores(d.algo, modelameas.algo, timeout=5)), 30)
+    expect_equal(sum(parscores(d.algo, modelbmeas.algo, timeout=2.5)), 20)
+    
+    expect_equal(sum(parscores(d.algo, modelameas.algo, timeout=0.5, addCosts=F)), 50)
+    expect_equal(sum(parscores(d.algo, modelameas.algo, timeout=5, addCosts=F)), 10)
+    expect_equal(sum(parscores(d.algo, modelbmeas.algo, timeout=2.5, addCosts=F)), 0)
+    
+    modela.algo = modelameas.algo
+    modelb.algo = modelbmeas.algo
+    attr(modela.algo, "addCosts") = FALSE
+    attr(modelb.algo, "addCosts") = FALSE
+    expect_equal(sum(parscores(d.algo, modela.algo, timeout=0.5)), 50)
+    expect_equal(sum(parscores(d.algo, modela.algo, timeout=5)), 10)
+    expect_equal(sum(parscores(d.algo, modelb.algo, timeout=2.5)), 0)
 })
 
 test_that("parscores does not cost unused features", {
@@ -88,6 +113,19 @@ test_that("parscores does not cost unused features", {
 
     expect_equal(sum(parscores(d, modelameas, timeout=1.5)), 150)
     expect_equal(sum(parscores(d, modelameas, timeout=3.5)), 30)
+    
+    # same test with algorithm features
+    fold.algo = data.frame(p=rep.int(c(1, 0), 5),
+                           s=rep.int(T, 10), c=rep.int(1, 10), c_cost=rep.int(2, 10),
+                           f_cost=rep.int(1, 10),
+                           sf=rep.int(1, 10), a=rep.int(c("a", "b"), 5))
+    d.algo = list(data=rbind(cbind(id=rep.int(1:5, rep.int(2, 5)), fold.algo), cbind(id=rep.int(6:10, rep.int(2, 5)), fold.algo)),
+                  test=list(1:5, 6:10), performance=c("p"), ids=c("id"),
+                  success=c("s"), cost=c("c_cost", "f_cost"), features=c("c"), algos=c("a"),
+                  algorithmFeatures=c("sf"))
+    
+    expect_equal(sum(parscores(d.algo, modelameas.algo, timeout=1.5)), 150)
+    expect_equal(sum(parscores(d.algo, modelameas.algo, timeout=3.5)), 30)
 })
 
 test_that("parscores takes feature cost groups into account", {
@@ -106,6 +144,25 @@ test_that("parscores takes feature cost groups into account", {
 
     expect_equal(sum(parscores(e, modelameas, timeout=1.5)), 150)
     expect_equal(sum(parscores(e, modelameas, timeout=2.5)), 20)
+    
+    # same test with algorithm features
+    fold.algo = data.frame(p=rep.int(1, 5), e=rep.int(0, 5), f=rep.int(0, 5),
+                      g=rep.int(0, 5), d=rep.int(T, 5), g1=rep.int(1, 5), g2=rep.int(1, 5),
+                      a=rep.int("a", 5), sf=rep.int(0, 5))
+    groups.algo = list(g1=c("e", "f"), g2=c("g"))
+    d.algo = list(data=rbind(cbind(id=1:5, fold.algo), cbind(id=6:10, fold.algo)),
+             test=list(1:5, 6:10), performance=c("p"), ids=c("id"), algos=c("a"),
+             success=c("d"), costGroups=groups.algo, cost=c("g1", "g2"), features=c("f", "g"),
+             algorithmFeatures=c("sf"))
+    e.algo = d.algo
+    e.algo$features = c("f")
+    
+    expect_equal(sum(parscores(d.algo, modelameas.algo, timeout=2.5)), 250)
+    expect_equal(sum(parscores(d.algo, modelameas.algo, timeout=1.5)), 150)
+    expect_equal(sum(parscores(d.algo, modelameas.algo, timeout=5)), 30)
+    
+    expect_equal(sum(parscores(e.algo, modelameas.algo, timeout=1.5)), 150)
+    expect_equal(sum(parscores(e.algo, modelameas, timeout=2.5)), 20)
 })
 
 test_that("parscores works for test splits", {
@@ -120,6 +177,12 @@ test_that("parscores works for test splits", {
     d$test = list(1:5)
 
     expect_equal(sum(parscores(d, model)), 50)
+    
+    # same test with algorithm features
+    d.algo = dmeas.algo
+    d.algo$test = list(1:10)
+    
+    expect_equal(sum(parscores(d.algo, model)), 50)
 })
 
 test_that("parscores works for test splits that repeat", {
@@ -136,6 +199,12 @@ test_that("parscores works for test splits that repeat", {
     d$test = list(c(1,2), c(1,2), c(2,3))
 
     expect_equal(sum(parscores(d, model)), 60)
+    
+    # same test with algorithm features
+    d.algo = dmeas.algo
+    d.algo$test = list(c(1,2,3,4), c(1,2,3,4), c(3,4,5,6))
+    
+    expect_equal(sum(parscores(d.algo, model)), 60)
 })
 
 test_that("parscores works with NA predictions", {
@@ -147,6 +216,11 @@ test_that("parscores works with NA predictions", {
     attr(model, "hasPredictions") = TRUE
 
     pars = parscores(dmeas, model)
+    expect_equal(length(pars), 10)
+    expect_equal(sum(pars), 50)
+    
+    # same test with algorithm features
+    pars = parscores(dmeas.algo, model)
     expect_equal(length(pars), 10)
     expect_equal(sum(pars), 50)
 })
