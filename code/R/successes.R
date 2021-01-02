@@ -50,12 +50,12 @@ function(data=NULL, model=NULL, timeout=NULL, addCosts=NULL) {
     } else {
         d = data$data[c(data$ids, data$algos, data$performance)]
         perfs = convertLongToWide(data=d, timevar=data$algos, idvar=data$ids, prefix=paste(data$performance,".",sep=""))
-        perfs = perfs[unique(data$data$algorithm)]
+        perfs = perfs[unique(data$data[[data$algos]])]
         
-        d = data$data[c(data$ids, data$algos, "success")]
-        successes = convertLongToWide(data=d, timevar=data$algos, idvar=data$ids, prefix="success.")
-        successes = successes[unique(data$data$algorithm)]
-        colnames(successes) = paste(colnames(successes), "success", sep="_")
+        d = data$data[c(data$ids, data$algos, data$success)]
+        successes = convertLongToWide(data=d, timevar=data$algos, idvar=data$ids, prefix=paste(data$success,".",sep=""))
+        successes = successes[unique(data$data[[data$algos]])]
+        colnames(successes) = paste(colnames(successes), data$success, sep="_")
     }
     if(!addCosts || is.null(data$cost)) {
         costs = rep.int(0, nrow(perfs))
@@ -70,7 +70,7 @@ function(data=NULL, model=NULL, timeout=NULL, addCosts=NULL) {
         d = reshape(d, direction = "wide", timevar = data$algos, idvar = data$ids)
         colnames(d) = gsub(paste(data$performance,".",sep=""), "", colnames(d))
         predictions$iid = match(do.call(paste, predictions[data$ids]), do.call(paste, d[data$ids]))
-        predictions$pid = match(predictions$algorithm, unique(data$data$algorithm))
+        predictions$pid = match(predictions$algorithm, unique(data$data[[data$algos]]))
     }
     
     predictions$score = apply(predictions, 1, function(x) {
@@ -92,3 +92,4 @@ function(data=NULL, model=NULL, timeout=NULL, addCosts=NULL) {
 }
 class(successes) = "llama.metric"
 attr(successes, "minimize") = FALSE
+
