@@ -125,10 +125,11 @@ function(data=NULL) {
     
     if(is.null(data$algorithmFeatures)) {
         best = names(sort(sapply(data$performance, function(x) { mean(data$data[,x]) }), decreasing=!data$minimize))[1]
+        ids = data$data[data$ids]
     } else {
         best = names(sort(sapply(unique(data$data[[data$algos]]), function(x) { mean(data$data[data$data[[data$algos]] == x, data$performance]) }), decreasing=!data$minimize))[1]
+        ids = unique(data$data[data$ids])
     }
-    ids = data$data[data$ids]
     data.frame(ids, algorithm = factor(best), score = 1, iteration = 1)
     
 }
