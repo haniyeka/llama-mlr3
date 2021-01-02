@@ -9,7 +9,7 @@ function(data=NULL) {
     if(is.null(data$algorithmFeatures)) {
         ids = data$data[idxs,data$ids,drop=F]
     } else {
-        ids = unique(data$data$instance_id)[idxs]
+        ids = unique(data$data[[data$ids]])[idxs]
         ids = data.frame(ids)
         colnames(ids) = data$ids
     }
@@ -33,7 +33,7 @@ function(data=NULL) {
     if(is.null(data$algorithmFeatures)) {
         ids = data$data[data$ids]
     } else { 
-        best = best[seq(1, length(best), length(unique(data$data$algorithm)))]
+        best = best[seq(1, length(best), length(unique(data$data[[data$algos]])))]
         ids = unique(data$data[data$ids]) 
     }
     data.frame(ids, algorithm = factor(names(sort(table(best), decreasing=T)[1])), score = 1, iteration = 1)
@@ -54,7 +54,7 @@ function(data=NULL, factor=10) {
     if(is.null(data$algorithmFeatures)) {
         algos = data$performance
     } else {
-        algos = unique(data$data$algorithm)
+        algos = unique(data$data[[data$algos]])
     }
     
     best = names(sort(sapply(algos, function(x) {
@@ -91,7 +91,7 @@ function(data=NULL) {
     if(is.null(data$algorithmFeatures)) {
         algos = data$performance
     } else {
-        algos = unique(data$data$algorithm)
+        algos = unique(data$data[[data$algos]])
     }
     
     best = names(sort(sapply(algos, function(x) {
@@ -126,7 +126,7 @@ function(data=NULL) {
     if(is.null(data$algorithmFeatures)) {
         best = names(sort(sapply(data$performance, function(x) { mean(data$data[,x]) }), decreasing=!data$minimize))[1]
     } else {
-        best = names(sort(sapply(unique(data$data$algorithm), function(x) { mean(data$data[data$data[[data$algos]] == x, data$performance]) }), decreasing=!data$minimize))[1]
+        best = names(sort(sapply(unique(data$data[[data$algos]]), function(x) { mean(data$data[data$data[[data$algos]] == x, data$performance]) }), decreasing=!data$minimize))[1]
     }
     ids = data$data[data$ids]
     data.frame(ids, algorithm = factor(best), score = 1, iteration = 1)
@@ -156,7 +156,7 @@ function(data=NULL, fold=NULL, pairs=FALSE) {
             } else {
                 perfs = data$data[data$train[[fold]],][c(data$performance, data$algos, data$ids)]
             }
-            combns = combn(unique(data$data$algorithm), 2)
+            combns = combn(unique(data$data[[data$algos]]), 2)
             values = lapply(1:ncol(combns), function(j) {
                 p = perfs[perfs[[data$algos]] == combns[1,j], ]
                 return(p = p)
@@ -202,3 +202,4 @@ function(predictions=NULL, bestOnly=TRUE) {
     }
     sort(table(algorithms), decreasing = TRUE)
 }
+
