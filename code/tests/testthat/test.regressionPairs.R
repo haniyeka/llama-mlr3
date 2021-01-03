@@ -5,6 +5,14 @@ test_that("regressionPairs predicts", {
         expect_equal(ss$algorithm, factor(c("c", "b")))
         expect_equal(ss$score, c(1, -1))
     })
+    
+    # same test with algorithm features
+    res.algo = regressionPairs(regressor=algotestregressor, d.algo)
+    expect_equal(unique(res.algo$predictions$id), 11:20)
+    by(res.algo$predictions, res.algo$predictions$id, function(ss) {
+        stopifnot(levels(ss$algorithm) %in% c("c", "b"))
+        expect_equal(ss$score, c(1, -1))
+    })
 })
 
 test_that("regressionPairs returns predictor", {
@@ -16,6 +24,16 @@ test_that("regressionPairs returns predictor", {
         expect_equal(ss$algorithm, factor(c("c", "b")))
         expect_equal(ss$score, c(1, -1))
     })
+    
+    # same test with algorithm features
+    res.algo = regressionPairs(regressor=algotestregressor, d.algo)
+    fold.algo$id = rep.int(1:10, rep.int(2, 10))
+    preds.algo = res.algo$predictor(fold.algo)
+    expect_equal(unique(preds.algo$id), 1:10)
+    by(preds.algo, preds.algo$id, function(ss) {
+        stopifnot(levels(ss$algorithm) %in% c("c", "b"))
+        expect_equal(ss$score, c(1, -1))
+    })
 })
 
 test_that("regressionPairs returns predictor that works without IDs", {
@@ -25,6 +43,16 @@ test_that("regressionPairs returns predictor that works without IDs", {
     expect_equal(unique(preds$id), 1:10)
     by(preds, preds$id, function(ss) {
         expect_equal(ss$algorithm, factor(c("c", "b")))
+        expect_equal(ss$score, c(1, -1))
+    })
+    
+    # same test with algorithm features
+    res.algo = regressionPairs(regressor=algotestregressor, d.algo)
+    fold.algo$id = rep.int(1:10, rep.int(2, 10))
+    preds.algo = res.algo$predictor(fold.algo[c(d.algo$features, d.algo$algorithmFeatures, d.algo$algos, d.algo$performance)])
+    expect_equal(unique(preds.algo$id), 1:10)
+    by(preds.algo, preds.algo$id, function(ss) {
+        stopifnot(levels(ss$algorithm) %in% c("c", "b"))
         expect_equal(ss$score, c(1, -1))
     })
 })
@@ -39,6 +67,12 @@ test_that("regressionPairs raises error without data", {
 
 test_that("regressionPairs raises error without train/test split", {
     fold = data.frame(a=rep.int(0, 10), b=c(rep.int(1, 5), rep.int(0, 5)), c=c(rep.int(0, 5), rep.int(1, 5)), best=c(rep.int("c", 5), rep.int("b", 5)))
+    d = list(data=rbind(fold, fold), features=c("a"), minimize=T, performance=c("b", "c"))
+    class(d) = "llama.data"
+    expect_error(regressionPairs(testregressor, d))
+    
+    # same test with algorithm features
+    fold.algo = data.frame(a=rep.int(0, 10), b=c(rep.int(1, 5), rep.int(0, 5)), c=c(rep.int(0, 5), rep.int(1, 5)), best=c(rep.int("c", 5), rep.int("b", 5)))
     d = list(data=rbind(fold, fold), features=c("a"), minimize=T, performance=c("b", "c"))
     class(d) = "llama.data"
     expect_error(regressionPairs(testregressor, d))
@@ -130,3 +164,4 @@ test_that("regression works with NA predictions", {
         expect_equal(ss$score, Inf)
     })
 })
+
