@@ -29,7 +29,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         combns = combn(data$performance, 2)
     } else {
         totalBests = data.frame(target=factor(breakBestTies(data, pairs=TRUE), levels=unique(data$data$algorithm)))
-        combns = combn(unique(data$data$algorithm), 2)
+        combns = combn(unique(data$data[[data$algos]]), 2)
     }
     
     predictions = rbind.fill(parallelMap(function(i) {
@@ -65,10 +65,10 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
                 a2 = which(data$data[data$train[[i]], data$algos] == combns[2,j])
                 trperf = data.frame(target=data$data[a1, data$performance] - data$data[a2, data$performance])
                 
-                f1 = subset(data$data, data$data[[data$algos]] == combns[1,j])
-                f2 = subset(data$data, data$data[[data$algos]] == combns[2,j])
-                f1 = f1[data$algorithmFeatures][1,]
-                f2 = f2[data$algorithmFeatures][1,]
+                f1 = subset(data$data[data$train[[i]], ], data$data[data$train[[i]], data$algos] == combns[1,j])
+                f2 = subset(data$data[data$train[[i]], ], data$data[data$train[[i]], data$algos] == combns[2,j])
+                f1 = f1[data$algorithmFeatures]
+                f2 = f2[data$algorithmFeatures]
                 feature.diff = f1 - f2
                 
                 tr.features = trf$features[trf$features[[data$algos]] == combns[1,j], ]
@@ -135,7 +135,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
                 if(is.null(data$algorithmFeatures)) {
                     algos = data$performance
                 } else {
-                    algos = unique(data$data$algorithm)
+                    algos = unique(data$data[[data$algos]])
                 }
                 performanceSums = sapply(algos, function(p) {
                     sum(unlist(sapply(1:ncol(combns), signPair, p, sign, row, combns)))
@@ -173,8 +173,8 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
             
             f1 = subset(data$data, data$data[[data$algos]] == combns[1,j])
             f2 = subset(data$data, data$data[[data$algos]] == combns[2,j])
-            f1 = f1[data$algorithmFeatures][1,]
-            f2 = f2[data$algorithmFeatures][1,]
+            f1 = f1[data$algorithmFeatures]
+            f2 = f2[data$algorithmFeatures]
             feature.diff = f1 - f2
             
             fs.features = fs$features[fs$features[[data$algos]] == combns[1,j], ]
@@ -218,8 +218,8 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
                 
                 f1 = subset(x, x[[data$algos]] == combns[1,j])
                 f2 = subset(x, x[[data$algos]] == combns[2,j])
-                f1 = f1[data$algorithmFeatures][1,]
-                f2 = f2[data$algorithmFeatures][1,]
+                f1 = f1[data$algorithmFeatures]
+                f2 = f2[data$algorithmFeatures]
                 feature.diff = f1 - f2
                 
                 ts.features = tsf$features[tsf$features[[data$algos]] == combns[1,j], ]
@@ -274,7 +274,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
                 sign = function(d) { return(d) }
             }
             if(!is.null(data$algorithmFeatures)) {
-                ids = unique(x[data$ids])
+                ids = unique(ids)
                 pairpredictions = data.frame(target = pairpredictions, algo.pairs = algo.pairs, rep(ids[[data$ids]], ncol(combns)))
                 colnames(pairpredictions) = c("target", "algo.pairs", data$ids)
                 pairpredictions = convertLongToWide(pairpredictions, timevar="algo.pairs", idvar=data$ids, prefix="target.")
@@ -284,7 +284,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
                 if(is.null(data$algorithmFeatures)) {
                     algos = data$performance
                 } else {
-                    algos = unique(data$data$algorithm)
+                    algos = unique(data$data[[data$algos]])
                 }
                 performanceSums = sapply(algos, function(p) {
                     sum(unlist(sapply(1:ncol(combns), signPair, p, sign, row, combns)))
@@ -313,3 +313,4 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
     return(retval)
 }
 class(regressionPairs) = "llama.modelFunction"
+
