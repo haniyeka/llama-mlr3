@@ -125,6 +125,23 @@ registerS3method("trainLearner", "regr.test.algo", trainLearner.regr.test.algo)
 registerS3method("predictLearner", "regr.test.algo", predictLearner.regr.test.algo)
 algotestregressor = makeLearner("regr.test.algo")
 
+
+makeRLearner.regr.test.algo.three = function() {
+    makeRLearnerRegr(cl = "regr.test.algo.three", package="llama", par.set=makeParamSet(), properties=c("numerics", "factors", "weights"))
+}
+trainLearner.regr.test.algo.three = function(.learner, .task, .subset, .weights, ...) {
+    .task
+}
+predictLearner.regr.test.algo.three = function(learner, model, newdata) {
+    targets = unique(getTaskData(model$learner.model)$target)
+    return(rep.int(c(targets), nrow(newdata)/3))
+}
+registerS3method("makeRLearner", "regr.test.algo.three", makeRLearner.regr.test.algo.three)
+registerS3method("trainLearner", "regr.test.algo.three", trainLearner.regr.test.algo.three)
+registerS3method("predictLearner", "regr.test.algo.three", predictLearner.regr.test.algo.three)
+threealgotestregressor = makeLearner("regr.test.algo.three")
+
+
 makeRLearner.regr.natest = function() {
     makeRLearnerRegr(cl = "regr.natest", package="llama", par.set=makeParamSet(), properties=c("numerics", "factors", "weights", "missings"))
 }
@@ -182,3 +199,4 @@ registerS3method("makeRLearner", "cluster.natest", makeRLearner.cluster.natest)
 registerS3method("trainLearner", "cluster.natest", trainLearner.cluster.natest)
 registerS3method("predictLearner", "cluster.natest", predictLearner.cluster.natest)
 natestclusterer = makeLearner("cluster.natest")
+
