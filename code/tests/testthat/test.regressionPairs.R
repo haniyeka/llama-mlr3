@@ -72,10 +72,12 @@ test_that("regressionPairs raises error without train/test split", {
     expect_error(regressionPairs(testregressor, d))
     
     # same test with algorithm features
-    fold.algo = data.frame(a=rep.int(0, 10), b=c(rep.int(1, 5), rep.int(0, 5)), c=c(rep.int(0, 5), rep.int(1, 5)), best=c(rep.int("c", 5), rep.int("b", 5)))
-    d = list(data=rbind(fold, fold), features=c("a"), minimize=T, performance=c("b", "c"))
-    class(d) = "llama.data"
-    expect_error(regressionPairs(testregressor, d))
+    fold.algo = data.frame(a=rep.int(0, 20), p=c(rep.int(c(1, 0), 5), rep.int(c(0, 1), 5)), best=c(rep.int("c", 5), rep.int("b", 5)), 
+                           algo=rep.int(c("b", "c"), 10), s=rep.int(c(2, 3), 10))
+    d.algo = list(data=rbind(fold.algo, fold.algo), features=c("a"), minimize=T, performance=c("p"),
+             algos=c("a"), algorithmFeatures=c("s"))
+    class(d.algo) = "llama.data"
+    expect_error(regressionPairs(algotestregressor, d.algo))
 })
 
 test_that("regressionPairs works with three algorithms", {
@@ -86,6 +88,22 @@ test_that("regressionPairs works with three algorithms", {
         expect_equal(ss$score, c(2, -1, -1))
     })
 
+    fold$id = 1:10
+    preds = res$predictor(fold)
+    expect_equal(unique(preds$id), 1:10)
+    by(preds, preds$id, function(ss) {
+        expect_equal(ss$algorithm, factor(c("c", "b", "d")))
+        expect_equal(ss$score, c(2, -1, -1))
+    })
+    
+    # same test with algorithm features
+    res.algo = regressionPairs(regressor=threealgotestregressor, d.three.algo)
+    expect_equal(unique(res.algo$predictions$id), 11:20)
+    by(res.algo$predictions, res.algo$predictions$id, function(ss) {
+        stopifnot(levels(ss$algorithm) %in% c("c", "b", "d"))
+        expect_equal(ss$score, c(2, -1, -1))
+    })
+    
     fold$id = 1:10
     preds = res$predictor(fold)
     expect_equal(unique(preds$id), 1:10)
