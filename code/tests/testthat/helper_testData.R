@@ -41,6 +41,22 @@ class(d.three) = "llama.data"
 attr(d.three, "hasSplits") = TRUE
 
 
+fold.three.algo = data.frame(a=rep.int(0, 30), p=c(rep.int(c(1, 0, 1), 5), rep.int(c(0, 1, 1), 5)),
+                       f=rep.int(c(2, 3, 4), 10), algo=rep(c("b", "c", "d"), 10))
+d.three.algo = list(data=rbind(cbind(fold.three.algo, id=rep.int(1:10, rep.int(3, 10))), cbind(fold.three.algo, id=rep.int(11:20, rep.int(3, 10)))),
+               train=list(1:nrow(fold.three.algo)),
+               test=list(1:nrow(fold.three.algo) + nrow(fold.three.algo)),
+               features=c("a"),
+               algorithmFeatures=c("f"),
+               ids=c("id"),
+               algos=c("algo"),
+               minimize=T,
+               performance=c("p"),
+               best=rep.int(c(rep.int("c", 5), rep.int("b", 5)), 2))
+class(d.three.algo) = "llama.data"
+attr(d.three.algo, "hasSplits") = TRUE
+
+
 folde = data.frame(a=c(rep.int(0, 5), rep.int(1, 5)),
                   b=c(rep.int(1, 5), rep.int(0, 5)),
                   c=rep.int(1, 10))
@@ -125,4 +141,5 @@ one = list(data=rbind(cbind(foldone, id=1:10), cbind(foldone, id=11:20)),
          best=rep.int("a", 20))
 class(one) = "llama.data"
 attr(one, "hasSplits") = TRUE
+
 
