@@ -28,7 +28,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         totalBests = data.frame(target=factor(breakBestTies(data), levels=data$performance))
         combns = combn(data$performance, 2)
     } else {
-        totalBests = data.frame(target=factor(breakBestTies(data, pairs=TRUE), levels=unique(data$data$algorithm)))
+        totalBests = data.frame(target=factor(breakBestTies(data, pairs=TRUE), levels=unique(data$data[[data$algos]])))
         combns = combn(unique(data$data[[data$algos]]), 2)
     }
     
