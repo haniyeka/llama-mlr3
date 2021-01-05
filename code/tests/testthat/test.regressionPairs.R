@@ -80,6 +80,7 @@ test_that("regressionPairs raises error without train/test split", {
     expect_error(regressionPairs(algotestregressor, d.algo))
 })
 
+#FIXME: finish this 
 test_that("regressionPairs works with three algorithms", {
     res = regressionPairs(regressor=testregressor, d.three)
     expect_equal(unique(res$predictions$id), 11:20)
@@ -134,6 +135,30 @@ test_that("regressionPairs respects minimize", {
         expect_equal(ss$algorithm, factor(c("foo", "bar")))
         expect_equal(ss$score, c(1, -1))
     })
+    
+    # same test with algorithm features
+    fold.algo = data.frame(a=rep.int(0, 20), best=rep.int("b", 10), p=c(rep.int(c(2, 1), 5), rep.int(c(3, 1), 5)), 
+                           algo=rep.int(c("foo", "bar"), 10), s=rep.int(c(2, 3), 10))
+    d.algo = list(data=rbind(cbind(fold.algo, id=rep.int(1:10, rep.int(2, 10))), cbind(fold.algo, id=rep.int(11:20, rep.int(2, 10)))),
+             train=list(1:nrow(fold.algo)), test=list(1:nrow(fold.algo) + nrow(fold.algo)),
+             features=c("a"), performance=c("p"), minimize=F, ids=c("id"),
+             algorithmFeatures=c("s"), algos=c("algo"))
+    class(d.algo) = "llama.data"
+    attr(d.algo, "hasSplits") = TRUE
+    res.algo = regressionPairs(regressor=algotestregressor, d.algo)
+    expect_equal(unique(res.algo$predictions$id), 11:20)
+    by(res.algo$predictions, res.algo$predictions$id, function(ss) {
+        expect_equal(ss$algorithm, factor(c("foo", "bar")))
+        expect_true(ss$score == c(1, -1) || ss$score == c(2, -2))
+    })
+    
+    fold.algo$id = rep.int(1:10, rep.int(2, 10))
+    preds.algo = res.algo$predictor(fold.algo)
+    expect_equal(unique(preds$id), 1:10)
+    by(preds.algo, preds.algo$id, function(ss) {
+        expect_equal(ss$algorithm, factor(c("foo", "bar")))
+        expect_true(ss$score == c(1, -1) || ss$score == c(2, -2))
+    })
 })
 
 test_that("regressionPairs allows combine classifier", {
@@ -151,6 +176,10 @@ test_that("regressionPairs allows combine classifier", {
         expect_equal(ss$algorithm, factor(c("b", "c")))
         expect_equal(ss$score, c(1, 0))
     })
+})
+
+test_that("regressionPairs doesn't allow combine classifier with algorithm features", {
+    expect_error(regressionPairs(regressor=algotestregressor, d.algo, combine=idtestclassifier))
 })
 
 test_that("regression works with NA predictions", {
@@ -178,6 +207,21 @@ test_that("regression works with NA predictions", {
     preds = res$predictor(fold)
     expect_equal(unique(preds$id), 1:10)
     by(preds, preds$id, function(ss) {
+        expect_equal(ss$algorithm, factor(NA))
+        expect_equal(ss$score, Inf)
+    })
+    
+    # same test with algorithm features
+    res.algo = regressionPairs(natestregressor, d.algo)
+    expect_equal(unique(res.algo$predictions$id), 11:20)
+    by(res.algo$predictions, res.algo$predictions$id, function(ss) {
+        expect_equal(ss$algorithm, factor(NA))
+        expect_equal(ss$score, Inf)
+    })
+    fold.algo$id = rep.int(1:10, rep.int(2, 10))
+    preds.algo = res.algo$predictor(fold.algo)
+    expect_equal(unique(preds.algo$id), 1:10)
+    by(preds.algo, preds.algo$id, function(ss) {
         expect_equal(ss$algorithm, factor(NA))
         expect_equal(ss$score, Inf)
     })
