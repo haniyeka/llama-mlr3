@@ -84,13 +84,13 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
             }
             combinedpredictions = rbind.fill(lapply(1:nrow(preds), function(j) {
                 ss = preds[j,,drop=F]
-                ord = do.call(order, c(list(ss), decreasing = TRUE))
+                ord = do.call(order, c(ifelse(nrow(ss) == 1, ss, list(ss)), decreasing = TRUE))
                 data.frame(ids[j,,drop=F], algorithm=factor(names(ss)[ord]), score=as.numeric(ss)[ord], iteration=i, row.names = NULL)
             }))
         } else {
             merged = Reduce('+', ensemblepredictions)
             combinedpredictions = rbind.fill(lapply(1:nrow(merged), function(j) {
-                ord = do.call(order, c(list(merged[j,]), decreasing = TRUE))
+                ord = do.call(order, c(ifelse(nrow(merged[j,]) == 1, merged[j,], list(merged[j,])), decreasing = TRUE))
                 data.frame(ids[j,,drop=F], algorithm=factor(names(merged)[ord]), score=as.numeric(merged[j,])[ord], iteration=i, row.names = NULL)
             }))
         }
@@ -165,13 +165,13 @@ function(classifier=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) 
             }
             combinedpredictions = rbind.fill(lapply(1:nrow(preds), function(j) {
                 ss = preds[j,,drop=F]
-                ord = do.call(order, c(list(ss), decreasing = TRUE))
+                ord = do.call(order, c(ifelse(nrow(ss) == 1, ss, list(ss)), decreasing = TRUE))
                 data.frame(ids[j,,drop=F], algorithm=factor(names(ss)[ord]), score=as.numeric(ss)[ord], iteration=i, row.names = NULL)
             }))
         } else {
             merged = Reduce('+', ensemblepredictions)
             combinedpredictions = rbind.fill(lapply(1:nrow(merged), function(j) {
-                ord = do.call(order, c(list(merged[j,]), decreasing = TRUE))
+                ord = do.call(order, c(ifelse(nrow(merged[j,]) == 1, merged[j,], list(merged[j,])), decreasing = TRUE))
                 data.frame(ids[j,,drop=F], algorithm=factor(names(merged)[ord]), score=as.numeric(merged[j,])[ord], iteration=i, row.names = NULL)
             }))
         }
