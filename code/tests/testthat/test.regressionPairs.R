@@ -80,7 +80,6 @@ test_that("regressionPairs raises error without train/test split", {
     expect_error(regressionPairs(algotestregressor, d.algo))
 })
 
-#FIXME: finish this 
 test_that("regressionPairs works with three algorithms", {
     res = regressionPairs(regressor=testregressor, d.three)
     expect_equal(unique(res$predictions$id), 11:20)
@@ -98,19 +97,19 @@ test_that("regressionPairs works with three algorithms", {
     })
     
     # same test with algorithm features
-    res.algo = regressionPairs(regressor=threealgotestregressor, d.three.algo)
+    res.algo = regressionPairs(regressor=testregressor, d.three.algo)
     expect_equal(unique(res.algo$predictions$id), 11:20)
     by(res.algo$predictions, res.algo$predictions$id, function(ss) {
-        stopifnot(levels(ss$algorithm) %in% c("c", "b", "d"))
-        expect_equal(ss$score, c(2, -1, -1))
+        stopifnot(levels(ss$algorithm) %in% c("d", "c", "b"))
+        expect_equal(ss$score, c(2, 0, -2))
     })
     
-    fold$id = 1:10
-    preds = res$predictor(fold)
-    expect_equal(unique(preds$id), 1:10)
-    by(preds, preds$id, function(ss) {
-        expect_equal(ss$algorithm, factor(c("c", "b", "d")))
-        expect_equal(ss$score, c(2, -1, -1))
+    fold.three.algo$id = rep.int(1:10, rep.int(3, 10))
+    preds.algo = res.algo$predictor(fold.three.algo)
+    expect_equal(unique(preds.algo$id), 1:10)
+    by(preds.algo, preds.algo$id, function(ss) {
+        expect_equal(ss$algorithm, factor(c("d", "c", "b")))
+        expect_equal(ss$score, c(2, 0, -2))
     })
 })
 
