@@ -148,15 +148,15 @@ test_that("regressionPairs respects minimize", {
     expect_equal(unique(res.algo$predictions$id), 11:20)
     by(res.algo$predictions, res.algo$predictions$id, function(ss) {
         expect_equal(ss$algorithm, factor(c("foo", "bar")))
-        expect_true(ss$score == c(1, -1) || ss$score == c(2, -2))
+        expect_true(any(ss$score == c(1, -1), ss$score == c(2, -2), equals(TRUE)))
     })
     
     fold.algo$id = rep.int(1:10, rep.int(2, 10))
     preds.algo = res.algo$predictor(fold.algo)
-    expect_equal(unique(preds$id), 1:10)
+    expect_equal(unique(preds.algo$id), 1:10)
     by(preds.algo, preds.algo$id, function(ss) {
         expect_equal(ss$algorithm, factor(c("foo", "bar")))
-        expect_true(ss$score == c(1, -1) || ss$score == c(2, -2))
+        expect_true(any(ss$score == c(1, -1), ss$score == c(2, -2)))
     })
 })
 
