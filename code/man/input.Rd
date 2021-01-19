@@ -7,8 +7,8 @@ Read data
 Reads performance data that can be used to train and evaluate models.
 }
 \usage{
-input(features, performances, algorithmFeatures = NULL, successes = NULL, costs = NULL, extra = NULL, 
-    minimize = T, perfcol = "performance")
+input(features, performances, algorithmFeatures = NULL, successes = NULL, costs = NULL, 
+		extra = NULL, minimize = T, perfcol = "performance")
 }
 \arguments{
   \item{features}{
