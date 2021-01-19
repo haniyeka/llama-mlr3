@@ -47,7 +47,7 @@ input(features, performances, algorithmFeatures = NULL, successes = NULL, costs 
   \item{minimize}{
   whether the minimum performance value is best. Default true.
 }
-  \item{perfol}{
+  \item{perfcol}{
   name of the column that stores performance values when algorithm features 
   are provided. Default performance.
 }

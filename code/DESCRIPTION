@@ -11,7 +11,7 @@ Author: Lars Kotthoff [aut,cre],
 Maintainer: Lars Kotthoff <larsko@uwyo.edu>
 Description: Provides functionality to train and evaluate algorithm selection models for portfolios.
 Depends: R (>= 4.0), mlr (>= 2.5)
-Imports: rJava, parallelMap, ggplot2, checkmate, BBmisc, plyr
+Imports: rJava, parallelMap, ggplot2, checkmate, BBmisc, plyr, data.table
 Suggests: testthat, ParamHelpers
 License: BSD_3_clause + file LICENSE
 URL: https://bitbucket.org/lkotthoff/llama
