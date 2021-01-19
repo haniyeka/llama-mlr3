@@ -6,7 +6,8 @@ Date: 2021-01-04
 Author: Lars Kotthoff [aut,cre],
     Bernd Bischl [aut],
     Barry Hurley [ctb],
-    Talal Rahwan [ctb]
+    Talal Rahwan [ctb],
+		Damir Pulatov [ctb]
 Maintainer: Lars Kotthoff <larsko@uwyo.edu>
 Description: Provides functionality to train and evaluate algorithm selection models for portfolios.
 Depends: R (>= 4.0), mlr (>= 2.5)
