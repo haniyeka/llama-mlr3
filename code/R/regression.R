@@ -17,7 +17,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
     if(is.null(data$algorithmFeatures)) {
         totalBests = data.frame(target=factor(breakBestTies(data), levels=data$performance))
     } else {
-        totalBests = data.frame(target=factor(breakBestTies(data), levels=unique(data$data$algorithm)))
+        totalBests = data.frame(target=factor(breakBestTies(data), levels=data$algorithmNames))
     }
     
     predictions = rbind.fill(parallelMap(function(i) {
