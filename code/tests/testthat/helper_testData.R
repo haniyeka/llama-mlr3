@@ -22,6 +22,7 @@ d.algo = list(data=rbind(cbind(fold.algo, id=rep.int(1:10, rep.int(2, 10))), cbi
               algos=c("algo"),
               minimize=T,
               performance=c("p"),
+              algorithmNames=c("b", "c"),
               best=rep.int(c(rep.int("c", 5), rep.int("b", 5)), 2))
 class(d.algo) = "llama.data"
 attr(d.algo, "hasSplits") = TRUE
