@@ -94,10 +94,10 @@ test_that("single best returns the single best", {
     # same test with algorithm features
     fold.algo = data.frame(id=rep.int(c(1:10), rep.int(2, 10)), p=rep.int(c(1, 0), 10), f=1:20, a=rep.int(c("a", "b"), 10))
     d.algo = list(data=fold.algo, performance=c("p"), minimize=T, best=rep.int("a", 10), ids=c("id"), 
-             algorithmFeatures=c("f"), algos=c("a"))
+             algorithmFeatures=c("f"), algos=c("a"), algorithmNames=c("a", "b"))
     class(d.algo) = "llama.data"
     e.algo = list(data=fold.algo, performance=c("p"), minimize=F, best=rep.int("a", 10), ids=c("id"),
-             algorithmFeatures=c("f"), algos=c("a"))
+             algorithmFeatures=c("f"), algos=c("a"), algorithmNames=c("a", "b"))
     class(e.algo) = "llama.data"
     
     preds.algo = singleBest(d.algo)
@@ -134,10 +134,10 @@ test_that("single best works with best list", {
     
     # same test with algorithm features
     fold.algo = data.frame(id=rep.int(c(1:10), rep.int(2, 10)), p=rep.int(c(1, 0), 10), f=1:20, a=rep.int(c("a", "b"), 10))
-    d.algo = list(data=fold.algo, performance=c("p"), minimize=T, ids=c("id"), algorithmFeatures=c("f"), algos=c("a"))
+    d.algo = list(data=fold.algo, performance=c("p"), minimize=T, ids=c("id"), algorithmFeatures=c("f"), algos=c("a"), algorithmNames=c("a", "b"))
     d.algo$best = bestlistlong
     class(d.algo) = "llama.data"
-    e.algo = list(data=fold.algo, performance=c("p"), minimize=F, ids=c("id"), algorithmFeatures=c("f"), algos=c("a"))
+    e.algo = list(data=fold.algo, performance=c("p"), minimize=F, ids=c("id"), algorithmFeatures=c("f"), algos=c("a"), algorithmNames=c("a", "b"))
     e.algo$best = bestlistlong
     class(e.algo) = "llama.data"
     
@@ -168,7 +168,7 @@ test_that("single best by count returns the single best", {
     # same test with algorithm features
     d.algo = list(data=data.frame(id=rep.int(c(1:3), rep.int(2, 3)), p=c(1,2,2,2,3,3), a=rep.int(c("a", "b"), 3)),
              performance=c("p"), minimize=T, ids=c("id"), algorithmFeatures=c("f"), 
-             algos=c("a"))
+             algos=c("a"), algorithmNames=c("a", "b"))
     d.algo$best = rep.int("a", 3)
     class(d.algo) = "llama.data"
     
@@ -194,7 +194,7 @@ test_that("single best by count works with best list", {
     # same test with algorithm features
     d.algo = list(data=data.frame(id=rep.int(c(1:3), rep.int(2, 3)), p=c(1,2,2,2,3,3), a=rep.int(c("a", "b"), 3)),
                   performance=c("p"), minimize=T, ids=c("id"), algorithmFeatures=c("f"), 
-                  algos=c("a"))
+                  algos=c("a"), algorithmNames=c("a", "b"))
     d.algo$best = bestlist
     class(d.algo) = "llama.data"
     
