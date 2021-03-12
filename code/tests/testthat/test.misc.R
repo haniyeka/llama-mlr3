@@ -221,7 +221,7 @@ test_that("single best by par returns the single best", {
     fold.algo = data.frame(id=rep.int(c(1:10), rep.int(2, 10)), p=rep.int(c(1, 0), 10), f=1:20, a=rep.int(c("a", "b"), 10),
                            s=rep.int(c(F, T), 10))
     d.algo = list(data=fold.algo, performance=c("p"), success=c("s"), best=rep.int("a", 10), 
-                  ids=c("id"), algorithmFeatures=c("f"), algos=c("a"))
+                  ids=c("id"), algorithmFeatures=c("f"), algos=c("a"), algorithmNames=c("a", "b"))
     class(d.algo) = "llama.data"
     
     preds.algo = singleBestByPar(d.algo)
@@ -248,7 +248,7 @@ test_that("single best by par works with best list", {
     fold.algo = data.frame(id=rep.int(c(1:10), rep.int(2, 10)), p=rep.int(c(1, 0), 10), f=1:20, a=rep.int(c("a", "b"), 10),
                            s=rep.int(c(F, T), 10))
     d.algo = list(data=fold.algo, performance=c("p"), success=c("s"), 
-                  ids=c("id"), algorithmFeatures=c("f"), algos=c("a"))
+                  ids=c("id"), algorithmFeatures=c("f"), algos=c("a"), algorithmNames=c("a", "b"))
     d.algo$best = bestlistlong
     class(d.algo) = "llama.data"
     
@@ -277,7 +277,7 @@ test_that("single best by par works with train/test split", {
     fold.algo = data.frame(id=rep.int(c(1:10), rep.int(2, 10)), p=rep.int(c(1, 0), 10), f=1:20, a=rep.int(c("a", "b"), 10),
                            s=rep.int(c(F, T), 10))
     d.algo = list(data=fold.algo, test=list(1:10), train=list(11:20), 
-                  performance=c("p"), success=c("s"), ids=c("id"), algorithmFeatures=c("f"), algos=c("a"))
+                  performance=c("p"), success=c("s"), ids=c("id"), algorithmFeatures=c("f"), algos=c("a"), algorithmNames=c("a", "b"))
     d.algo$best = bestlistlong
     class(d.algo) = "llama.data"
     

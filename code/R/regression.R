@@ -191,7 +191,7 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
                 ids = data.frame(id = 1:nrow(x))  
             } else {
                 n = nrow(x) / length(unique(x[[data$algos]]))
-                ids = data.frame(id = rep.int(1:n, rep.int(length(unique(x[[data$algos]])), n)))
+                ids = data.frame(id = rep.int(1:n, length(unique(x[[data$algos]]))))
             }
         }
         performancePredictions = data.frame(row.names=1:nrow(tsf$features))
