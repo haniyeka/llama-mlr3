@@ -308,7 +308,7 @@ test_that("single best by successes returns the single best", {
     fold.algo = data.frame(id=rep.int(c(1:10), rep.int(2, 10)), p=rep.int(c(1, 0), 10), f=1:20, a=rep.int(c("a", "b"), 10),
                            s=rep.int(c(F, T), 10))
     d.algo = list(data=fold.algo, performance=c("p"), success=c("s"), best=rep.int("a", 10), 
-                  ids=c("id"), algorithmFeatures=c("f"), algos=c("a"))
+                  ids=c("id"), algorithmFeatures=c("f"), algos=c("a"), algorithmNames=c("a", "b"))
     class(d.algo) = "llama.data"
     
     preds.algo = singleBestBySuccesses(d.algo)
@@ -335,7 +335,7 @@ test_that("single best by successes works with best list", {
     fold.algo = data.frame(id=rep.int(c(1:10), rep.int(2, 10)), p=rep.int(c(1, 0), 10), f=1:20, a=rep.int(c("a", "b"), 10),
                            s=rep.int(c(F, T), 10))
     d.algo = list(data=fold.algo, performance=c("p"), success=c("s"), 
-                  ids=c("id"), algorithmFeatures=c("f"), algos=c("a"))
+                  ids=c("id"), algorithmFeatures=c("f"), algos=c("a"), algorithmNames=c("a", "b"))
     d.algo$best = bestlistlong
     class(d.algo) = "llama.data"
     
@@ -360,7 +360,7 @@ test_that("break best ties recomputes bests without ties", {
     # same test with algorithm features
     d.algo = list(data=data.frame(p=c(1,2,2,2,3,2.5), a=rep.int(c("a", "b"), 3), f=1:6,
                                   id=rep.int(c(1:3), rep.int(2, 3))),
-             performance=c("p"), algos=c("a"), algorithmFeatures=c("f"), ids=c("id"), minimize=T)
+             performance=c("p"), algos=c("a"), algorithmFeatures=c("f"), ids=c("id"), algorithmNames=c("a", "b"), minimize=T)
     class(d.algo) = "llama.data"
     
     expect_equal(breakBestTies(d.algo), factor(c("a", "a", "a", "a", "b", "b")))
@@ -379,7 +379,7 @@ test_that("break best ties accepts fold argument", {
     fold.algo = data.frame(p=c(1,2,2,2,3,2.5), a=rep.int(c("a", "b"), 3), f=1:6,
                id=rep.int(c(1:3), rep.int(2, 3)))
     d.algo = list(data=rbind(fold.algo, fold.algo), performance=c("p"), algos=c("a"), 
-                  algorithmFeatures=c("f"), ids=c("id"), minimize=T,
+                  algorithmFeatures=c("f"), ids=c("id"), minimize=T, algorithmNames=c("a", "b"),
                   train=list(1:nrow(fold.algo)))
     class(d.algo) = "llama.data"
     
