@@ -1,8 +1,8 @@
 Package: llama
 Type: Package
 Title: Leveraging Learning to Automatically Manage Algorithms
-Version: 0.10
-Date: 2021-01-19
+Version: 0.10.1
+Date: 2021-03-16
 Author: Lars Kotthoff [aut,cre],
     Bernd Bischl [aut],
     Barry Hurley [ctb],
