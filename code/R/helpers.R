@@ -53,16 +53,3 @@ function() {
     cond = structure(list(message = "Skipping expensive run."), class = c("skip", "condition"))
     if(Sys.getenv("RUN_EXPENSIVE") != "true") stop(cond)
 }
-
-makeRLearner.classif.constant = function() {
-    makeRLearnerClassif(cl = "classif.constant", package="llama",
-        par.set=ParamHelpers::makeParamSet(), properties=c("numerics", "factors", "ordered", "weights", "oneclass", "multiclass", "missings"))
-}
-trainLearner.classif.constant = function(.learner, .task, .subset, .weights, ...) { }
-predictLearner.classif.constant = function(.learner, .model, .newdata, ...) {
-    return(factor(rep.int(.model$factor.levels$target, nrow(.newdata))))
-}
-registerS3method("makeRLearner", "classif.constant", makeRLearner.classif.constant)
-registerS3method("trainLearner", "classif.constant", trainLearner.classif.constant)
-registerS3method("predictLearner", "classif.constant", predictLearner.classif.constant)
-constantClassifier = makeLearner("classif.constant")
