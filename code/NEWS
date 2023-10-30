@@ -1,0 +1,66 @@
+llama_0.10.1:
+- small fixes related to support for algorithm features
+
+llama_0.10:
+- support algorithm features
+
+llama_0.9.4:
+- R devel compatiblity
+
+llama_0.9.3:
+- fix R 4.0 compatiblity
+
+llama_0.9.2:
+- fix bug that caused errors in some pairwise classification cases
+
+llama_0.9.1:
+- fix bug that caused errors with learners that supports weights when only a
+  single class label is present
+
+llama_0.9:
+- stricter argument checking: the number of folds to partition in must be an
+  integer
+- the functions that generate partitions into train/test now overwrite any
+  existing partitions
+- automatic tuning of models is now supported through the tuneModel function
+- mlr 2.5 compatiblity
+- classification functions can now use learners that predict probabilities
+- various small bug and reliability fixes
+
+llama_0.8:
+- models computed during cross-validation can be saved by passing save.models to
+  the model builders
+- various performance improvements, especially in the score computing functions
+- introduce functions for result analysis: perfScatterPlot, predTable
+- allow to create train/test splits with bootstrapping
+- stratification for the train/test split generation functions is now turned off
+  by default
+- feature selection functionality has been retired
+- some of the internal APIs have changed -- your code may break if you rely on
+  these
+
+llama_0.7.2:
+- take success (if present) into account when determining best algorithm: if
+  nothing was successful on an instance, set to NA -- this means that vbs may
+  return NA as well
+- fix bugs wrt cost calculations
+- fix stupid bug that caused the incorrect best algorithm to be determined in
+  some cases
+- some addtional small bug fixes
+
+llama_0.7.1:
+- allow vbs/singleBest to operate on test splits to simplify the interface
+- corrected the implementation of contributions() to handle minimisation and
+  maximisation of performance values correctly
+
+
+llama_0.7:
+- add regressionPairs model, which predicts the performance difference for each
+  pair of algorithms and makes decisions based on that
+- use mlr for machine learning algorithms
+- use original problem features along with predictions in stacked learners
+
+llama_1.0: 
+- uses mlr3, mlr3cluster for machine learning 
+- ported functions to use mlr3 instead of mlr
+- predicts "se" for regression 

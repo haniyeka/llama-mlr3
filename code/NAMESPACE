@@ -1,0 +1,42 @@
+export(
+    bsFolds,
+    classify,
+    classifyPairs,
+    cluster,
+    contributions,
+    cvFolds,
+    input,
+    imputeCensored,
+    misclassificationPenalties,
+    normalize,
+    parscores,
+    perfScatterPlot,
+    predTable,
+    print.llama.data,
+    print.llama.model,
+    regression,
+    regressionPairs,
+    singleBest,
+    singleBestByCount,
+    singleBestByPar,
+    singleBestBySuccesses,
+    successes,
+    trainTest,
+    tuneModel,
+    vbs
+)
+S3method(print, llama.data)
+S3method(print, llama.model)
+importFrom(BBmisc, getMinIndex, getMaxIndex)
+importFrom(rJava, J, .jpackage, .jarray)
+importFrom(parallelMap, parallelMap, parallelRegisterLevels)
+importFrom(plyr, rbind.fill, arrange, ddply, .)
+importFrom(stats, aggregate, as.formula, predict, setNames, reshape)
+importFrom(utils, combn, head)
+import(checkmate)
+import(ggplot2)
+import(mlr3)
+import(mlr3cluster)
+import(mlr3learners)
+import(mlr3extralearners)
+import(data.table)
