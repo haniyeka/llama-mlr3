@@ -59,3 +59,8 @@ llama_0.7:
   pair of algorithms and makes decisions based on that
 - use mlr for machine learning algorithms
 - use original problem features along with predictions in stacked learners
+
+llama_1.0: 
+- uses mlr3, mlr3cluster for machine learning 
+- ported functions to use mlr3 instead of mlr
+- predicts "se" for regression 

@@ -25,26 +25,26 @@ function(data=NULL, estimator=makeLearner("regr.lm"), epsilon=0.1, maxit=1000) {
             haveind = splits$`TRUE`
             wantind = splits$`FALSE`
             if(is.null(data$algorithmFeatures)) {
-                task = makeRegrTask(id="imputation", target="target", data=cbind(data.frame(target=data$data[haveind,p]), data$data[haveind,][data$features]))
-                model = train(estimator, task=task)
-                data$data[wantind,p] = predict(model, newdata=data$data[wantind,][data$features])$data$response
+                task = TaskRegr$new(id="imputation", target="target", backend=cbind(data.frame(target=data$data[haveind,p]), data$data[haveind,][data$features]))
+                model = estimator$train(task=task)
+                data$data[wantind,p] = model$predict_newdata(newdata=data$data[wantind,][data$features])$response
             } else {
-                task = makeRegrTask(id="imputation", target="target", data=cbind(data.frame(target=data$data[haveind,p]), data$data[haveind,][c(data$features, data$algorithmFeatures)]))
-                model = train(estimator, task=task)
-                data$data[wantind,p] = predict(model, newdata=data$data[wantind,][c(data$features, data$algorithmFeatures)])$data$response
+                task = TaskRegr$new(id="imputation", target="target", backend=cbind(data.frame(target=data$data[haveind,p]), data$data[haveind,][c(data$features, data$algorithmFeatures)]))
+                model = estimator$train(task=task)
+                data$data[wantind,p] = model$predict_newdata(newdata=data$data[wantind,][c(data$features, data$algorithmFeatures)])$response
             }
 
             diff = Inf
             it = 1
             while(diff > epsilon) {
                 if(is.null(data$algorithmFeatures)) {
-                    task = makeRegrTask(id="imputation", target="target", data=cbind(data.frame(target=data$data[[p]]), data$data[data$features]))
-                    model = train(estimator, task=task)
-                    preds = predict(model, newdata=data$data[wantind,][data$features])$data$response
+                    task = TaskRegr$new(id="imputation", target="target", backend=cbind(data.frame(target=data$data[[p]]), data$data[data$features]))
+                    model = estimator$train(task=task)
+                    preds = model$predict_newdata(newdata=data$data[wantind,][data$features])$response
                 } else {
-                    task = makeRegrTask(id="imputation", target="target", data=cbind(data.frame(target=data$data[[p]]), data$data[c(data$features, data$algorithmFeatures)]))
-                    model = train(estimator, task=task)
-                    preds = predict(model, newdata=data$data[wantind,][c(data$features, data$algorithmFeatures)])$data$response
+                    task = TaskRegr$new(id="imputation", target="target", backend=cbind(data.frame(target=data$data[[p]]), data$data[c(data$features, data$algorithmFeatures)]))
+                    model = estimator$train(task=task)
+                    preds = model$predict_newdata(newdata=data$data[wantind,][c(data$features, data$algorithmFeatures)])$response
                 }
 
                 diff = max(abs(preds - data$data[wantind,p]))

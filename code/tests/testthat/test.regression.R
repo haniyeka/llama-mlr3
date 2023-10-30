@@ -159,3 +159,25 @@ test_that("regression works with single algorithm", {
     })
 })
     
+
+test_that("regression predicts se", {
+  res = regression(regressor = se.testregressor, data = d)
+  expect_equal(unique(res$predictions$id), 11:20) 
+  by(res$predictions, res$predictions$id, function(ss) { 
+    expect_equal(ss$algorithm, factor(c("c", "b"))) 
+    expect_equal(ss$score, c(0, 1))
+  })
+  expect_equal(length(colnames(res$predictions)),5)
+  expect_equal(colnames(res$predictions)[4],"se")
+  # same test with algorithm features
+  res = regression(algo.se.testregressor, d.algo)
+  expect_equal(unique(res$predictions$id), 11:20)
+  by(res$predictions, res$predictions$id, function(ss) {
+    expect_equal(ss$algorithm, factor(c("b", "c")))
+  })
+  by(res$predictions, res$predictions$algorithm, function(ss) {
+    expect_equal(ss$score, rep.int(c(1, 0), 5))
+  })
+  expect_equal(length(colnames(res$predictions)),5)
+  expect_equal(colnames(res$predictions)[4],"se")
+})
