@@ -59,7 +59,7 @@ test_that("imputeCensored imputes non-successes", {
     class(d) = "llama.data"
     res = imputeCensored(d, footestregressor)
     expect_identical(res$data$foo[1:5], res$original_data$foo[1:5])
-    expect_true(all(res$data$foo[6:10] == 1))
+    expect_true(all(res$data$foo[6:10] == 0))
     
     # same test with algorithm features
     data.algo = data.frame(a=rep.int(0, 10), p=rep.int(0, 10), s=c(rep.int(T, 5), rep.int(F, 5)), algo=rep.int("foo", 10), 
@@ -69,6 +69,6 @@ test_that("imputeCensored imputes non-successes", {
     class(d.algo) = "llama.data"
     res.algo = imputeCensored(d.algo, footestregressor)
     expect_identical(res.algo$data$p[1:5], res.algo$original_data$p[1:5])
-    expect_true(all(res.algo$data$p[6:10] == 1))
+    expect_true(all(res.algo$data$p[6:10] == 0))
 })
 

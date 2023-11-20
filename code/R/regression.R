@@ -1,8 +1,8 @@
 regression <-
 function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }, combine=NULL, expand=identity, save.models=NA, use.weights = TRUE) {
-    if(!testClass(regressor, "Learner")) {
-        stop("Need regressor!")
-    }
+  if(!testClass(regressor, "Learner") && !testList(regressor, types="Learner")) {
+    stop("Need regressor!")
+  }
     assertClass(data, "llama.data")
     hs = attr(data, "hasSplits")
     if(is.null(hs) || hs != TRUE) {
@@ -80,7 +80,9 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
                 saveRDS(list(model=model, train.data=task, test.data=tsf$features), file = paste(save.models, regressor$id, i, "rds", sep="."))
             }
             performancePredictions[[data$performance]] = model$predict_newdata(newdata=tsf$features)$response
-            if(regressor$predict.type == "se") performancePredictionsSE[[data$performance]] = model$predict_newdata(newdata=tsf$features)$se
+            if(regressor$predict_type == "se"){
+              performancePredictionsSE[[data$performance]] = model$predict_newdata(newdata=tsf$features)$se
+            } 
         }
         
         if(!is.null(combine)) {
@@ -159,10 +161,10 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
     
     fw = abs(apply(fp, 1, max) - apply(fp, 1, min))
     if(is.null(data$algorithmFeatures)) {
-        models = lapply(1:length(data$performance), function(i) {
-            task = TaskRegr$new(id="regression", target="target", backend=cbind(data.frame(target=data$data[[data$performance[i]]]), fs$features))
-            return(regressor$train(task = task))
-        })
+      models = lapply(1:length(data$performance), function(i) {
+        task = TaskRegr$new(id="regression", target="target", backend=cbind(data.frame(target=data$data[[data$performance[i]]]), fs$features))
+        return(regressor$train(task = task)$clone(deep = TRUE))
+      })
     } else {
         target = data$data[c(data$performance, data$algos)]
         target = arrange(target, target[[data$algos]])
@@ -231,13 +233,13 @@ function(regressor=NULL, data=NULL, pre=function(x, y=NULL) { list(features=x) }
         if(is.null(data$algorithmFeatures)) {
             for (i in 1:length(data$performance)) {
                 performancePredictions[,i] = models[[i]]$predict_newdata(newdata=tsf$features)$response
-                if(regressor$predict_type == "se") performancePredictionsSE[,i] = models[[i]]$predict_newdata(newdata=tsf$features)$response
+                if(regressor$predict_type == "se") performancePredictionsSE[,i] = models[[i]]$predict_newdata(newdata=tsf$features)$se
             }
             colnames(performancePredictions) = data$performance
             if(regressor$predict_type == "se") { colnames(performancePredictionsSE) = data$performance }
         } else {
             performancePredictions[[data$performance]] = models$predict_newdata(newdata=tsf$features)$response
-            if(regressor$predict_type == "se") performancePredictionsSE[[data$performance]] = models$predict_newdata(newdata=tsf$features)$se
+            if(regressor$predict_type == "se"){ performancePredictionsSE[[data$performance]] = models$predict_newdata(newdata=tsf$features)$se }
         }
         
         if(!is.null(combine)) {

@@ -32,6 +32,7 @@ function(data, nfolds = 10L, stratify = FALSE) {
         n = length(x)
         rep(1:nfolds, length.out = n)[sample(n, n)]
     }))
+    
     if(length(unique(tmp)) != nfolds) {
         stop(paste("Requested ", nfolds, " folds, but cannot produce this many.", sep=""))
     } 

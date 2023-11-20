@@ -26,7 +26,8 @@ function(ldf, llama.fun, learner, design, metric = parscores, nfolds = 10L, quie
         outer.split.ldf$train = list(ldf$train[[i]])
         outer.split.ldf$test = list(ldf$test[[i]])
 
-        learner2 = setHyperPars(learner, par.vals = best.parvals)
+        learner2 = learner
+        do.call(function(...) learner2$param_set$set_values(...), best.parvals)
         model = llama.fun(learner2, data = outer.split.ldf)
 
         retval = model$predictions
@@ -35,7 +36,8 @@ function(ldf, llama.fun, learner, design, metric = parscores, nfolds = 10L, quie
     })
 
     best.parvals = tuneLlamaModel(ldf, llama.fun, learner, design, metric, quiet)
-    learner2 = setHyperPars(learner, par.vals = best.parvals)
+    learner2 = learner
+    do.call(function(...) learner2$param_set$set_values(...), best.parvals)
     full.split.ldf = ldf
     full.split.ldf$train = list(ldf$train[[1]])
     full.split.ldf$test = list(ldf$test[[1]])
@@ -59,7 +61,12 @@ function(ldf, llama.fun, learner, design, metric, quiet) {
     # FIXME: we currently do not handle failed tuning evals
     ys = parallelMap(function(x) {
         pars = as.list(design[x,,drop = FALSE])
-        learner = setHyperPars(learner, par.vals = pars)
+        new_params <- list()
+        for (param_name in names(pars)) {
+          new_params[[param_name]] <- pars[[param_name]]
+        }
+        
+        do.call(function(...) learner$param_set$set_values(...), new_params)
         model = llama.fun(learner, ldf)
         score = mean(metric(ldf, model))
 
