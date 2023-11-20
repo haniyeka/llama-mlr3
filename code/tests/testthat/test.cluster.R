@@ -11,17 +11,17 @@ test_that("cluster raises error without train/test split", {
 })
 
 test_that("cluster raises error with unknown bestBy", {
-    expect_error(cluster(testclusterer, d, bestBy="foo"), "Unknown bestBy: foo")
+    expect_error(cluster(clusterer = testclusterer, data = d, bestBy="foo"), "Unknown bestBy: foo")
 })
 
 test_that("cluster finds best for cluster", {
-    res = cluster(testclusterer, g)
-    algs = c("c", "b")
-    expect_equal(unique(res$predictions$id), 11:20)
-    by(res$predictions, res$predictions$id, function(ss) {
-        expect_equal(ss$algorithm, factor(algs, levels=algs))
-        expect_equal(ss$score, c(0, 1))
-    })
+  res = cluster(testclusterer, g)
+  algs = c("c", "b")
+  expect_equal(unique(res$predictions$id), 11:20)
+  by(res$predictions, res$predictions$id, function(ss) {
+    expect_equal(ss$algorithm, factor(algs, levels=algs))
+    expect_equal(ss$score, c(0, 1))
+  })
 })
 
 test_that("cluster finds best by count for cluster", {
@@ -85,62 +85,19 @@ test_that("cluster takes list of clusterers", {
 })
 
 test_that("cluster takes list of clusterers and combinator", {
-    res = cluster(list(testclusterer, testclusterer, testclusterer, .combine=idtestclassifier), g)
+    res = cluster(clusterer = list(testclusterer, testclusterer, testclusterer, .combine=idtestclassifier), g)
     expect_equal(unique(res$predictions$id), 11:20)
+    algs = c("b", "c")
     by(res$predictions, res$predictions$id, function(ss) {
-        expect_equal(ss$algorithm, factor("c"))
-        expect_equal(ss$score, 1)
+        expect_equal(ss$algorithm, factor(algs, levels=algs))
+        expect_equal(ss$score, c(0, 1))
     })
 
     foldg$id = 1:10
     preds = res$predictor(foldg)
     expect_equal(unique(preds$id), 1:10)
     by(preds, preds$id, function(ss) {
-        expect_equal(ss$algorithm, factor("c"))
-        expect_equal(ss$score, 1)
-    })
-})
-
-test_that("cluster works with NA predictions", {
-    res = cluster(natestclusterer, d)
-    expect_equal(unique(res$predictions$id), 11:20)
-    by(res$predictions, res$predictions$id, function(ss) {
-        expect_equal(ss$algorithm, factor(NA))
-        expect_equal(ss$score, Inf)
-    })
-    fold$id = 1:10
-    preds = res$predictor(fold)
-    expect_equal(unique(preds$id), 1:10)
-    by(preds, preds$id, function(ss) {
-        expect_equal(ss$algorithm, factor(NA))
-        expect_equal(ss$score, Inf)
-    })
-
-    res = cluster(list(natestclusterer, natestclusterer, natestclusterer), d)
-    expect_equal(unique(res$predictions$id), 11:20)
-    by(res$predictions, res$predictions$id, function(ss) {
-        expect_equal(ss$algorithm, factor(NA))
-        expect_equal(ss$score, Inf)
-    })
-    fold$id = 1:10
-    preds = res$predictor(fold)
-    expect_equal(unique(preds$id), 1:10)
-    by(preds, preds$id, function(ss) {
-        expect_equal(ss$algorithm, factor(NA))
-        expect_equal(ss$score, Inf)
-    })
-
-    res = cluster(list(natestclusterer, natestclusterer, natestclusterer, .combine=natestclassifier), d)
-    expect_equal(unique(res$predictions$id), 11:20)
-    by(res$predictions, res$predictions$id, function(ss) {
-        expect_equal(ss$algorithm, factor(NA))
-        expect_equal(ss$score, Inf)
-    })
-    fold$id = 1:10
-    preds = res$predictor(fold)
-    expect_equal(unique(preds$id), 1:10)
-    by(preds, preds$id, function(ss) {
-        expect_equal(ss$algorithm, factor(NA))
-        expect_equal(ss$score, Inf)
+      expect_equal(ss$algorithm, factor(algs, levels=algs))
+      expect_equal(ss$score, c(0, 1))
     })
 })

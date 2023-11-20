@@ -44,25 +44,25 @@ folds = cvFolds(satsolvers)
 test_that("classify", {
     skip.expensive()
 
-    res = classify(classifier=makeLearner("classif.OneR"), data=folds)
+    res = classify(classifier=lrn("classif.OneR"), data=folds)
     expect_true(sum(parscores(folds, res)) > vbsp)
     expect_true(sum(misclassificationPenalties(folds, res)) > vbsm)
     expect_true(sum(successes(folds, res)) < vbss)
     expect_true(is.data.frame(res$predictor(satsolvers$data[satsolvers$features])))
 
-    res = classify(classifier=list(makeLearner("classif.OneR"),
-                                   makeLearner("classif.OneR"),
-                                   makeLearner("classif.OneR")),
+    res = classify(classifier=list(lrn("classif.OneR"),
+                                   lrn("classif.OneR"),
+                                   lrn("classif.OneR")),
                     data=folds)
     expect_true(sum(parscores(folds, res)) > vbsp)
     expect_true(sum(misclassificationPenalties(folds, res)) > vbsm)
     expect_true(sum(successes(folds, res)) < vbss)
     expect_true(is.data.frame(res$predictor(satsolvers$data[satsolvers$features])))
 
-    res = classify(classifier=list(makeLearner("classif.OneR"),
-                                   makeLearner("classif.OneR"),
-                                   makeLearner("classif.OneR"),
-                                    .combine=makeLearner("classif.OneR")),
+    res = classify(classifier=list(lrn("classif.OneR"),
+                                   lrn("classif.OneR"),
+                                   lrn("classif.OneR"),
+                                    .combine=lrn("classif.OneR")),
                     data=folds)
     expect_true(sum(parscores(folds, res)) > vbsp)
     expect_true(sum(misclassificationPenalties(folds, res)) > vbsm)
@@ -73,15 +73,15 @@ test_that("classify", {
 test_that("classifyPairs", {
     skip.expensive()
 
-    res = classifyPairs(classifier=makeLearner("classif.OneR"), data=folds)
+    res = classifyPairs(classifier=lrn("classif.OneR"), data=folds)
     expect_true(sum(parscores(folds, res)) > vbsp)
     expect_true(sum(misclassificationPenalties(folds, res)) > vbsm)
     expect_true(sum(successes(folds, res)) < vbss)
     expect_true(is.data.frame(res$predictor(satsolvers$data[satsolvers$features])))
 
-    res = classifyPairs(classifier=makeLearner("classif.OneR"),
+    res = classifyPairs(classifier=lrn("classif.OneR"),
                         data=folds,
-                        combine=makeLearner("classif.OneR"))
+                        combine=lrn("classif.OneR"))
     expect_true(sum(parscores(folds, res)) > vbsp)
     expect_true(sum(misclassificationPenalties(folds, res)) > vbsm)
     expect_true(sum(successes(folds, res)) < vbss)
@@ -91,32 +91,32 @@ test_that("classifyPairs", {
 test_that("cluster", {
     skip.expensive()
 
-    res = cluster(clusterer=makeLearner("cluster.SimpleKMeans"), data=folds, pre=normalize)
+    res = cluster(clusterer=lrn("clust.SimpleKMeans"), data=folds, pre=normalize)
     expect_true(sum(parscores(folds, res)) > vbsp)
     expect_true(sum(misclassificationPenalties(folds, res)) > vbsm)
     expect_true(sum(successes(folds, res)) < vbss)
     expect_true(is.data.frame(res$predictor(satsolvers$data[satsolvers$features])))
 
-    res = cluster(clusterer=makeLearner("cluster.SimpleKMeans"), data=folds,
+    res = cluster(clusterer=lrn("cluster.SimpleKMeans"), data=folds,
         bestBy="successes", pre=normalize)
     expect_true(sum(parscores(folds, res)) > vbsp)
     expect_true(sum(misclassificationPenalties(folds, res)) > vbsm)
     expect_true(sum(successes(folds, res)) < vbss)
     expect_true(is.data.frame(res$predictor(satsolvers$data[satsolvers$features])))
 
-    res = cluster(clusterer=list(makeLearner("cluster.SimpleKMeans"),
-                                 makeLearner("cluster.SimpleKMeans"),
-                                 makeLearner("cluster.SimpleKMeans")),
+    res = cluster(clusterer=list(lrn("cluster.SimpleKMeans"),
+                                 lrn("cluster.SimpleKMeans"),
+                                 lrn("cluster.SimpleKMeans")),
         data=folds, pre=normalize)
     expect_true(sum(parscores(folds, res)) > vbsp)
     expect_true(sum(misclassificationPenalties(folds, res)) > vbsm)
     expect_true(sum(successes(folds, res)) < vbss)
     expect_true(is.data.frame(res$predictor(satsolvers$data[satsolvers$features])))
 
-    res = cluster(clusterer=list(makeLearner("cluster.SimpleKMeans"),
-                                 makeLearner("cluster.SimpleKMeans"),
-                                 makeLearner("cluster.SimpleKMeans"),
-        .combine=makeLearner("classif.OneR")), data=folds, pre=normalize)
+    res = cluster(clusterer=list(lrn("cluster.SimpleKMeans"),
+                                 lrn("cluster.SimpleKMeans"),
+                                 lrn("cluster.SimpleKMeans"),
+        .combine=lrn("classif.OneR")), data=folds, pre=normalize)
     expect_true(sum(parscores(folds, res)) > vbsp)
     expect_true(sum(misclassificationPenalties(folds, res)) > vbsm)
     expect_true(sum(successes(folds, res)) < vbss)
@@ -126,23 +126,23 @@ test_that("cluster", {
 test_that("regression", {
     skip.expensive()
 
-    res = regression(regressor=makeLearner("regr.lm"), data=folds)
+    res = regression(regressor=lrn("regr.lm"), data=folds)
     expect_true(sum(parscores(folds, res)) > vbsp)
     expect_true(sum(misclassificationPenalties(folds, res)) > vbsm)
     expect_true(sum(successes(folds, res)) < vbss)
     expect_true(is.data.frame(res$predictor(satsolvers$data[satsolvers$features])))
 
-    res = regression(regressor=makeLearner("regr.lm"),
+    res = regression(regressor=lrn("regr.lm"),
                      data=folds,
-                     combine=makeLearner("classif.OneR"))
+                     combine=lrn("classif.OneR"))
     expect_true(sum(parscores(folds, res)) > vbsp)
     expect_true(sum(misclassificationPenalties(folds, res)) > vbsm)
     expect_true(sum(successes(folds, res)) < vbss)
     expect_true(is.data.frame(res$predictor(satsolvers$data[satsolvers$features])))
 
-    res = regression(regressor=makeLearner("regr.lm"),
+    res = regression(regressor=lrn("regr.lm"),
                      data=folds,
-                     combine=makeLearner("classif.OneR"),
+                     combine=lrn("classif.OneR"),
                      expand=function(x) { cbind(x, combn(c(1:ncol(x)), 2,
                             function(y) { abs(x[,y[1]] - x[,y[2]]) })) })
     expect_true(sum(parscores(folds, res)) > vbsp)
@@ -154,14 +154,14 @@ test_that("regression", {
 test_that("regressionPairs", {
     skip.expensive()
 
-    res = regressionPairs(regressor=makeLearner("regr.lm"), data=folds)
+    res = regressionPairs(regressor=lrn("regr.lm"), data=folds)
     expect_true(sum(parscores(folds, res)) > vbsp)
     expect_true(sum(misclassificationPenalties(folds, res)) > vbsm)
     expect_true(sum(successes(folds, res)) < vbss)
     expect_true(is.data.frame(res$predictor(satsolvers$data[satsolvers$features])))
 
-    res = regressionPairs(regressor=makeLearner("regr.lm"), data=folds,
-        combine=makeLearner("classif.OneR"))
+    res = regressionPairs(regressor=lrn("regr.lm"), data=folds,
+        combine=lrn("classif.OneR"))
     expect_true(sum(parscores(folds, res)) > vbsp)
     expect_true(sum(misclassificationPenalties(folds, res)) > vbsm)
     expect_true(sum(successes(folds, res)) < vbss)
@@ -171,7 +171,7 @@ test_that("regressionPairs", {
 test_that("perfScatterPlot", {
     skip.expensive()
 
-    model = classify(classifier=makeLearner("classif.J48"), data=folds)
+    model = classify(classifier=lrn("classif.J48"), data=folds)
     library(ggplot2)
     p = perfScatterPlot(parscores, model, singleBest, folds, satsolvers) +
         scale_x_log10() + scale_y_log10() +
@@ -186,13 +186,12 @@ test_that("perfScatterPlot", {
     expect_false(is.null(p))
 })
 
-
 test_that("tune", {
     skip.expensive()
 
     ps = makeParamSet(makeIntegerParam("M", lower = 1, upper = 100))
     design = generateRandomDesign(10, ps)
-    res = tuneModel(folds, classify, makeLearner("classif.J48"), design, parscores, nfolds = 3L, quiet = TRUE)
+    res = tuneModel(folds, classify, lrn("classif.J48"), design, parscores, nfolds = 3L, quiet = TRUE)
 
     expect_equal(class(res), "llama.model")
     expect_equal(attr(res, "type"), "classify")

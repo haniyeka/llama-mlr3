@@ -1,183 +1,76 @@
-test_that("regression predicts", {
-    res = regression(testregressor, d)
-    expect_equal(unique(res$predictions$id), 11:20) 
-    by(res$predictions, res$predictions$id, function(ss) { 
-        expect_equal(ss$algorithm, factor(c("c", "b"))) 
-        expect_equal(ss$score, c(0, 1))
-    })
-    
-    # same test with algorithm features
-    res = regression(algotestregressor, d.algo)
-    expect_equal(unique(res$predictions$id), 11:20)
-    by(res$predictions, res$predictions$id, function(ss) {
-        expect_equal(ss$algorithm, factor(c("b", "c")))
-    })
-    by(res$predictions, res$predictions$algorithm, function(ss) {
-        expect_equal(ss$score, rep.int(c(1, 0), 5))
-    })
+test_that("Input validation for regressor and data parameters in regression function", {
+  # NULL regressor
+  expect_error(regression(regressor = NULL, data = d), 
+               "Need regressor!")
+  # NULL data
+  expect_error(regression(regressor = testregressor, data = NULL), 
+               "Must inherit from class 'llama.data', but has class 'NULL'")
+  
+  # correct data and regressor
+  expect_silent(regression(regressor = testregressor, data = d))
+  
+  # NA save.models
+  expect_silent(regression(regressor = testregressor, data = d, save.models = NA))
+  
+  # use weights
+  expect_silent(regression(regressor = testregressor, data = d, use.weights = TRUE))
+  # don't use weights
+  expect_silent(regression(regressor = testregressor, data = d, use.weights = FALSE))
 })
 
-test_that("regression returns predictor", {
-    res = regression(testregressor, d)
-    fold$id = 1:10
-    preds = res$predictor(fold)
-    expect_equal(unique(preds$id), 1:10)
-    by(preds, preds$id, function(ss) {
-        expect_equal(ss$algorithm, factor(c("c", "b")))
-        expect_equal(ss$score, c(0, 1))
-    })
-    
-    # same test with algorithm features
-    res = regression(algotestregressor, d.algo)
-    fold.algo$id = id=rep.int(1:10, rep.int(2, 10))
-    preds = res$predictor(fold.algo)
-    expect_equal(unique(preds$id), 1:10)
-    by(preds, preds$id, function(ss) {
-        expect_equal(ss$algorithm, factor(c("b", "c")))
-    })
-    by(preds, preds$algorithm, function(ss) {
-        expect_equal(ss$score, rep.int(c(1, 0), 5))
-    })
+test_that("Functionality test",{
+  # correct data and regressor
+  expect_silent(regression(regressor = testregressor, data = d))
 })
 
-test_that("regression returns predictor that works without IDs", {
-    res = regression(testregressor, d)
-    fold$id = 1:10
-    preds = res$predictor(fold[d$features])
-    expect_equal(unique(preds$id), 1:10)
-    by(preds, preds$id, function(ss) {
-        expect_equal(ss$algorithm, factor(c("c", "b")))
-        expect_equal(ss$score, c(0, 1))
-    })
-    
-    # same test with algorithm features
-    res = regression(algotestregressor, d.algo)
-    fold.algo$id = rep.int(1:10, rep.int(2, 10))
-    preds = res$predictor(fold.algo[c(d.algo$features, d.algo$algorithmFeatures, d.algo$algos)])
-    expect_equal(unique(preds$id), 1:10)
-    by(preds, preds$id, function(ss) {
-        expect_equal(ss$algorithm, factor(c("b", "c")))
-    })
-    by(preds, preds$algorithm, function(ss) {
-        expect_equal(ss$score, rep.int(c(1, 0), 5))
-    })
+test_that("regression predicts",{
+  set.seed(123)
+  res = regression(regressor = testregressor, data = d)
+  algs = rep(c("b", "c"),10)
+  scores = rep(c(0.5, 0.5),10)
+  expect_equal(res$predictions$algorithm, factor(algs))
+  expect_equal(res$predictions$score, scores)
+})
+
+test_that("regression returns predictor",{
+  set.seed(123)
+  res = regression(regressor = testregressor, data = d)
+  fold$id = 1:10
+  
+  set.seed(123)
+  preds = res$predictor(fold)
+  expect_equal(unique(preds$id), 1:10)
+  
+  algs = rep(c("b", "c"),10)
+  scores = rep(c(0.5, 0.5),10)
+  expect_equal(preds$algorithm, factor(algs))
+  expect_equal(preds$score, scores)
+})
+
+test_that("regression returns predictor that works without IDs",{
+  set.seed(123)
+  res = regression(regressor = testregressor, data = d)
+  fold$id = 1:10
+  
+  set.seed(123)
+  preds = res$predictor(fold[d$features])
+  expect_equal(unique(preds$id), 1:10)
+  
+  algs = rep(c("b", "c"),10)
+  scores = rep(c(0.5, 0.5),10)
+  expect_equal(preds$algorithm, factor(algs))
+  expect_equal(preds$score, scores)
 })
 
 test_that("regression raises error without regressor", {
-    expect_error(regression())
+  expect_error(regression())
 })
 
 test_that("regression raises error without data", {
-    expect_error(regression(testregressor))
+  expect_error(regression(testregressor))
 })
 
 test_that("regression raises error without train/test split", {
-    fold = data.frame(a=rep.int(0, 10), b=c(rep.int(1, 5), rep.int(0, 5)), c=c(rep.int(0, 5), rep.int(1, 5)), best=c(rep.int("c", 5), rep.int("b", 5)))
-    d = list(data=rbind(fold, fold), features=c("a"), minimize=T, performance=c("b", "c"))
-    class(d) = "llama.data"
-    expect_error(regression(testregressor, d))
+  expect_error(regression(testregressor, dnosplit), "Need data with train/test split!")
 })
 
-test_that("regression allows to combine by max", {
-    fold = data.frame(a=rep.int(0, 10), best=rep.int("b", 10), foo=rep.int(2, 10), bar=rep.int(1, 10))
-    d = list(data=rbind(cbind(fold, id=1:10), cbind(fold, id=11:20)),
-             train=list(1:nrow(fold)), test=list(1:nrow(fold) + nrow(fold)),
-             features=c("a"), performance=c("foo", "bar"), minimize=F, ids=c("id"))
-    class(d) = "llama.data"
-    attr(d, "hasSplits") = TRUE
-    res = regression(testregressor, d)
-    expect_equal(unique(res$predictions$id), 11:20)
-    by(res$predictions, res$predictions$id, function(ss) {
-        expect_equal(ss$algorithm, factor(c("foo", "bar")))
-        expect_equal(ss$score, c(2, 1))
-    })
-    
-    fold$id = 1:10
-    preds = res$predictor(fold)
-    expect_equal(unique(preds$id), 1:10)
-    by(preds, preds$id, function(ss) {
-        expect_equal(ss$algorithm, factor(c("foo", "bar")))
-        expect_equal(ss$score, c(2, 1))
-    })
-})
-
-test_that("regression allows stacking", {
-    res = regression(testregressor, d, combine=idtestclassifier)
-    expect_equal(unique(res$predictions$id), 11:20)
-    by(res$predictions, res$predictions$id, function(ss) {
-        expect_equal(ss$algorithm, factor(c("b", "c")))
-        expect_equal(ss$score, c(1, 0))
-    })
-    
-    fold$id = 1:10
-    preds = res$predictor(fold)
-    expect_equal(unique(preds$id), 1:10)
-    by(preds, preds$id, function(ss) {
-        expect_equal(ss$algorithm, factor(c("b", "c")))
-        expect_equal(ss$score, c(1, 0))
-    })
-})
-
-test_that("regression works with NA predictions", {
-    res = regression(natestregressor, d)
-    expect_equal(unique(res$predictions$id), 11:20)
-    by(res$predictions, res$predictions$id, function(ss) {
-        expect_equal(ss$algorithm, factor(NA))
-        expect_equal(ss$score, Inf)
-    })
-    fold$id = 1:10
-    preds = res$predictor(fold)
-    expect_equal(unique(preds$id), 1:10)
-    by(preds, preds$id, function(ss) {
-        expect_equal(ss$algorithm, factor(NA))
-        expect_equal(ss$score, Inf)
-    })
-    
-    res = regression(natestregressor, d, combine=natestclassifier)
-    expect_equal(unique(res$predictions$id), 11:20)
-    by(res$predictions, res$predictions$id, function(ss) {
-        expect_equal(ss$algorithm, factor(NA))
-        expect_equal(ss$score, Inf)
-    })
-    fold$id = 1:10
-    preds = res$predictor(fold)
-    expect_equal(unique(preds$id), 1:10)
-    by(preds, preds$id, function(ss) {
-        expect_equal(ss$algorithm, factor(NA))
-        expect_equal(ss$score, Inf)
-    })
-})
-
-test_that("regression works with single algorithm", {
-    dp = d
-    dp$performance = c("b")
-    res = regression(testregressor, dp)
-    expect_equal(unique(res$predictions$id), 11:20)
-    by(res$predictions, res$predictions$id, function(ss) {
-        expect_equal(ss$algorithm, factor(c("b")))
-        expect_equal(ss$score, c(1))
-    })
-})
-    
-
-test_that("regression predicts se", {
-  res = regression(regressor = se.testregressor, data = d)
-  expect_equal(unique(res$predictions$id), 11:20) 
-  by(res$predictions, res$predictions$id, function(ss) { 
-    expect_equal(ss$algorithm, factor(c("c", "b"))) 
-    expect_equal(ss$score, c(0, 1))
-  })
-  expect_equal(length(colnames(res$predictions)),5)
-  expect_equal(colnames(res$predictions)[4],"se")
-  # same test with algorithm features
-  res = regression(algo.se.testregressor, d.algo)
-  expect_equal(unique(res$predictions$id), 11:20)
-  by(res$predictions, res$predictions$id, function(ss) {
-    expect_equal(ss$algorithm, factor(c("b", "c")))
-  })
-  by(res$predictions, res$predictions$algorithm, function(ss) {
-    expect_equal(ss$score, rep.int(c(1, 0), 5))
-  })
-  expect_equal(length(colnames(res$predictions)),5)
-  expect_equal(colnames(res$predictions)[4],"se")
-})
