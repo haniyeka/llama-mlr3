@@ -104,7 +104,7 @@ we're going to use a random forest classifier. Now train a simple classification
 model that predicts the best algorithm.
 
 <<message=FALSE>>=
-model = classify(makeLearner("classif.randomForest"), folds)
+model = classify(lrn("classif.randomForest"), folds)
 @
 
 Great! Now let's see how well this model is doing and compare its performance to
@@ -304,7 +304,7 @@ makes it possible to use LLAMA to quickly evaluate a range of different
 techniques for algorithm selection on given data, such as presented
 in~\cite{kotthoff_evaluation_2012}. Being able to do so is crucial for achieving
 good performance in practice. LLAMA requires that machine learning algorithms
-are available through the mlr package~\cite{mlr}.
+are available through the mlr3 package~\cite{mlr}.
 
 
 \section{LLAMA for domestic use}
@@ -323,10 +323,10 @@ techniques for algorithm selection on given data, such as presented
 in~\cite{kotthoff_evaluation_2012}. Being able to do so is crucial for achieving
 good performance in practice.
 
-LLAMA uses the \lstinline{mlr} package~\cite{mlr} as an interface to R's many
+LLAMA uses the \lstinline{mlr3} package~\cite{mlr} as an interface to R's many
 machine learning method implementations. The advantage is that a wide range of
 implementations are supported with a common interface, making it easier for
-LLAMA to use them than the vanilla functions. Familiarity with \lstinline{mlr}
+LLAMA to use them than the vanilla functions. Familiarity with \lstinline{mlr3}
 is helpful, but not required to use LLAMA.
 
 LLAMA provides a number of high-level functions that can be used to create
@@ -440,7 +440,7 @@ success.csv:
 You can load this data into LLAMA as follows.
 
 <<eval=FALSE>>=
-data = input(read.csv("features.csv"), read.csv("times.csv"), read.csv("success.csv"))
+data = input(read.csv("features.csv"), read.csv("times.csv"), successes=read.csv("success.csv"))
 @
 
 The \lstinline{input} function automatically computes all the meta data
@@ -450,7 +450,7 @@ the returned structure can be found in the on-line documentation.
 \subsubsection{Algorithm Selection Benchmark Library}
 
 The Algorithm Selection Benchmark Library ASlib\footnote{\url{http://aslib.net}}
-offers, at the time of writing, 14 different scenarios that have been used in
+offers, at the time of writing, 29 different scenarios that have been used in
 algorithm selection publications. It defines a data format for these scenarios
 as well.
 % TODO: add citation
@@ -468,11 +468,11 @@ scenario = parseASScenario("/path/to/scenario/dir")
 # convert data format
 ldf = convertToLlama(scenario)
 folds = cvFolds(ldf)
-model = classify(makeLearner("classif.J48"), folds)
+model = classify(lrn("classif.J48"), folds)
 
 # convert data format including specified cross-validation splits
 folds = convertToLlamaCVFolds(scenario)
-model = classify(makeLearner("classif.J48"), folds)
+model = classify(lrn("classif.J48"), folds)
 @
 
 \subsubsection{Example data}
@@ -556,11 +556,11 @@ For this, we call \lstinline{classify} with the name of the machine learning
 algorithm and the data folds created above.
 
 <<message=FALSE>>=
-model = classify(makeLearner("classif.J48"), folds)
+model = classify(lrn("classif.J48"), folds)
 @
 
 For the other available machine learning models, please consult the
-\lstinline{mlr} documentation~\cite{mlr}.
+\lstinline{mlr3} documentation~\cite{mlr}.
 
 The call to \lstinline{classify} trains and tests models on each
 cross-validation fold. That is, for $n$ folds it trains $n$ models using $n-1$
