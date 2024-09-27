@@ -54,7 +54,7 @@ and train a simple classification model that predicts the best algorithm.
 
 ::
 
-    model = classify(makeLearner("classif.randomForest"), folds)
+    model = classify(lrn("classif.randomForest"), folds)
 
 Great! Now let's see how well this model is doing and compare its performance to
 the virtual best solver (VBS) and the single best solver in terms of average
