@@ -701,7 +701,7 @@ a different function and pass in a machine learning algorithm that is able to
 learn models to predict numeric quantities as an argument.
 
 <<warning=FALSE>>=
-model = regression(makeLearner("regr.lm"), folds)
+model = regression(lrn("regr.lm"), folds)
 @
 
 You will notice that running this command takes longer than for the
@@ -744,7 +744,7 @@ implemented in LLAMA. The function is called \lstinline{classifyPairs} and
 conforms to the usual interface.
 
 <<>>=
-model = classifyPairs(makeLearner("classif.J48"), folds)
+model = classifyPairs(lrn("classif.J48"), folds)
 @
 
 Running this command on the example SAT data will take quite a long time, as a
@@ -773,7 +773,7 @@ function, this time the \lstinline{cluster} function with the \lstinline{XMeans}
 clustering algorithm.
 
 <<>>=
-model = cluster(makeLearner("cluster.XMeans"), folds)
+model = cluster(lrn("cluster.XMeans"), folds)
 @
 
 The return value corresponds to the usual format. The prediction data frame
