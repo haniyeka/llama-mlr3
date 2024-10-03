@@ -773,7 +773,7 @@ function, this time the \lstinline{cluster} function with the \lstinline{XMeans}
 clustering algorithm.
 
 <<>>=
-model = cluster(lrn("cluster.XMeans"), folds)
+model = cluster(lrn("clust.xmeans"), folds)
 @
 
 The return value corresponds to the usual format. The prediction data frame
@@ -834,7 +834,7 @@ the range for all features is -1 to 1. It is specified through the
 \lstinline{pre} argument.
 
 <<>>=
-model = cluster(makeLearner("cluster.XMeans"), folds, pre=normalize)
+model = cluster(lrn("clust.xmeans"), folds, pre=normalize)
 mean(misclassificationPenalties(folds, model))
 mean(parscores(folds, model))
 sum(successes(folds, model))
@@ -869,9 +869,9 @@ the imputation function does not check the plausibility of the results -- it is
 possible that the predicted runtimes are less than the time-out!
 
 <<warning=FALSE>>=
-imputed = imputeCensored(data, makeLearner("regr.lm"))
+imputed = imputeCensored(data, lrn("regr.lm"))
 imputedFolds = cvFolds(imputed)
-imputedModel = regression(makeLearner("regr.lm"), imputedFolds)
+imputedModel = regression(lrn("regr.lm"), imputedFolds)
 mean(misclassificationPenalties(folds, model))
 mean(parscores(folds, model))
 sum(successes(folds, model))
@@ -942,13 +942,13 @@ the predictions of these classifiers are combined using another \lstinline{J48}
 decision tree.
 
 <<warning=FALSE, message=FALSE>>=
-ensembleModel = classify(list(makeLearner("classif.J48"),
-        makeLearner("classif.rpart"),
-        makeLearner("classif.knn")),
+ensembleModel = classify(list(lrn("classif.J48"),
+        lrn("classif.rpart"),
+        lrn("classif.kknn")),
     folds)
-stackedEnsembleModel = classify(list(makeLearner("classif.J48"),
-        makeLearner("classif.rpart"),
-        makeLearner("classif.knn"),
+stackedEnsembleModel = classify(list(lrn("classif.J48"),
+        lrn("classif.rpart"),
+        lrn("classif.kknn"),
         .combine=makeLearner("classif.J48")),
     folds)
 
@@ -984,8 +984,8 @@ predictions, the best algorithm. To achieve this, a classification algorithm is
 given as the \lstinline{combine} argument.
 
 <<warning=FALSE>>=
-stackedModel = regression(makeLearner("regr.lm"), folds,
-    combine=makeLearner("classif.J48"))
+stackedModel = regression(lrn("regr.lm"), folds,
+    combine=lrn("classif.J48"))
 mean(misclassificationPenalties(folds, model))
 mean(parscores(folds, model))
 sum(successes(folds, model))
@@ -1008,8 +1008,8 @@ classifier. In this case, we want to add the pairwise absolute differences
 between the predicted performances of algorithms.
 
 <<warning=FALSE>>=
-stackedExpandedModel = regression(makeLearner("regr.lm"), folds,
-    combine=makeLearner("classif.J48"),
+stackedExpandedModel = regression(lrn("regr.lm"), folds,
+    combine=lrn("classif.J48"),
     expand=function(x) {
         cbind(x, combn(c(1:ncol(x)), 2, function(y) {
             abs(x[,y[1]] - x[,y[2]])
@@ -1057,7 +1057,7 @@ processes should be specified through \lstinline{parallelLibrary}.
 <<eval=FALSE>>=
 library(parallelMap)
 parallelStartSocket(2) # use 2 CPUs
-parallelLibrary("llama", "mlr")
+parallelLibrary("llama", "mlr3")
 # LLAMA code
 parallelStop()
 @
@@ -1115,7 +1115,8 @@ allows you to plot a scatter plot that compares the performance of two
 selectors. What is does is best illustrated through an example.
 
 <<perf-scatter-sb, fig.cap="PAR10 performance comparison between J48 decision tree selection model and single best.">>=
-model = classify(makeLearner("classif.J48"), folds)
+library(ggplot2)
+model = classify(lrn("classif.J48"), folds)
 perfScatterPlot(parscores, model, singleBest, folds, satsolvers) + scale_x_log10() + scale_y_log10() + xlab("J48") + ylab("single best")
 @
 
@@ -1146,8 +1147,8 @@ Figure~\ref{fig:perf-scatter-models} shows another scatter plot that compares
 the performance of two ``real'' models instead of a model and a baseline.
 
 <<perf-scatter-models, fig.cap="PAR10 performance comparison between J48 decision tree and random forest selection models.">>=
-model1 = classify(makeLearner("classif.J48"), folds)
-model2 = classify(makeLearner("classif.randomForest"), folds)
+model1 = classify(lrn("classif.J48"), folds)
+model2 = classify(lrn("classif.randomForest"), folds)
 perfScatterPlot(parscores, model1, model2, folds) + scale_x_log10() + scale_y_log10() + xlab("J48") + ylab("random forest")
 @
 
@@ -1245,7 +1246,7 @@ using the log of the PAR10 scores to get more shades of grey.
 
 <<par, fig.cap="PAR10 scores for a \texttt{J48} classification model.">>=
 folds = cvFolds(satsolvers)
-model = classify(makeLearner("classif.J48"), folds)
+model = classify(lrn("classif.J48"), folds)
 scores = parscores(folds, model)
 par(mar=c(1,1,1,10))
 image(log10(t(as.matrix(scores))), axes=F, col=cols)
@@ -1262,11 +1263,11 @@ plot (Figure~\ref{fig:par-cmp}).
 
 <<par-cmp, warning=FALSE, fig.cap="PAR10 scores for five different models. The number in each label shows the mean PAR10 score across all instances.">>=
 folds = cvFolds(satsolvers)
-model1 = classify(makeLearner("classif.J48"), folds)
-model2 = regression(makeLearner("regr.lm"), folds)
-model3 = classifyPairs(makeLearner("classif.J48"), folds)
-model4 = regressionPairs(makeLearner("regr.lm"), folds)
-model5 = cluster(makeLearner("cluster.XMeans"), folds)
+model1 = classify(lrn("classif.J48"), folds)
+model2 = regression(lrn("regr.lm"), folds)
+model3 = classifyPairs(lrn("classif.J48"), folds)
+model4 = regressionPairs(lrn("regr.lm"), folds)
+model5 = cluster(lrn("clust.xmeans"), folds)
 scores1 = parscores(folds, model1)
 scores2 = parscores(folds, model2)
 scores3 = parscores(folds, model3)
@@ -1294,6 +1295,7 @@ As a final example, we will plot the differences in predicted and actual rank
 for the regression model (Figure~\ref{fig:rank-diff}).
 
 <<rank-diff, fig.cap="Difference between actual and predicted rank for the regression model. Red means that an algorithm was predicted to be worse than it actually was, blue that it was predicted to be better. Predicted and actual rank agree for white.">>=
+library(plyr)
 par(mar=c(7,1,1,5))
 ranks = t(ddply(model$predictions, .(benchmark_id), function(x) { as.vector(sapply(x$algorithm, function(z) { which(z == satsolvers$performance) })) })[-1])
 diffs = apply(times, 1, order)-ranks
