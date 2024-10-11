@@ -17,7 +17,7 @@ trainTest(data, trainpart = 0.6, stratify = FALSE)
   the fraction of the data to use for training. Default 0.6.
 }
   \item{stratify}{
-  whether to stratify the folds. Makes really only sense for classification
+  whether to stratify the folds. Really only makes sense for classification
   models. Defaults to \code{FALSE}.
 }
 }

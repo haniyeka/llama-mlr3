@@ -15,7 +15,7 @@ regression(regressor = NULL, data = NULL,
 }
 \arguments{
   \item{regressor}{
-  the mlr regressor to use. See examples.
+  the mlr3 regressor to use. See examples.
 }
   \item{data}{
   the data to use with training and test sets. The structure returned by
@@ -57,7 +57,7 @@ The evaluation across the training and test sets will be parallelized
 automatically if a suitable backend for parallel computation is loaded.
 The \code{parallelMap} level is "llama.fold".
 
-If \code{combine} is not null, it is assumed to be an mlr classifier and will be
+If \code{combine} is not null, it is assumed to be an mlr3 classifier and will be
 used to learn a model to predict the best algorithm given the original features
 and the performance predictions for the individual algorithms. \code{combine} option
 is currently not supported with algorithm features. If this
@@ -73,7 +73,7 @@ the performance value is to be maximised, \code{Inf} otherwise.
 
 If \code{save.models} is not \code{NA}, the models trained during evaluation are
 serialized into files. Each file contains a list with members \code{model} (the
-mlr model), \code{train.data} (the mlr task with the training data), and
+mlr3 model), \code{train.data} (the mlr3 task with the training data), and
 \code{test.data} (the data frame with the test data used to make predictions).
 The file name starts with \code{save.models}, followed by the ID of the machine
 learning model, followed by "combined" if the model combines predictions of
@@ -113,23 +113,23 @@ if(Sys.getenv("RUN_EXPENSIVE") == "true") {
 data(satsolvers)
 folds = cvFolds(satsolvers)
 
-res = regression(regressor=makeLearner("regr.lm"), data=folds)
+res = regression(regressor=lrn("regr.lm"), data=folds)
 # the total number of successes
 sum(successes(folds, res))
 # predictions on the entire data set
 res$predictor(satsolvers$data[satsolvers$features])
 
-res = regression(regressor=makeLearner("regr.ksvm"), data=folds)
+res = regression(regressor=lrn("regr.ksvm"), data=folds)
 
 # combine performance predictions using classifier
-ress = regression(regressor=makeLearner("regr.ksvm"),
+ress = regression(regressor=lrn("regr.ksvm"),
                   data=folds,
-                  combine=makeLearner("classif.J48"))
+                  combine=lrn("classif.J48"))
 
 # add pairwise differences to performance predictions before running classifier
-ress = regression(regressor=makeLearner("regr.ksvm"),
+ress = regression(regressor=lrn("regr.ksvm"),
                   data=folds,
-                  combine=makeLearner("classif.J48"),
+                  combine=lrn("classif.J48"),
                   expand=function(x) { cbind(x, combn(c(1:ncol(x)), 2,
                          function(y) { abs(x[,y[1]] - x[,y[2]]) })) })
 }
