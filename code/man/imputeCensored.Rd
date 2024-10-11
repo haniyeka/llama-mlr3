@@ -8,7 +8,7 @@ Impute the performance values that are censored, i.e. for which the respective
 algorithm was not successful.
 }
 \usage{
-imputeCensored(data = NULL, estimator = makeLearner("regr.lm"),
+imputeCensored(data = NULL, estimator = lrn("regr.lm"),
     epsilon = 0.1, maxit = 1000)
 }
 \arguments{

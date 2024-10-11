@@ -15,7 +15,7 @@ classifyPairs(classifier = NULL, data = NULL,
 }
 \arguments{
   \item{classifier}{
-  the mlr classifier to use. See examples.
+  the mlr3 classifier to use. See examples.
 }
   \item{data}{
   the data to use with training and test sets. The structure returned by
@@ -69,7 +69,7 @@ algorithm.
 
 If \code{save.models} is not \code{NA}, the models trained during evaluation are
 serialized into files. Each file contains a list with members \code{model} (the
-mlr model), \code{train.data} (the mlr task with the training data), and
+mlr3 model), \code{train.data} (the mlr3 task with the training data), and
 \code{test.data} (the data frame with the test data used to make predictions).
 The file name starts with \code{save.models}, followed by the ID of the machine
 learning model, followed by "combined" if the model combines predictions of
@@ -111,20 +111,20 @@ if(Sys.getenv("RUN_EXPENSIVE") == "true") {
 data(satsolvers)
 folds = cvFolds(satsolvers)
 
-res = classifyPairs(classifier=makeLearner("classif.J48"), data=folds)
+res = classifyPairs(classifier=lrn("classif.J48"), data=folds)
 # the total number of successes
 sum(successes(folds, res))
 # predictions on the entire data set
 res$predictor(satsolvers$data[satsolvers$features])
 
 # use probabilities instead of labels
-res = classifyPairs(classifier=makeLearner("classif.randomForest",
-                                predict.type = "prob"), data=folds)
+res = classifyPairs(classifier=lrn("classif.randomForest",
+                                predict_type = "prob"), data=folds)
 
 # combine predictions using J48 induced classifier instead of majority vote
-res = classifyPairs(classifier=makeLearner("classif.J48"),
+res = classifyPairs(classifier=lrn("classif.J48"),
                     data=folds,
-                    combine=makeLearner("classif.J48"))
+                    combine=lrn("classif.J48"))
 }
 }
 \keyword{ models }

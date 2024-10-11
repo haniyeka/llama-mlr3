@@ -14,7 +14,7 @@ classify(classifier = NULL, data = NULL,
 }
 \arguments{
   \item{classifier}{
-  the mlr classifier to use. See examples.
+  the mlr3 classifier to use. See examples.
 
   The argument can also be a list of such classifiers.
 }
@@ -63,7 +63,7 @@ If the prediction of a stacked learner is \code{NA}, the prediction will be
 
 If \code{save.models} is not \code{NA}, the models trained during evaluation are
 serialized into files. Each file contains a list with members \code{model} (the
-mlr model), \code{train.data} (the mlr task with the training data), and
+mlr3 model), \code{train.data} (the mlr3 task with the training data), and
 \code{test.data} (the data frame with the test data used to make predictions).
 The file name starts with \code{save.models}, followed by the ID of the machine
 learning model, followed by "combined" if the model combines predictions of
@@ -104,28 +104,28 @@ if(Sys.getenv("RUN_EXPENSIVE") == "true") {
 data(satsolvers)
 folds = cvFolds(satsolvers)
 
-res = classify(classifier=makeLearner("classif.J48"), data=folds)
+res = classify(classifier=lrn("classif.J48"), data=folds)
 # the total number of successes
 sum(successes(folds, res))
 # predictions on the entire data set
 res$predictor(satsolvers$data[satsolvers$features])
 
-res = classify(classifier=makeLearner("classif.svm"), data=folds)
+res = classify(classifier=lrn("classif.svm"), data=folds)
 
 # use probabilities instead of labels
-res = classify(classifier=makeLearner("classif.randomForest", predict.type = "prob"), data=folds)
+res = classify(classifier=lrn("classif.randomForest", predict_type = "prob"), data=folds)
 
 # ensemble classification
-rese = classify(classifier=list(makeLearner("classif.J48"),
-                                makeLearner("classif.IBk"),
-                                makeLearner("classif.svm")),
+rese = classify(classifier=list(lrn("classif.J48"),
+                                lrn("classif.IBk"),
+                                lrn("classif.svm")),
                 data=folds)
 
 # ensemble classification with a classifier to combine predictions
-rese = classify(classifier=list(makeLearner("classif.J48"),
-                                makeLearner("classif.IBk"),
-                                makeLearner("classif.svm"),
-                                .combine=makeLearner("classif.J48")),
+rese = classify(classifier=list(lrn("classif.J48"),
+                                lrn("classif.IBk"),
+                                lrn("classif.svm"),
+                                .combine=lrn("classif.J48")),
                 data=folds)
 }
 }

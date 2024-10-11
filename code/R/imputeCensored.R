@@ -1,5 +1,5 @@
 imputeCensored <-
-function(data=NULL, estimator=makeLearner("regr.lm"), epsilon=0.1, maxit=1000) {
+function(data=NULL, estimator=lrn("regr.lm"), epsilon=0.1, maxit=1000) {
     if(!testClass(estimator, "Learner")) {
         stop("Need regressor to impute values!")
     }

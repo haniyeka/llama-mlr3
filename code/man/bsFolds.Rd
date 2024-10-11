@@ -18,7 +18,7 @@ bsFolds(data, nfolds = 10L, stratify = FALSE)
   the number of folds. Defaults to 10.
 }
   \item{stratify}{
-  whether to stratify the folds. Makes really only sense for classification
+  whether to stratify the folds. Really only makes sense for classification
   models. Defaults to \code{FALSE}.
 }
 }
@@ -27,7 +27,7 @@ Partitions the data set into folds. Stratification, if requested, is done by the
 best algorithm, i.e. the one with the best performance. The distribution of the
 best algorithms in each fold will be approximately the same. For each fold, the
 training index set is assembled through .632 bootstrap. The remaining indices
-are used for testing. There is no guarantee on the sizes of either sets. The
+are used for testing. There is no guarantee on the sizes of either set. The
 sets of indices are added to the original data set and returned.
 
 If the data set has train and test partitions already, they are overwritten.

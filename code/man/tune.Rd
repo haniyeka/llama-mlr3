@@ -14,7 +14,7 @@ tuneModel(ldf, llama.fun, learner, design, metric = parscores, nfolds = 10L,
 \arguments{
   \item{ldf}{the LLAMA data to use. The structure returned by \code{input}.}
   \item{llama.fun}{the LLAMA model building function.}
-  \item{learner}{the mlr learner to use.}
+  \item{learner}{the mlr3 learner to use.}
   \item{design}{the data frame denoting the parameter values to try. Can be
     produced with the \code{ParamHelpers} package. See examples.}
   \item{metric}{the metric used to evaluate the model. Can be one of
@@ -76,7 +76,7 @@ if(Sys.getenv("RUN_EXPENSIVE") == "true") {
 library(ParamHelpers)
 data(satsolvers)
 
-learner = makeLearner("classif.J48")
+learner = lrn("classif.J48")
 # parameter set for J48
 ps = makeParamSet(makeIntegerParam("M", lower = 1, upper = 100))
 # generate 10 random parameter sets

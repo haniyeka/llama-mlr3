@@ -15,7 +15,7 @@ cluster(clusterer = NULL, data = NULL,
 }
 \arguments{
   \item{clusterer}{
-  the mlr clustering function to use. See examples.
+  the mlr3 clustering function to use. See examples.
 
   The argument can also be a list of such functions.
 }
@@ -68,7 +68,7 @@ the performance value is to be maximised, \code{Inf} otherwise.
 
 If \code{save.models} is not \code{NA}, the models trained during evaluation are
 serialized into files. Each file contains a list with members \code{model} (the
-mlr model), \code{train.data} (the mlr task with the training data), and
+mlr3 model), \code{train.data} (the mlr3 task with the training data), and
 \code{test.data} (the data frame with the test data used to make predictions).
 The file name starts with \code{save.models}, followed by the ID of the machine
 learning model, followed by "combined" if the model combines predictions of
@@ -110,26 +110,26 @@ if(Sys.getenv("RUN_EXPENSIVE") == "true") {
 data(satsolvers)
 folds = cvFolds(satsolvers)
 
-res = cluster(clusterer=makeLearner("cluster.XMeans"), data=folds, pre=normalize)
+res = cluster(clusterer=lrn("clust.xmeans"), data=folds, pre=normalize)
 # the total number of successes
 sum(successes(folds, res))
 # predictions on the entire data set
 res$predictor(satsolvers$data[satsolvers$features])
 
 # determine best by number of successes
-res = cluster(clusterer=makeLearner("cluster.XMeans"), data=folds,
+res = cluster(clusterer=lrn("clust.xmeans"), data=folds,
     bestBy="successes", pre=normalize)
 sum(successes(folds, res))
 
 # ensemble clustering
-rese = cluster(clusterer=list(makeLearner("cluster.XMeans"),
-    makeLearner("cluster.SimpleKMeans"), makeLearner("cluster.EM")),
+rese = cluster(clusterer=list(lrn("clust.xmeans"),
+    lrn("clust.SimpleKMeans"), lrn("clust.em")),
     data=folds, pre=normalize)
 
 # ensemble clustering with a classifier to combine predictions
-rese = cluster(clusterer=list(makeLearner("cluster.XMeans"),
-    makeLearner("cluster.SimpleKMeans"), makeLearner("cluster.EM"),
-    .combine=makeLearner("classif.J48")), data=folds, pre=normalize)
+rese = cluster(clusterer=list(lrn("clust.xmeans"),
+    lrn("clust.SimpleKMeans"), lrn("clust.em"),
+    .combine=lrn("classif.J48")), data=folds, pre=normalize)
 }
 }
 \keyword{ cluster }

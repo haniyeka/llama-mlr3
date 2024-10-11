@@ -40,7 +40,7 @@ if(Sys.getenv("RUN_EXPENSIVE") == "true") {
 data(satsolvers)
 folds = cvFolds(satsolvers)
 
-cluster(clusterer=makeLearner("cluster.XMeans"), data=folds, pre=normalize)
+cluster(clusterer=lrn("clust.xmeans"), data=folds, pre=normalize)
 }
 }
 \keyword{ models }

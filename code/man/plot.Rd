@@ -59,7 +59,7 @@ Lars Kotthoff
 if(Sys.getenv("RUN_EXPENSIVE") == "true") {
 data(satsolvers)
 folds = cvFolds(satsolvers)
-model = classify(classifier=makeLearner("classif.J48"), data=folds)
+model = classify(classifier=lrn("classif.J48"), data=folds)
 
 # Simple plot to compare our selector to the single best in terms of PAR10 score
 library(ggplot2)

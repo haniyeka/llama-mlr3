@@ -52,7 +52,7 @@ if(Sys.getenv("RUN_EXPENSIVE") == "true") {
 data(satsolvers)
 folds = cvFolds(satsolvers)
 
-model = classify(classifier=makeLearner("classif.J48"), data=folds)
+model = classify(classifier=lrn("classif.J48"), data=folds)
 sum(misclassificationPenalties(folds, model))
 }
 }

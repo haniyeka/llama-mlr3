@@ -35,7 +35,7 @@ depending on the types of features available to the function.
 Various functions to split the data into training and test set(s) and to
 evaluate the performance of the learned models are provided.
 
-LLAMA uses the mlr package to access the implementation of machine learning
+LLAMA uses the mlr3 package to access the implementation of machine learning
 algorithms in R.
 
 The model building functions are using the \code{parallelMap} package to
@@ -70,7 +70,7 @@ if(Sys.getenv("RUN_EXPENSIVE") == "true") {
 data(satsolvers)
 folds = cvFolds(satsolvers)
 
-model = classify(classifier=makeLearner("classif.J48"), data=folds)
+model = classify(classifier=lrn("classif.J48"), data=folds)
 # print the total number of successes
 print(sum(successes(folds, model)))
 # print the total misclassification penalty
@@ -85,7 +85,7 @@ print(sum(successes(satsolvers, vbs, addCosts = FALSE)))
 print(model$predictor(subset(satsolvers$data, TRUE, satsolvers$features)))
 
 # train a regression model
-model = regression(regressor=makeLearner("regr.lm"), data=folds)
+model = regression(regressor=lrn("regr.lm"), data=folds)
 # print the total number of successes
 print(sum(successes(folds, model)))
 }

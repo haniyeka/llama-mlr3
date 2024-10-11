@@ -50,7 +50,7 @@ induce one regression model for all pairs of algorithms to predict the performan
 difference between them. If \code{combine} is not supplied, the best overall
 algorithm is determined by summing the performance differences over all pairs
 for each algorithm and ranking them by this sum. The algorithm with the largest
-value is chosen. If it is supplied, it is assumed to be an mlr classifier. This
+value is chosen. If it is supplied, it is assumed to be an mlr3 classifier. This
 classifier is passed the original features and the predictions for each pair of
 algorithms. \code{combine} option is currently not supported with algorithm features.
 If the classifier supports weights and \code{use.weights} is
@@ -78,7 +78,7 @@ the performance value is to be maximised, \code{Inf} otherwise.
 
 If \code{save.models} is not \code{NA}, the models trained during evaluation are
 serialized into files. Each file contains a list with members \code{model} (the
-mlr model), \code{train.data} (the mlr task with the training data), and
+mlr3 model), \code{train.data} (the mlr3 task with the training data), and
 \code{test.data} (the data frame with the test data used to make predictions).
 The file name starts with \code{save.models}, followed by the ID of the machine
 learning model, followed by "combined" if the model combines predictions of
@@ -114,15 +114,15 @@ if(Sys.getenv("RUN_EXPENSIVE") == "true") {
 data(satsolvers)
 folds = cvFolds(satsolvers)
 
-model = regressionPairs(regressor=makeLearner("regr.lm"), data=folds)
+model = regressionPairs(regressor=lrn("regr.lm"), data=folds)
 # the total number of successes
 sum(successes(folds, model))
 # predictions on the entire data set
 model$predictor(satsolvers$data[satsolvers$features])
 
 # combine predictions using J48 induced classifier
-model = regressionPairs(regressor=makeLearner("regr.lm"), data=folds,
-    combine=makeLearner("classif.J48"))
+model = regressionPairs(regressor=lrn("regr.lm"), data=folds,
+    combine=lrn("classif.J48"))
 }
 }
 \keyword{ models }
