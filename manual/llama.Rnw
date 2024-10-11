@@ -949,7 +949,7 @@ ensembleModel = classify(list(lrn("classif.J48"),
 stackedEnsembleModel = classify(list(lrn("classif.J48"),
         lrn("classif.rpart"),
         lrn("classif.kknn"),
-        .combine=makeLearner("classif.J48")),
+        .combine=lrn("classif.J48")),
     folds)
 
 mean(misclassificationPenalties(folds, model))
@@ -1001,8 +1001,7 @@ choosing the algorithm with the lowest predicted value is very hard to learn
 when considering only the performance values independently and not the relation
 between them.
 
-LLAMA does support an additional argument for \lstinline{regression} that allows
-to make this task easier. The \lstinline{expand} argument allows to specify a
+LLAMA does support an additional argument for \lstinline{regression} that makes  this task easier. The \lstinline{expand} argument allows to specify a
 function that, given the performance predictions, can augment the inputs to the
 classifier. In this case, we want to add the pairwise absolute differences
 between the predicted performances of algorithms.
@@ -1024,7 +1023,7 @@ mean(parscores(folds, stackedExpandedModel))
 sum(successes(folds, stackedExpandedModel))
 @
 
-While the function given here may appear cryptic at first, it demonstrates one o
+While the function given here may appear cryptic at first, it demonstrates one of
 the advantages of the implementation of LLAMA as an R package. It allows to use
 arbitrary R functions to process data. This version achieves an improvement over
 the stacked model without expansion.
@@ -1499,7 +1498,7 @@ myPortfolioSolver = function(instance) {
     result = runSolver(instance, presolver, timeout=presolveTimeout)
     if(!isSolved(result)) {
         simpleFeatures = getSimpleFeatures(instance)
-        featureTime = predict(featureTimeMode, newdata=simpleFeatures)$data$response
+        featureTime = predict(featureTimeModel, newdata=simpleFeatures)$data$response
         if((featureTime > featureTimeLimit)) {
             return(runSolver(instance, backupsolver))
         } else {
