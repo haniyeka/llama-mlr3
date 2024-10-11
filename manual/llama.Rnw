@@ -1423,7 +1423,7 @@ reducedFeatureNames = names(reducedFeatureData)[-1]
 featureTimeTask = makeRegrTask("featureTime", target="time", data=cbind(featureTimes, subset(reducedFeatureData, T, reducedFeatureNames)))
 featureTimeModel = train(makeLearner("regr.lm"), task=featureTimeTask)
 featureTimeLimit = 5
-data = subset(subset(read.csv("features.csv"), featureTimes$time < featureTimeLimit), read.csv("performance.csv"))
+data = merge(subset(read.csv("features.csv"), featureTimes$time < featureTimeLimit), read.csv("performance.csv"))
 @
 
 Similar assumptions as in the section above are made. The LLAMA data frame can
