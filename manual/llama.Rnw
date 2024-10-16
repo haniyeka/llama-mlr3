@@ -1387,8 +1387,8 @@ performanceData = read.csv("performance.csv")
 featureData = read.csv("features.csv")
 featureNames = names(featureData)[-1]
 satisfiable = read.csv("satisfiable.csv")
-satisfiableTask = makeClassifTask("satisfiable", target="satisfiable", data=cbind(satisfiable, subset(featureData, T, featureNames)))
-satisfiableModel = train(makeLearner("classif.J48"), task=satisfiableTask)
+satisfiableTask = as_task_classif("satisfiable", target="satisfiable", data=cbind(satisfiable, subset(featureData, T, featureNames)))
+satisfiableModel = train(lrn("classif.J48"), task=satisfiableTask)
 satisfiableData = input(featureData, subset(performanceData, satisfiable$satisfiable))
 unsatisfiableData = input(featureData, subset(performanceData, !satisfiable$satisfiable))
 @
@@ -1420,8 +1420,8 @@ and evaluation of the algorithm selection model.
 featureTimes = read.csv("featureTimes.csv")
 reducedFeatureData = read.csv("reducedFeatures.csv")
 reducedFeatureNames = names(reducedFeatureData)[-1]
-featureTimeTask = makeRegrTask("featureTime", target="time", data=cbind(featureTimes, subset(reducedFeatureData, T, reducedFeatureNames)))
-featureTimeModel = train(makeLearner("regr.lm"), task=featureTimeTask)
+featureTimeTask = as_task_regr("featureTime", target="time", data=cbind(featureTimes, subset(reducedFeatureData, T, reducedFeatureNames)))
+featureTimeModel = train(lrn("regr.lm"), task=featureTimeTask)
 featureTimeLimit = 5
 data = merge(subset(read.csv("features.csv"), featureTimes$time < featureTimeLimit), read.csv("performance.csv"))
 @
@@ -1448,18 +1448,18 @@ presolver = "minisat"
 featureTimeLimit = 5
 
 toSolve = (performanceData[presolver] > presolveLimit)&(featureTimes$time < featureTimeLimit)
-featureTimeTask = makeRegrTask("featureTime", target="time", data=cbind(featureTimes, subset(reducedFeatureData, T, reducedFeatureNames)))
-featureTimeModel = train(makeLearner("regr.lm"), task=featureTimeTask)
-satisfiableTask = makeClassifTask("satisfiable", target="satisfiable", data=cbind(satisfiable, subset(featureData, T, featureNames)))
-satisfiableModel = train(makeLearner("classif.J48"), task=satisfiableTask)
+featureTimeTask = as_task_regr("featureTime", target="time", data=cbind(featureTimes, subset(reducedFeatureData, T, reducedFeatureNames)))
+featureTimeModel = train(lrn("regr.lm"), task=featureTimeTask)
+satisfiableTask = as_task_classif("satisfiable", target="satisfiable", data=cbind(satisfiable, subset(featureData, T, featureNames)))
+satisfiableModel = train(lrn("classif.J48"), task=satisfiableTask)
 
 satisfiableData = input(featureData, subset(performanceData, satisfiable$satisfiable&toSolve))
 unsatisfiableData = input(featureData, subset(performanceData, (!satisfiable$satisfiable)&toSolve))
 
 satisfiableFolds = cvFolds(satisfiableData)
 unsatisfiableFolds = cvFolds(unsatisfiableData)
-satisfiableModel = classifyPairs(makeLearner("classif.randomForest"), satisfiableFolds)
-unsatisfiableModel = classifyPairs(makeLearner("classif.randomForest"), unsatisfiableFolds)
+satisfiableModel = classifyPairs(lrn("classif.randomForest"), satisfiableFolds)
+unsatisfiableModel = classifyPairs(lrn("classif.randomForest"), unsatisfiableFolds)
 @
 
 Let's walk through it step by step. First, we read all the relevant data, as in
