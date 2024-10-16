@@ -97,25 +97,25 @@ test_that("cluster", {
     expect_true(sum(successes(folds, res)) < vbss)
     expect_true(is.data.frame(res$predictor(satsolvers$data[satsolvers$features])))
 
-    res = cluster(clusterer=lrn("cluster.SimpleKMeans"), data=folds,
+    res = cluster(clusterer=lrn("clust.SimpleKMeans"), data=folds,
         bestBy="successes", pre=normalize)
     expect_true(sum(parscores(folds, res)) > vbsp)
     expect_true(sum(misclassificationPenalties(folds, res)) > vbsm)
     expect_true(sum(successes(folds, res)) < vbss)
     expect_true(is.data.frame(res$predictor(satsolvers$data[satsolvers$features])))
 
-    res = cluster(clusterer=list(lrn("cluster.SimpleKMeans"),
-                                 lrn("cluster.SimpleKMeans"),
-                                 lrn("cluster.SimpleKMeans")),
+    res = cluster(clusterer=list(lrn("clust.SimpleKMeans"),
+                                 lrn("clust.SimpleKMeans"),
+                                 lrn("clust.SimpleKMeans")),
         data=folds, pre=normalize)
     expect_true(sum(parscores(folds, res)) > vbsp)
     expect_true(sum(misclassificationPenalties(folds, res)) > vbsm)
     expect_true(sum(successes(folds, res)) < vbss)
     expect_true(is.data.frame(res$predictor(satsolvers$data[satsolvers$features])))
 
-    res = cluster(clusterer=list(lrn("cluster.SimpleKMeans"),
-                                 lrn("cluster.SimpleKMeans"),
-                                 lrn("cluster.SimpleKMeans"),
+    res = cluster(clusterer=list(lrn("clust.SimpleKMeans"),
+                                 lrn("clust.SimpleKMeans"),
+                                 lrn("clust.SimpleKMeans"),
         .combine=lrn("classif.OneR")), data=folds, pre=normalize)
     expect_true(sum(parscores(folds, res)) > vbsp)
     expect_true(sum(misclassificationPenalties(folds, res)) > vbsm)
