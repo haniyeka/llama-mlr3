@@ -48,7 +48,7 @@ This document corresponds to LLAMA version 0.9.1.
 
 \end{titlepage}
 
-<<setup, include=FALSE, cache=FALSE>>=
+<<setup, include=FALSE, cache=TRUE>>=
 library(knitr)
 # set global chunk options
 opts_chunk$set(fig.align='center', fig.show='hold', out.width=".7\\textwidth", tidy=TRUE, tidy.opts=list(blank=FALSE, width.cutoff=45), cache=TRUE)
