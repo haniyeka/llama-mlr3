@@ -7,11 +7,11 @@
 # Suggests), plus the learner backends the tests and examples need (below).
 #
 # Packages come from the repositories R is configured with
-# (getOption("repos")). In the rocker Docker images that is a dated binary
-# snapshot, so image builds are fast and reproducible. If no CRAN mirror is
-# configured, https://cloud.r-project.org is used. mlr3extralearners is not on
-# CRAN; it comes from the mlr-org r-universe, after everything else, so the
-# other packages always come from CRAN.
+# (getOption("repos")); see the Dockerfile for what that is in the rocker
+# images. If no CRAN mirror is configured, https://cloud.r-project.org is used.
+# mlr3extralearners is not on CRAN; it comes from the mlr-org r-universe.
+# Everything that is on CRAN (including mlr3extralearners' own dependencies)
+# comes from CRAN; only packages CRAN doesn't have come from r-universe.
 #
 # Packages that are already installed are not reinstalled or upgraded.
 #
@@ -70,10 +70,20 @@ message("Repositories: ", paste(repos, collapse = ", "))
 todo <- setdiff(missing_pkgs(), names(universe_pkgs))
 if (length(todo)) install.packages(todo, lib = lib, repos = repos)
 
-# 2. Packages from r-universe (their CRAN dependencies are already in place).
+# 2. Packages from r-universe. First their dependencies that CRAN has, from
+#    CRAN (r-universe often has newer development versions of them), then
+#    the packages themselves and any dependencies CRAN doesn't have.
 todo <- intersect(missing_pkgs(), names(universe_pkgs))
 if (length(todo)) {
-  install.packages(todo, lib = lib, repos = c(unique(universe_pkgs[todo]), repos))
+  all_repos <- c(unique(universe_pkgs[todo]), repos)
+  deps <- unlist(tools::package_dependencies(
+    todo, db = available.packages(repos = all_repos),
+    which = c("Depends", "Imports", "LinkingTo"), recursive = TRUE
+  ))
+  deps <- setdiff(deps, c(rownames(installed.packages()), base_pkgs))
+  from_cran <- intersect(deps, rownames(available.packages(repos = repos)))
+  if (length(from_cran)) install.packages(from_cran, lib = lib, repos = repos)
+  install.packages(todo, lib = lib, repos = all_repos)
 }
 
 still_missing <- missing_pkgs()
