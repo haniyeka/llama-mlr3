@@ -1,0 +1,113 @@
+# Build the Docker image (Dockerfile at the repository root) for one or more
+# R versions and run R CMD build + R CMD check --as-cran on the llama package
+# in code/. The check logs are uploaded as an artifact of each run.
+#
+# Run it from the Actions tab: "R CMD check" -> "Run workflow".
+name: R CMD check
+
+on:
+  workflow_dispatch:
+    inputs:
+      r_version:
+        description: >-
+          R version: a rocker/r-ver tag (e.g. 4.6.2, 4.5.3, devel, latest),
+          or "all" for 4.5.3, 4.6.2 and devel
+        required: true
+        default: all
+        type: string
+
+  push:
+    branches: [ci-docker]
+  #   branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.r_version || 'all' }}
+  cancel-in-progress: true
+
+jobs:
+  versions:
+    name: Pick R versions
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      matrix: ${{ steps.pick.outputs.matrix }}
+    steps:
+      - id: pick
+        env:
+          R_INPUT: ${{ inputs.r_version || 'all' }}
+        run: |
+          if [ "$R_INPUT" = "all" ]; then
+            matrix='["4.5.3","4.6.2","devel"]'
+          elif [[ "$R_INPUT" =~ ^([0-9]+\.[0-9]+\.[0-9]+|devel|latest)$ ]]; then
+            matrix="[\"$R_INPUT\"]"
+          else
+            echo "::error::r_version must be all, devel, latest or x.y.z (got: $R_INPUT)"
+            exit 1
+          fi
+          echo "R versions: $matrix"
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+
+  check:
+    name: R ${{ matrix.r }}
+    needs: versions
+    runs-on: ubuntu-latest
+    # devel compiles every package from source; a 4.6.2 job takes ~5 minutes.
+    timeout-minutes: 60
+    # R-devel may break for reasons that aren't ours: report, don't fail the run.
+    continue-on-error: ${{ matrix.r == 'devel' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        r: ${{ fromJSON(needs.versions.outputs.matrix) }}
+    env:
+      R_VERSION: ${{ matrix.r }}
+      _R_CHECK_CRAN_INCOMING_REMOTE_: "false"
+    steps:
+      - name: Check out
+        uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Build the image (R ${{ matrix.r }})
+        run: docker build --build-arg R_VERSION="$R_VERSION" -t "llama-check:$R_VERSION" .
+
+      - name: R CMD build + R CMD check
+        run: |
+          mkdir -p check
+          docker run --rm \
+            --user "$(id -u):$(id -g)" -e HOME=/tmp \
+            -e _R_CHECK_CRAN_INCOMING_REMOTE_ \
+            -v "$PWD/check:/out" -w /out \
+            "llama-check:$R_VERSION" \
+            bash -c 'R CMD build /llama/code && R CMD check --as-cran --no-manual llama_*.tar.gz'
+
+      - name: Summary (fail on ERROR or WARNING)
+        if: always()
+        run: |
+          log=check/llama.Rcheck/00check.log
+          if [ ! -f "$log" ]; then
+            echo "No check log: the image build or R CMD build failed (see above)." | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+          {
+            echo "### R $R_VERSION"
+            echo '```'
+            grep -E '(ERROR|WARNING|NOTE)$|^Status:' "$log" || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          grep '^Status:' "$log"
+          ! grep -qE '^Status:.*(ERROR|WARNING)' "$log"
+
+      - name: Upload check results
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: check-r-${{ matrix.r }}
+          path: |
+            check/*.Rcheck/
+            check/*.tar.gz
+          if-no-files-found: warn
+          retention-days: 14
