@@ -14,12 +14,15 @@ ARG R_VERSION=4.6.2
 FROM rocker/r-ver:${R_VERSION}
 
 # Java (headless JDK) for rJava and RWeka; headers for packages built from
-# source; qpdf, pandoc and tidy are used by R CMD check --as-cran.
+# source (on R-devel every package is: fs needs libuv, stringi uses ICU);
+# qpdf, pandoc and tidy are used by R CMD check --as-cran.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         default-jdk-headless \
         libcurl4-openssl-dev \
+        libicu-dev \
         libssl-dev \
+        libuv1-dev \
         libxml2-dev \
         qpdf \
         pandoc \
