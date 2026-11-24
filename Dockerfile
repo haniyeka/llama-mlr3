@@ -35,5 +35,7 @@ COPY install_deps.R ./
 COPY code/DESCRIPTION code/DESCRIPTION
 RUN Rscript install_deps.R
 
-# The package source.
+# The package source. code/inst/manual/llama.pdf is a symlink to
+# ../../../manual/llama.pdf, so copy its target too.
+COPY manual/llama.pdf manual/llama.pdf
 COPY code/ code/

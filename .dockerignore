@@ -1,0 +1,17 @@
+# Allowlist: Docker only sees what the Dockerfile copies. Everything else
+# (.git, manual/, example-data/, local notes such as PLAN.md) stays out of the
+# build context and the image. If the Dockerfile starts copying another file,
+# add it here with a "!" line.
+*
+!install_deps.R
+!code
+# Target of the symlink code/inst/manual/llama.pdf (the package manual).
+!manual/llama.pdf
+
+# Inside code/: editor state and leftovers from local builds and checks.
+code/**/.Rproj.user
+code/**/*.Rcheck
+code/**/*.tar.gz
+code/**/.Rhistory
+code/**/.RData
+code/**/testthat-problems.rds
